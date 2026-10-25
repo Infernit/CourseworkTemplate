@@ -16,6 +16,6 @@ set(SFML_INCS "lib/SFML/include")
 link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
 
 #### Practical 1 ####
-add_executable(testing main.cpp "main.cpp" "card.cpp" "effect.cpp" "suit.cpp" "spades.cpp")
+add_executable(testing main.cpp "main.cpp" "card.cpp" "effect.cpp" "suit.cpp" )
 target_include_directories(testing PRIVATE ${SFML_INCS})
 target_link_libraries(testing sfml-graphics)

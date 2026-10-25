@@ -1,17 +1,17 @@
 #pragma once
 #include "effect.h"
+#include <vector>
 
 class Suit {
 
 public:
 	Suit(Effect effect);
+	Suit(std::vector<Effect> effects);
 
-	virtual ~Suit() = default;
-
-	virtual Effect getSuitEffect() const = 0;
+	std::vector<Effect> getSuitEffects();
 
 protected:
-	Effect effect;
+	std::vector<Effect> effects;
 
 
 private:

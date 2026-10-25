@@ -1,28 +1,33 @@
 #pragma once
 
+enum EffectType {
+	damage,
+	healing,
+	damageIncrease,
+	healingIncrease,
+	damageDecreasePercent,
+	damageResist,
+};
+
 class Effect {
 
 public:
-	Effect(bool isPositive, int damage, int healing, int damageIncrease, int healthIncrease, float damageDecresePercentage, int damageResist);
+	Effect();
+	Effect(bool isPositive, EffectType type, float value);
 	bool getIsPositiveEffect();
-	int getDamage();
-	int getHealing();
-	int getDamageIncrease();
-	int getHealingIncrease();
-	float getDamageDecreasePercent();
-	int getDamageResist();
+	EffectType getEffectType();
+	float getValue();
 
 protected:
 	
 
 private:
-	bool positiveEffect; //H: True, D: True, C: False, S: False
-	int damage; //H: 0, D: 0, C: 1-10, S: 0
-	int healing; //H: 1-10, D: 0, C: 0, S: 0
-	int damageIncrease; //H: 0, D: 1-10, C: 0, S: 0
-	int healingIncrease; //H: 0, D: 1-10, C: 0, S: 0
-	float damageDecreasePercent; //H: 0, D: 0, C: 0, S: 0.1-1.0
-	int damageResist; //H: 0, D: 1-10, C: 0, S: 0
+	bool isPositive; //H: True, D: True, C: False, S: False
+	EffectType effectType;
+	float value;
+
+	// Maybe change this system to have an enum declaring the type and then a value, apply multiple effects rather than one for diamonds.
+	// So just have positiveEffect, enum and value (which will be a float) 
 
 	// Diamonds will provide all buffs when applied, but be removed as soon as one is used.
 	// For the effects in the suit classes, set all values to lowest, then when effect is added to the card times by rank.

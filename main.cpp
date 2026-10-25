@@ -1,18 +1,29 @@
-#include "spades.h"
 #include "card.h"
 #include <iostream>
 
 int main()
 {
-	Effect heartEffect(true, 0, 1, 0, 0, 0.0f, 0);
-	Effect diamondEffect(true, 0, 0, 1, 1, 0.0f, 1);
-	Effect clubEffect(false, 1, 0, 0, 0, 0.0f, 0);
-	Effect spadeEffect(false, 0, 0, 0, 0, 0.1f, 0);
+	// Heart Cards Heal
+	Effect heartEffect(true, healing, 1.0f);
 
-	Spades spade(spadeEffect);
+	// Diamond Cards Will Have One Of The Following Effects
+	Effect diamondEffect1(true, damageIncrease, 1.0f);
+	Effect diamondEffect2(true, healingIncrease, 1.0f);
+	Effect diamondEffect3(true, damageResist, 1.0f);
 
-	Card eightofSpades(spade, 8);
+	// Club Cards Deal Damage
+	Effect clubEffect(false, damage, 1.0f);
 
-	std::cout << eightofSpades.getCardEffect().getDamageDecreasePercent() << std::endl;
+	// Spade Cards Reduce Outgoing Damage
+	Effect spadeEffect(false, damageDecreasePercent, 0.1f);
+
+	Suit hearts(heartEffect);
+	Suit diamonds({ diamondEffect1, diamondEffect2, diamondEffect3 });
+	Suit clubs(clubEffect);
+	Suit spades(spadeEffect);
+	
+	Card eightofSpades(spades, 8);
+
+	std::cout << eightofSpades.getCardEffects()[0].getValue() << std::endl;
 
 }

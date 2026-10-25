@@ -1,16 +1,20 @@
 #include "card.h"
 
-Card::Card(Suit& suit, int rank)
-	: cardSuit(suit), cardRank(rank), cardEffect(Effect(
-		suit.getSuitEffect().getIsPositiveEffect(),
-		suit.getSuitEffect().getDamage()* rank,
-		suit.getSuitEffect().getHealing()* rank,
-		suit.getSuitEffect().getDamageIncrease()* rank,
-		suit.getSuitEffect().getHealingIncrease()* rank,
-		suit.getSuitEffect().getDamageDecreasePercent()* rank,
-		suit.getSuitEffect().getDamageResist()* rank)) {
+Card::Card(Suit suit, int rank)
+	: cardSuit(suit), cardRank(rank), cardEffects({})
+{
+	int size = suit.getSuitEffects().size();
+	std::vector<Effect> array(size);
+
+	for (int i = 0; i < size; i++) {
+		array[i] = Effect(suit.getSuitEffects()[i].getIsPositiveEffect(),
+			suit.getSuitEffects()[i].getEffectType(),
+			suit.getSuitEffects()[i].getValue() * rank);
+	}
+
+	cardEffects = array;
 };
 
-Effect Card::getCardEffect() {
-	return cardEffect;
+std::vector<Effect> Card::getCardEffects() {
+	return cardEffects;
 }

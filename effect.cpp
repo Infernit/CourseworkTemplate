@@ -1,34 +1,16 @@
 #include "effect.h"
 
-Effect::Effect(bool isPositive, int damage, int healing, int damageIncrease, int healingIncrease, float damageDecresePercentage, int damageResist) :
-	positiveEffect(isPositive), damage(damage), healing(healing), damageIncrease(damageIncrease), 
-	healingIncrease(healingIncrease), damageDecreasePercent(damageDecresePercentage), damageResist(damageResist) { }
-
+Effect::Effect() : isPositive(false), effectType(damage), value(0) {};
+Effect::Effect(bool isPositive, EffectType type, float value) : isPositive(isPositive), effectType(type), value(value) {};
 
 bool Effect::getIsPositiveEffect() {
-	return Effect::positiveEffect;
+	return Effect::isPositive;
 }
 
-int Effect::getDamage() {
-	return Effect::damage;
+EffectType Effect::getEffectType() {
+	return Effect::effectType;
 }
 
-int Effect::getHealing() {
-	return Effect::healing;
-}
-
-int Effect::getDamageIncrease() {
-	return Effect::damageIncrease;
-}
-
-int Effect::getHealingIncrease() {
-	return Effect::healingIncrease;
-}
-
-float Effect::getDamageDecreasePercent() {
-	return Effect::damageDecreasePercent;
-}
-
-int Effect::getDamageResist() {
-	return Effect::damageResist;
+float Effect::getValue() {
+	return Effect::value;
 }

@@ -4,13 +4,13 @@
 class Card {
 
 public:
-	Card(Suit& suit, int rank);
-	Effect getCardEffect();
+	Card(Suit suit, int rank);
+	std::vector<Effect> getCardEffects();
 
 protected:
-	Suit& cardSuit;
+	Suit cardSuit;
 	int cardRank;
-	Effect cardEffect;
+	std::vector<Effect> cardEffects;
 
 
 private:
