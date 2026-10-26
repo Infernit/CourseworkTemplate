@@ -4,6 +4,7 @@
 class Card {
 
 public:
+	Card();
 	Card(Suit suit, int rank);
 	std::vector<Effect> getCardEffects();
 

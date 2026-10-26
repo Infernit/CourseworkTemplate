@@ -1,5 +1,7 @@
 #include "card.h"
 
+Card::Card() {};
+
 Card::Card(Suit suit, int rank)
 	: cardSuit(suit), cardRank(rank), cardEffects({})
 {

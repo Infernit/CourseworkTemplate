@@ -1,5 +1,6 @@
 #include "suit.h"
 
+Suit::Suit() {};
 Suit::Suit(Effect effect) : effects({ effect }) {};
 Suit::Suit(std::vector<Effect> effects) : effects(effects) {};
 

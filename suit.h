@@ -5,6 +5,7 @@
 class Suit {
 
 public:
+	Suit();
 	Suit(Effect effect);
 	Suit(std::vector<Effect> effects);
 
