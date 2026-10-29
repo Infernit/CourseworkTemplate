@@ -1,6 +1,7 @@
 #pragma once
 
 enum EffectType {
+	none,
 	damage,
 	healing,
 	damageIncrease,

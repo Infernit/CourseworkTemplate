@@ -1,6 +1,6 @@
 #include "effect.h"
 
-Effect::Effect() : isPositive(false), effectType(damage), value(0) {};
+Effect::Effect() : isPositive(false), effectType(none), value(0) {};
 Effect::Effect(bool isPositive, EffectType type, float value) : isPositive(isPositive), effectType(type), value(value) {};
 
 bool Effect::getIsPositiveEffect() {

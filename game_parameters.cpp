@@ -1,18 +1,5 @@
 #include "game_parameters.h"
 
-GameParameters& GameParameters::getInstance() {
-	static GameParameters obj;
-	return obj;
-}
-
-int GameParameters::getHandSize() {
-	return _handSize;
-}
-
-int GameParameters::getStartingEnergy() {
-	return _startingEnergy;
-}
-
 Effect GameParameters::getHeartEffect() {
 	Effect effect(true, healing, 1.0f);
 	return effect;
@@ -42,3 +29,7 @@ Effect GameParameters::getSpadeEffect() {
 	Effect effect(false, damageDecreasePercent, 0.1f);
 	return effect;
 }
+
+int GameParameters::handSize = 7;
+int GameParameters::startingEnergy = 2;
+std::vector<std::string> suitNames = {"hearts", "diamonds", "clubs", "spades"};

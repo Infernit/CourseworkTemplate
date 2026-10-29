@@ -1,9 +1,9 @@
 #include "card.h"
 
-Card::Card() {};
+Card::Card() : _cardRank(-1) {};
 
 Card::Card(Suit suit, int rank)
-	: cardSuit(suit), cardRank(rank), cardEffects({})
+	: _cardSuit(suit), _cardRank(rank), _cardEffects({})
 {
 	int size = suit.getSuitEffects().size();
 	std::vector<Effect> array(size);
@@ -14,9 +14,17 @@ Card::Card(Suit suit, int rank)
 			suit.getSuitEffects()[i].getValue() * rank);
 	}
 
-	cardEffects = array;
+	_cardEffects = array;
 };
 
 std::vector<Effect> Card::getCardEffects() {
-	return cardEffects;
+	return _cardEffects;
+}
+
+Suit Card::getCardSuit() {
+	return _cardSuit;
+}
+
+int Card::getCardRank() {
+	return _cardRank;
 }

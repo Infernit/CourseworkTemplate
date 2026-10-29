@@ -4,7 +4,7 @@
 
 class Deck {
 public:
-	Deck(int value);
+	Deck();
 	int getCardCount();
 	std::vector<Card> getCards();
 	Card drawNextCard();

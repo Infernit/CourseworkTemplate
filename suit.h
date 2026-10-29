@@ -2,20 +2,25 @@
 #include "effect.h"
 #include <vector>
 
+enum SuitName {
+	hearts,
+	diamonds,
+	clubs,
+	spades,
+};
+
 class Suit {
 
 public:
 	Suit();
-	Suit(Effect effect);
-	Suit(std::vector<Effect> effects);
+	Suit(SuitName suitName, Effect effect);
+	Suit(SuitName suitName, std::vector<Effect> effects);
 
 	std::vector<Effect> getSuitEffects();
-
-protected:
-	std::vector<Effect> effects;
-
+	SuitName getSuitName();
 
 private:
-	
+	std::vector<Effect> _effects;
+	SuitName _suitName;
 
 };
