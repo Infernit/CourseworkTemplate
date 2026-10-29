@@ -9,6 +9,7 @@ public:
 	std::vector<Effect> getCardEffects();
 	Suit getCardSuit();
 	int getCardRank();
+	std::string toString();
 
 protected:
 	Suit _cardSuit;

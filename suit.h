@@ -18,9 +18,9 @@ public:
 
 	std::vector<Effect> getSuitEffects();
 	SuitName getSuitName();
+	std::string toString();
 
 private:
 	std::vector<Effect> _effects;
 	SuitName _suitName;
-
 };

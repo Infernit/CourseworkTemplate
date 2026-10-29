@@ -18,6 +18,8 @@ int main()
 		Card card = testDeck.drawNextCard();
 		int enumResult = card.getCardSuit().getSuitName();
 
+		// Test new to string methods for classes
+		std::cout << card.toString() << std::endl;
 		//std::cout << card.getCardRank() << " of " << params::suitNames[enumResult] << std::endl;
 	}
 }

@@ -1,4 +1,5 @@
 #include "card.h"
+#include <string>
 
 Card::Card() : _cardRank(-1) {};
 
@@ -27,4 +28,13 @@ Suit Card::getCardSuit() {
 
 int Card::getCardRank() {
 	return _cardRank;
+}
+
+// To string for the class for test printing
+std::string Card::toString() {
+	std::string effectsString = "";
+	for (Effect effect : _cardEffects) {
+		effectsString += effect.toString() + ", ";
+	}
+	return "Card Rank: " + std::to_string(_cardRank) + ", Card Suit: [" + _cardSuit.toString() + "], Card Effects: [" + effectsString + "]";
 }

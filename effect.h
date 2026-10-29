@@ -18,6 +18,7 @@ public:
 	bool getIsPositiveEffect();
 	EffectType getEffectType();
 	float getValue();
+	std::string toString();
 
 protected:
 	

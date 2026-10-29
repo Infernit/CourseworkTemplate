@@ -1,6 +1,7 @@
 #include "deck.h"
 #include "game_parameters.h"
 #include <ctime>
+#include <string>
 
 using params = GameParameters;
 
@@ -94,4 +95,14 @@ void Deck::populateSuits() {
 	suits[3] = spades;
 
 	_suits = suits;
+}
+
+// To string for the class for test printing
+std::string Deck::toString() {
+	std::string cardsString = "";
+	for (Card card : _cards) {
+		cardsString += card.toString() + ", ";
+	}
+
+	return "Deck Size: " + std::to_string(_cards.size()) + ", Cards: [" + cardsString + "]";
 }

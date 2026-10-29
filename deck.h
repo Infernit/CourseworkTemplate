@@ -9,6 +9,7 @@ public:
 	std::vector<Card> getCards();
 	Card drawNextCard();
 	void shuffleDeck();
+	std::string toString();
 	
 
 private:
