@@ -73,7 +73,7 @@ void Deck::populateDeck() {
 	std::vector<Card> cards(0);
 
 	for (int i = 0; i < _suits.size(); i++) {
-		for (int j = 0; j < 10; j++) {
+		for (int j = 0; j < 13; j++) {
 			Card card(_suits[i], j + 1);
 			cards.push_back(card);
 		}
