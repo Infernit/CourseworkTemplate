@@ -13,5 +13,6 @@ struct GameParameters {
 
 	static int handSize;
 	static int startingEnergy;
+	static std::vector<std::string> cardNames;
 	static std::vector<std::string> suitNames;
 };

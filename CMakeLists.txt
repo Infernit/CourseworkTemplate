@@ -11,11 +11,7 @@ SET(OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
 
 #### Add External Dependencies ####
-add_subdirectory("lib/SFML")
-set(SFML_INCS "lib/SFML/include")
-link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
+
 
 #### Practical 1 ####
 add_executable(testing main.cpp "main.cpp" "card.cpp" "effect.cpp" "suit.cpp" "deck.cpp" "game_parameters.cpp")
-target_include_directories(testing PRIVATE ${SFML_INCS})
-target_link_libraries(testing sfml-graphics)

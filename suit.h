@@ -3,6 +3,7 @@
 #include <vector>
 
 enum SuitName {
+	noSuit,
 	hearts,
 	diamonds,
 	clubs,

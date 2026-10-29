@@ -16,8 +16,9 @@ int main()
 
 	for (int i = 0; i < deckSize + 1; i++) {
 		Card card = testDeck.drawNextCard();
-		int enumResult = card.getCardSuit().getSuitName();
+		int rank = card.getCardRank();
+		int suitEnumResult = card.getCardSuit().getSuitName();
 
-		//std::cout << card.getCardRank() << " of " << params::suitNames[enumResult] << std::endl;
+		std::cout << params::cardNames[rank] << " of " << params::suitNames[suitEnumResult] << std::endl;
 	}
 }
