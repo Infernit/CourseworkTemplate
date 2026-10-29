@@ -1,6 +1,4 @@
 #include "suit.h"
-#include <string>
-#include "game_parameters.h"
 
 Suit::Suit() : _suitName(noSuit) {}
 Suit::Suit(SuitName suitName, Effect effect) : _effects({ effect }), _suitName(suitName) {};

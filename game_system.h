@@ -1,4 +1,5 @@
 #pragma once
+#include "game_parameters.h"
 
 struct GameSystem {
 	static void init();

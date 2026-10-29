@@ -1,6 +1,5 @@
 #pragma once
-#include "suit.h"
-#include "card.h"
+#include "game_parameters.h"
 
 class Deck {
 public:

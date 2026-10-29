@@ -1,5 +1,4 @@
 #include "effect.h"
-#include <string>
 
 Effect::Effect() : isPositive(false), effectType(none), value(0) {};
 Effect::Effect(bool isPositive, EffectType type, float value) : isPositive(isPositive), effectType(type), value(value) {};

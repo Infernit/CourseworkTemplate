@@ -1,5 +1,4 @@
 #include "card.h"
-#include <string>
 
 Card::Card() : _cardRank(0) {};
 

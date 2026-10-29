@@ -1,7 +1,4 @@
 #include "deck.h"
-#include "game_parameters.h"
-#include <ctime>
-#include <string>
 
 using params = GameParameters;
 

@@ -1,7 +1,5 @@
 #pragma once
-#include "effect.h"
-#include <vector>
-#include <string>
+#include "game_parameters.h"
 
 enum SuitName {
 	noSuit,

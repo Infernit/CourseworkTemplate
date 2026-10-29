@@ -1,5 +1,5 @@
 #pragma once
-#include "suit.h"
+#include "game_parameters.h"
 
 class Card {
 
