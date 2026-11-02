@@ -1,5 +1,5 @@
 #pragma once
-#include "game_parameters.h"
+#include "suit.h"
 #include "card.h"
 #include <vector>
 #include <string>

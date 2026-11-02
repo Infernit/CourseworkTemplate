@@ -6,13 +6,9 @@ using params = GameParameters;
 using namespace std;
 
 void Testing::kill_player() {
-
-	Player player;
 	GameSystem system;
-
-	system.hookPlayerKilled(&player);
-	player.reduceHealth(1);
-
+	system.createPlayers(false);
+	system.getPlayer1()->reduceHealth(1);
 }
 
 void Testing::test_deck_attributes() {

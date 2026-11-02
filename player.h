@@ -1,27 +1,31 @@
 #pragma once
-#include "game_parameters.h"
 #include "deck.h"
+#include "card.h"
+#include <vector>
+
+struct GameSystem;
 
 class Player {
 public:
-	Player(bool isAI, GameSystem system);
+	Player();
+	Player(bool isAI, GameSystem& system);
 	~Player();
 
 	int getPlayerNumber();
+	int getHealth();
 	void populateDeck();
 	Deck getDeck();
 	void reduceHealth(int value);
-	int getHealth();
 
 	__event void PlayerKilled(int playerNumber);
 
-protected:
-	int _playerNumber;
-	Deck _deck;
-	int _health;
+private:
 	bool _isAI;
-	GameSystem _system;
+	int _playerNumber;
+	int _health;
+	
+	GameSystem& _system;
+	Deck _deck;
 	
 	std::vector<Card> _hand;
-	// Board?
 };

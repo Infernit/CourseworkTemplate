@@ -1,6 +1,7 @@
 #include "deck.h"
 #include "card.h"
 #include "suit.h"
+#include "game_parameters.h"
 #include <ctime>
 #include <vector>
 

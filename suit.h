@@ -1,5 +1,4 @@
 #pragma once
-#include "game_parameters.h"
 #include "effect.h"
 #include <vector>
 #include <string>

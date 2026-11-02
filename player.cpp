@@ -1,10 +1,11 @@
+#include "game_parameters.h"
 #include "player.h"
-#include "game_system.h"
 #include "deck.h"
+#include "game_system.h"
 
-Player::Player(bool isAI, GameSystem system) : _isAI(isAI), _system(system) {
+Player::Player(bool isAI, GameSystem& system) : _isAI(isAI), _system(system) {
 	Player::populateDeck();
-	Player::_playerNumber = GameSystem::getNextPlayerNumber();
+	Player::_playerNumber = system.getNextPlayerNumber();
 	_system.hookPlayerKilled(this);
 }
 

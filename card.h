@@ -1,5 +1,4 @@
 #pragma once
-#include "game_parameters.h"
 #include "suit.h"
 #include <vector>
 

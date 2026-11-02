@@ -1,13 +1,14 @@
 #include "game_system.h"
+#include "player.h"
+
 #include <iostream>
+#include <memory>
 
-GameSystem::GameSystem() {
-
-}
+GameSystem::GameSystem() = default;
+GameSystem::~GameSystem() = default;
 
 void GameSystem::init() {
-	GameSystem system;
-	GameSystem::createPlayers(false, system);
+	GameSystem::createPlayers(false);
 }
 
 void GameSystem::hookPlayerKilled(Player* player) {
@@ -27,14 +28,17 @@ int GameSystem::getNextPlayerNumber() {
 	return GameSystem::_playerNumber;
 }
 
-void GameSystem::createPlayers(bool isP2Ai, GameSystem system) {
-	Player p1(false, system);
-	GameSystem::_player1 = p1;
-	Player p2(isP2Ai, system);
-	GameSystem::_player2 = p2;
+Player* GameSystem::getPlayer1() {
+	return _player1.get();
 }
 
-Player GameSystem::_player1;
-Player GameSystem::_player2;
+Player* GameSystem::getPlayer2() {
+	return _player2.get();
+}
+
+void GameSystem::createPlayers(bool isP2Ai) {
+	_player1 = std::make_unique<Player>(false, *this);
+	_player2 = std::make_unique<Player>(false, *this);
+}
 
 int GameSystem::_playerNumber = 0;

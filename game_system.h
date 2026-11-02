@@ -1,23 +1,35 @@
 #pragma once
-#include "game_parameters.h"
 #include <iostream>
+#include <memory>
+
+class Player;
 
 struct GameSystem {
 	GameSystem();
-	static void init();
-	static void reset();
-	static void clean();
-	static void update(const float& dt);
-	static void render();
-	static int getNextPlayerNumber();
+	~GameSystem();
+
+	void init();
+	void reset();
+	void clean();
+	void update(const float& dt);
+	void render();
+
+	int getNextPlayerNumber();
 
 	void hookPlayerKilled(Player* player);
 	void unhookPlayerKilled(Player* player);
+
 	void playerKilledHandler(int playerNumber);
-	static void createPlayers(bool isP2Ai, GameSystem system);
+
+	void createPlayers(bool isP2Ai);
+
+	Player* getPlayer1();
+
+	Player* getPlayer2();
+
 
 private:
-	static Player _player1;
-	static Player _player2;
+	std::unique_ptr<Player> _player1;
+	std::unique_ptr<Player> _player2;
 	static int _playerNumber;
 };
