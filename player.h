@@ -4,7 +4,8 @@
 
 class Player {
 public:
-	Player();
+	Player(bool isAI, GameSystem system);
+	~Player();
 
 	int getPlayerNumber();
 	void populateDeck();
@@ -18,6 +19,9 @@ protected:
 	int _playerNumber;
 	Deck _deck;
 	int _health;
-	// Hand
+	bool _isAI;
+	GameSystem _system;
+	
+	std::vector<Card> _hand;
 	// Board?
 };
