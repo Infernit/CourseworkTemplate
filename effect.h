@@ -1,5 +1,5 @@
 #pragma once
-#include "game_parameters.h"
+#include <string>
 
 enum EffectType {
 	none,

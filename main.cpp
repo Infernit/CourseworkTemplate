@@ -1,4 +1,9 @@
 #include "game_parameters.h"
+#include "player.h"
+#include "game_system.h"
+#include "deck.h"
+#include "card.h"
+#include <iostream>
 
 using params = GameParameters;
 
@@ -6,7 +11,9 @@ int main()
 {
 	Player player;
 
-	GameSystem::hookPlayerKilled(&player);
+	GameSystem system;
+
+	system.hookPlayerKilled(&player);
 
 	player.reduceHealth(1);
 

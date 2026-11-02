@@ -1,5 +1,6 @@
 #pragma once
 #include "game_parameters.h"
+#include "deck.h"
 
 class Player {
 public:

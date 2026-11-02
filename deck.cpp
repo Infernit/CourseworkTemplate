@@ -1,4 +1,8 @@
 #include "deck.h"
+#include "card.h"
+#include "suit.h"
+#include <ctime>
+#include <vector>
 
 using params = GameParameters;
 

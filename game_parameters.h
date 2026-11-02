@@ -1,14 +1,7 @@
 #pragma once
-#include "card.h"
-#include "deck.h"
 #include "effect.h"
-#include "game_system.h"
-#include "player.h"
-#include "suit.h"
-#include <string>
 #include <vector>
-#include <ctime>
-#include <iostream>
+#include <string>
 
 struct GameParameters {
 	static Effect getHeartEffect();

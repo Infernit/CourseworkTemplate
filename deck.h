@@ -1,5 +1,8 @@
 #pragma once
 #include "game_parameters.h"
+#include "card.h"
+#include <vector>
+#include <string>
 
 class Deck {
 public:

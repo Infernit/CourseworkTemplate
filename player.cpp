@@ -1,7 +1,10 @@
 #include "player.h"
+#include "game_system.h"
+#include "deck.h"
 
 Player::Player() {
-	populateDeck();
+	Player::populateDeck();
+	Player::_playerNumber = GameSystem::getNextPlayerNumber();
 }
 
 void Player::populateDeck() {
@@ -10,13 +13,13 @@ void Player::populateDeck() {
 }
 
 Deck Player::getDeck() {
-	return _deck;
+	return Player::_deck;
 }
 
 void Player::reduceHealth(int value) {
-	_health -= value;
+	Player::_health -= value;
 
-	if (_health <= 0) {
-		__raise Player::PlayerKilled();
+	if (Player::_health <= 0) {
+		__raise Player::PlayerKilled(Player::_playerNumber);
 	}
 }
