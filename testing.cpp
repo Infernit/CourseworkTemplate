@@ -37,3 +37,19 @@ void Testing::develop_effect_testing() {
 	// Queen of spades
 	//Card card
 }
+
+void Testing::fill_player_hand() {
+	GameSystem system;
+	system.createPlayers(false);
+	for (int i = 0; i < 100; i++) {
+		system.getPlayer1()->drawCard();
+	}
+	
+	std::cout << std::endl;
+	std::cout << "Hand contents" << std::endl;
+	std::cout << std::endl;
+
+	for (int i = 0; i < 7; i++) {
+		std::cout << GameParameters::cardNames[system.getPlayer1()->getHand()[i].getCardRank()] << " of " << GameParameters::suitNames[system.getPlayer1()->getHand()[i].getCardSuit().getSuitName()] << std::endl;
+	}
+}

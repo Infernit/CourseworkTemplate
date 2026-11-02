@@ -24,12 +24,13 @@ struct GameSystem {
 	void createPlayers(bool isP2Ai);
 
 	Player* getPlayer1();
-
 	Player* getPlayer2();
+	static int getMaxEnergy();
 
 
 private:
 	std::unique_ptr<Player> _player1;
 	std::unique_ptr<Player> _player2;
 	static int _playerNumber;
+	static int _maxEnergy;
 };

@@ -11,4 +11,5 @@ public:
 	static void kill_player();
 	static void test_deck_attributes();
 	static void develop_effect_testing();
+	static void fill_player_hand();
 };

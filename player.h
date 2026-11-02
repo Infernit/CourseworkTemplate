@@ -11,10 +11,15 @@ public:
 	Player(bool isAI, GameSystem& system);
 	~Player();
 
+	void drawCard();
+
 	int getPlayerNumber();
 	int getHealth();
-	void populateDeck();
 	Deck getDeck();
+	std::vector<Card> getHand();
+
+	void populateDeck();
+	
 	void reduceHealth(int value);
 
 	__event void PlayerKilled(int playerNumber);

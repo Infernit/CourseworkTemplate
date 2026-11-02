@@ -16,8 +16,8 @@ public:
 
 private:
 	std::vector<Card> _cards;
+	std::vector<Card> _drawnCards;
 	std::vector<Suit> _suits;
-	void populateDeck();
+	void populateDeck(int energyLimit);
 	void populateSuits();
-
 };

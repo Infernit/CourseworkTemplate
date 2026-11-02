@@ -12,4 +12,5 @@ int main()
 	Testing::kill_player();
 	Testing::test_deck_attributes();
 	Testing::develop_effect_testing();
+	Testing::fill_player_hand();
 }

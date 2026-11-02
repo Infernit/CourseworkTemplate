@@ -9,7 +9,7 @@ using params = GameParameters;
 
 Deck::Deck() {
 	populateSuits();
-	populateDeck();
+	populateDeck(GameSystem::getMaxEnergy());
 };
 
 int Deck::getCardCount() {
@@ -19,7 +19,6 @@ int Deck::getCardCount() {
 std::vector<Card> Deck::getCards() {
 	return _cards;
 }
-
 
 Card Deck::drawNextCard() {
 	//Best i can do for now
@@ -39,7 +38,7 @@ Card Deck::drawNextCard() {
 	}
 
 	_cards = cards;
-
+	_drawnCards.push_back(card);
 	return card;
 }
 
@@ -71,13 +70,23 @@ void Deck::shuffleDeck() {
 }
 
 
-void Deck::populateDeck() {
+void Deck::populateDeck(int maxEnergy) {
 	std::vector<Card> cards(0);
+	bool flag = false;
 
 	for (int i = 0; i < _suits.size(); i++) {
-		for (int j = 0; j < 13; j++) {
-			Card card(_suits[i], j + 1);
-			cards.push_back(card);
+		for (int j = 0; j < maxEnergy; j++) {
+			//Check if card has previously been drawn
+			for (int k = 0; k < _drawnCards.size(); k++) {
+				if (_drawnCards[k].getCardSuit().getSuitName() == i && _drawnCards[k].getCardRank() == j + 1) {
+					flag = true;
+				}
+			}
+			if (!flag) {
+				Card card(_suits[i], j + 1);
+				cards.push_back(card);
+			}
+			flag = false;
 		}
 	}
 
