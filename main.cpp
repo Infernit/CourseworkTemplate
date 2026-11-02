@@ -4,6 +4,13 @@ using params = GameParameters;
 
 int main()
 {
+	Player player;
+
+	GameSystem::hookPlayerKilled(&player);
+
+	player.reduceHealth(1);
+
+
 	Deck testDeck;
 	int deckSize = testDeck.getCards().size();
 	testDeck.shuffleDeck();

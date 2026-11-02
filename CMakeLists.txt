@@ -14,4 +14,4 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
 
 
 #### Practical 1 ####
-add_executable(testing main.cpp "main.cpp" "card.cpp" "effect.cpp" "suit.cpp" "deck.cpp" "game_parameters.cpp")
+add_executable(testing main.cpp "main.cpp" "card.cpp" "effect.cpp" "suit.cpp" "deck.cpp" "game_parameters.cpp" "player.cpp" "game_system.cpp")
