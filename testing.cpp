@@ -41,6 +41,7 @@ void Testing::develop_effect_testing() {
 void Testing::fill_player_hand() {
 	GameSystem system;
 	system.createPlayers(false);
+	// Loops 100 times to check if the hand size validation works
 	for (int i = 0; i < 100; i++) {
 		system.getPlayer1()->drawCard();
 	}
@@ -49,7 +50,7 @@ void Testing::fill_player_hand() {
 	std::cout << "Hand contents" << std::endl;
 	std::cout << std::endl;
 
-	for (int i = 0; i < 7; i++) {
-		std::cout << GameParameters::cardNames[system.getPlayer1()->getHand()[i].getCardRank()] << " of " << GameParameters::suitNames[system.getPlayer1()->getHand()[i].getCardSuit().getSuitName()] << std::endl;
+	for (int i = 0; i < params::handSize; i++) {
+		std::cout << params::cardNames[system.getPlayer1()->getHand()[i].getCardRank()] << " of " << params::suitNames[system.getPlayer1()->getHand()[i].getCardSuit().getSuitName()] << std::endl;
 	}
 }
