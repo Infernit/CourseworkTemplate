@@ -17,3 +17,5 @@ link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
 
 #### Practical 1 ####
 add_executable(testing main.cpp "game_parameters.cpp" "main.cpp" "card.cpp" "effect.cpp" "suit.cpp" "deck.cpp" "player.cpp" "game_system.cpp" "testing.cpp" "board.cpp")
+target_include_directories(testing PRIVATE ${SFML_INCS})
+target_link_libraries(testing sfml-graphics)

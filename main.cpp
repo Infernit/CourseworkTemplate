@@ -4,7 +4,9 @@
 #include "deck.h"
 #include "card.h"
 #include "testing.h"
+#include "board.h"
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 int main()
 {
@@ -13,4 +15,5 @@ int main()
 	Testing::test_deck_attributes();
 	Testing::develop_effect_testing();
 	Testing::fill_player_hand();
+	Board();
 }
