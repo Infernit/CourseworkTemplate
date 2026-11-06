@@ -16,6 +16,30 @@ set(SFML_INCS "lib/SFML/include")
 link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
 
 #### Practical 1 ####
-add_executable(testing main.cpp "game_parameters.cpp" "main.cpp" "card.cpp" "effect.cpp" "suit.cpp" "deck.cpp" "player.cpp" "game_system.cpp" "testing.cpp" "board.cpp")
-target_include_directories(testing PRIVATE ${SFML_INCS})
-target_link_libraries(testing sfml-graphics)
+add_executable(testing 
+	"src/game_parameters.cpp" 
+	"src/main.cpp" 
+	"src/card.cpp" 
+	"src/effect.cpp" 
+	"src/suit.cpp" 
+	"src/deck.cpp" 
+	"src/player.cpp" 
+	"src/game_system.cpp" 
+	"src/testing.cpp" 
+	"src/board.cpp"
+)
+
+target_include_directories(testing 
+	PRIVATE ${SFML_INCS}
+)
+
+#### Make sure it can find the spritesheet instead of just printing white squares
+target_compile_definitions(testing PRIVATE
+	RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/res"
+)
+
+target_link_libraries(testing 
+	sfml-graphics
+	sfml-window
+	sfml-system
+)

@@ -6,9 +6,9 @@ class Board {
 
 public:
 	Board();
+	void init();
 
 private:
 	std::vector<Card> side1Cards;
 	std::vector<Card> side2Cards;
-
 };
