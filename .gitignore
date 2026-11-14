@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # Ignore SFML source code
-/SFML/
+/lib/SFML/
 
 # User-specific files
 *.rsuser
