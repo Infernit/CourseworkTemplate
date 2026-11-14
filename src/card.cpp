@@ -28,6 +28,19 @@ Card::Card(Suit suit, int rank)
 		}
 
 		_cardEffects = array;
+
+		//Set a max health and set health to max health based on suit and rank
+		if (suit.getSuitName() == clubs) {
+			_maxHealth = rank * 2;
+		}
+		else if (suit.getSuitName() == hearts) {
+			_maxHealth = rank;
+		}
+		else {
+			_maxHealth = 0;
+		}
+		
+		_health = _maxHealth;
 	}
 
 	//Royalty
@@ -57,6 +70,58 @@ bool Card::reduceHealth(int value) {
 	}
 
 	return false;
+}
+
+void Card::increaseHealth(int value) {
+	_health += value;
+
+	if (_health > _maxHealth) {
+		_health = _maxHealth;
+	}
+}
+
+void Card::increaseEffect(int value, EffectType type) {
+	int size = _cardEffects.size();
+
+	for (int i = 0; i < size; i++) {
+		if (_cardEffects[i].getEffectType() == type) {
+			_effectIncrease += value;
+		}
+	}
+}
+
+bool Card::applyEffect(Effect effect) {
+	switch (effect.getEffectType()) {
+	case damage:
+		reduceHealth(effect.getValue());
+		break;
+
+	case healing:
+		increaseHealth(effect.getValue());
+		break;
+
+	case damageIncrease:
+		increaseEffect(effect.getValue(), damage);
+		break;
+
+	case healingIncrease:
+		increaseEffect(effect.getValue(), healing);
+		break;
+
+	case damageDecreasePercent:
+		//damage decrease percent method
+		break;
+
+	case damageResist:
+		//damage resist method
+		break;
+
+	default:
+		std::cout << "No effect applied" << std::endl;
+		break;
+	}
+
+	return true;
 }
 
 //Applies the effect of the card to a damagable (card or player)

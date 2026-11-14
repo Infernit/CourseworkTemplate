@@ -68,6 +68,11 @@ int GameSystem::getMaxEnergy() {
 	return _maxEnergy;
 }
 
+void GameSystem::setMaxEnergy(int value)
+{
+	_maxEnergy = value;
+}
+
 //___________________________________//
 //          LOCAL VARIABLES          //
 //___________________________________//

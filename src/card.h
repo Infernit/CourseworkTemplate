@@ -3,7 +3,7 @@
 #include "effectable.h"
 #include <vector>
 
-class Card : Effectable {
+class Card : public Effectable {
 
 public:
 //________________________________//
@@ -16,6 +16,9 @@ public:
 //          METHODS          //
 //___________________________//
 	bool reduceHealth(int value) override;
+	void increaseHealth(int value) override;
+	void increaseEffect(int value, EffectType type);
+	bool applyEffect(Effect effect) override;
 	void applyCardEffect(Effectable* target);
 
 //____________________________//
@@ -23,6 +26,7 @@ public:
 //____________________________//
 	int getCardRank();
 	int getCardHealth();
+	int getCardMaxHealth();
 	bool getIsRoyal();
 
 	Suit getCardSuit();
@@ -38,6 +42,7 @@ protected:
 //          LOCAL VARIABLES          //
 //___________________________________//
 	int _cardRank;
+	int _effectIncrease;
 	bool _isRoyal;
 
 	Suit _cardSuit;

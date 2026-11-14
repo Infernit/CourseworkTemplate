@@ -36,6 +36,7 @@ struct GameSystem {
 	Player* getPlayer1();
 	Player* getPlayer2();
 	static int getMaxEnergy();
+	static void setMaxEnergy(int value);
 
 
 private:

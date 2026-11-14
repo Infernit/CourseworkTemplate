@@ -15,5 +15,5 @@ int main()
 	Testing::test_deck_attributes();
 	Testing::develop_effect_testing();
 	Testing::fill_player_hand();
-	Board();
+	Testing::testing_effects_stuff();
 }

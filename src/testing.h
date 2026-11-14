@@ -12,4 +12,5 @@ public:
 	static void test_deck_attributes();
 	static void develop_effect_testing();
 	static void fill_player_hand();
+	static void testing_effects_stuff();
 };

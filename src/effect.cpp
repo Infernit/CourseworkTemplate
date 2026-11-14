@@ -5,7 +5,7 @@ Effect::Effect() : isPositive(false), effectType(none), value(0) {};
 Effect::Effect(bool isPositive, EffectType type, float value) : isPositive(isPositive), effectType(type), value(value) {};
 
 void Effect::applyEffect(Effectable* damagable) {
-	//Apply effect somehow here
+	damagable->applyEffect(*this);
 }
 
 bool Effect::getIsPositiveEffect() {

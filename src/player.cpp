@@ -9,6 +9,8 @@ Player::Player(bool isAI, GameSystem& system) : _isAI(isAI), _system(system) {
 	Player::populateDeck();
 	Player::_playerNumber = system.getNextPlayerNumber();
 	_system.hookPlayerKilled(this);
+	_maxHealth = GameParameters::maxPlayerHealth;
+	_health = _maxHealth;
 }
 
 Player::~Player() {
@@ -29,6 +31,11 @@ void Player::populateDeck() {
 	Player::_deck = deck;
 }
 
+int Player::getHealth()
+{
+	return _health;
+}
+
 Deck Player::getDeck() {
 	return Player::_deck;
 }
@@ -43,6 +50,48 @@ bool Player::reduceHealth(int value) {
 	}
 
 	return false;
+}
+
+void Player::increaseHealth(int value) {
+	_health += value;
+
+	if (_health > _maxHealth) {
+		_health = _maxHealth;
+	}
+}
+
+bool Player::applyEffect(Effect effect) {
+	switch (effect.getEffectType()) {
+	case damage:
+		reduceHealth(effect.getValue());
+		break;
+
+	case healing:
+		increaseHealth(effect.getValue());
+		break;
+
+	case damageIncrease:
+		//increaseEffect(effect.getValue(), damage);
+		break;
+
+	case healingIncrease:
+		//increaseEffect(effect.getValue(), healing);
+		break;
+
+	case damageDecreasePercent:
+		//damage decrease percent method
+		break;
+
+	case damageResist:
+		//damage resist method
+		break;
+
+	default:
+		std::cout << "No effect applied" << std::endl;
+		break;
+	}
+
+	return true;
 }
 
 std::vector<Card> Player::getHand() {
