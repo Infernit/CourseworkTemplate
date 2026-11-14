@@ -29,6 +29,10 @@ int Card::getCardRank() {
 	return _cardRank;
 }
 
+bool Card::getIsRoyal() {
+	return _isRoyal;
+}
+
 // To string for the class for test printing
 std::string Card::toString() {
 	std::string effectsString = "";

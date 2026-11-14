@@ -1,5 +1,5 @@
 #pragma once
-#include "game_parameters.h"
+#include "suit.h"
 #include "card.h"
 #include <vector>
 #include <string>
@@ -16,8 +16,8 @@ public:
 
 private:
 	std::vector<Card> _cards;
+	std::vector<Card> _drawnCards;
 	std::vector<Suit> _suits;
-	void populateDeck();
+	void populateDeck(int energyLimit);
 	void populateSuits();
-
 };
