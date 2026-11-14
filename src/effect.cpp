@@ -1,7 +1,12 @@
 #include "effect.h"
+#include "effectable.h"
 
 Effect::Effect() : isPositive(false), effectType(none), value(0) {};
 Effect::Effect(bool isPositive, EffectType type, float value) : isPositive(isPositive), effectType(type), value(value) {};
+
+void Effect::applyEffect(Effectable* damagable) {
+	//Apply effect somehow here
+}
 
 bool Effect::getIsPositiveEffect() {
 	return Effect::isPositive;

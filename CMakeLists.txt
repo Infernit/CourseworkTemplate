@@ -27,7 +27,7 @@ add_executable(testing
 	"src/game_system.cpp" 
 	"src/testing.cpp" 
 	"src/board.cpp"
-)
+	"src/effectable.h")
 
 target_include_directories(testing 
 	PRIVATE ${SFML_INCS}

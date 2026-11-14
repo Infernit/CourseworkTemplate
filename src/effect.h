@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+class Effectable;
+
 enum EffectType {
 	none,
 	damage,
@@ -16,6 +18,7 @@ class Effect {
 public:
 	Effect();
 	Effect(bool isPositive, EffectType type, float value);
+	void applyEffect(Effectable* damagable);
 	bool getIsPositiveEffect();
 	EffectType getEffectType();
 	float getValue();

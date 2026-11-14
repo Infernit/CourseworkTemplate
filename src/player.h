@@ -5,7 +5,7 @@
 
 struct GameSystem;
 
-class Player {
+class Player : Effectable {
 public:
 	Player();
 	Player(bool isAI, GameSystem& system);
@@ -20,14 +20,13 @@ public:
 
 	void populateDeck();
 	
-	void reduceHealth(int value);
+	bool reduceHealth(int value) override;
 
 	__event void PlayerKilled(int playerNumber);
 
 private:
 	bool _isAI;
 	int _playerNumber;
-	int _health;
 	
 	GameSystem& _system;
 	Deck _deck;

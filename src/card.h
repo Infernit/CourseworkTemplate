@@ -1,28 +1,46 @@
 #pragma once
 #include "suit.h"
+#include "effectable.h"
 #include <vector>
 
-class Card {
+class Card : Effectable {
 
 public:
+//________________________________//
+//          CONSTRUCTORS          //
+//________________________________//
 	Card();
 	Card(Suit suit, int rank);
-	std::vector<Effect> getCardEffects();
-	Suit getCardSuit();
+
+//___________________________//
+//          METHODS          //
+//___________________________//
+	bool reduceHealth(int value) override;
+	void applyCardEffect(Effectable* target);
+
+//____________________________//
+//          GETTTERS          //
+//____________________________//
 	int getCardRank();
-	// Receive this information too
+	int getCardHealth();
 	bool getIsRoyal();
+
+	Suit getCardSuit();
+	std::vector<Effect> getCardEffects();
+
+//____________________________//
+//          TOSTRING          //
+//____________________________//
 	std::string toString();
 
 protected:
-	Suit _cardSuit;
+//___________________________________//
+//          LOCAL VARIABLES          //
+//___________________________________//
 	int _cardRank;
-	std::vector<Effect> _cardEffects;
-	// If it has rank 11 (to make it distinguishable from numbered 1 cards even though it could be 1. Figure out dual rank???)
-	// then it is ace. Rank 10 could be 10 or any of the face cards. So, for ease of calculation from 10, make bool???
 	bool _isRoyal;
 
-private:
-
-
+	Suit _cardSuit;
+	std::vector<Effect> _cardEffects;
+	
 };

@@ -1,6 +1,9 @@
 #include "card.h"
 #include <iostream>
 
+//________________________________//
+//          CONSTRUCTORS          //
+//________________________________//
 //Default Constructor
 Card::Card() : _cardRank(0), _isRoyal(false) {};
 
@@ -38,7 +41,49 @@ Card::Card(Suit suit, int rank)
 		std::cout << "Invalid Card Rank" << std::endl;
 	}
 	
-};
+}
+
+//___________________________//
+//          METHODS          //
+//___________________________//
+//Reduces the health of the card
+//Returns true if card died, false if lived
+bool Card::reduceHealth(int value) {
+	_health -= value;
+
+	if (_health <= 0) {
+		//Card Dies
+		return true;
+	}
+
+	return false;
+}
+
+//Applies the effect of the card to a damagable (card or player)
+void Card::applyCardEffect(Effectable* target) {
+	int size = _cardEffects.size();
+
+	for (int i = 0; i < size; i++) {
+		_cardEffects[i].applyEffect(target);
+	}
+}
+
+//____________________________//
+//          GETTTERS          //
+//____________________________//
+//Returns the rank of the card
+int Card::getCardRank() {
+	return _cardRank;
+}
+
+int Card::getCardHealth() {
+	return _health;
+}
+
+//Returns whether the card is royalty
+bool Card::getIsRoyal() {
+	return _isRoyal;
+}
 
 //Returns a vector of all card Effects 
 std::vector<Effect> Card::getCardEffects() {
@@ -50,16 +95,11 @@ Suit Card::getCardSuit() {
 	return _cardSuit;
 }
 
-//Returns the rank of the card
-int Card::getCardRank() {
-	return _cardRank;
-}
 
-//Returns whether the card is royalty
-bool Card::getIsRoyal() {
-	return _isRoyal;
-}
 
+//____________________________//
+//          TOSTRING          //
+//____________________________//
 // To string for the class for test printing
 std::string Card::toString() {
 	std::string effectsString = "";

@@ -33,12 +33,16 @@ Deck Player::getDeck() {
 	return Player::_deck;
 }
 
-void Player::reduceHealth(int value) {
+//Returns true if player died, false if lived
+bool Player::reduceHealth(int value) {
 	Player::_health -= value;
 
 	if (Player::_health <= 0) {
 		__raise Player::PlayerKilled(Player::_playerNumber);
+		return true;
 	}
+
+	return false;
 }
 
 std::vector<Card> Player::getHand() {
