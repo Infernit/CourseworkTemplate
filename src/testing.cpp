@@ -73,6 +73,8 @@ void Testing::testing_effects_stuff() {
 		}
 	}
 
+	//10 of clubs attacking player on 100 health
+	//should reduce health by 10 (resulting in 90)
 	Player player(false, system);
 
 	std::cout << "player health pre attack: " << player.getHealth() << std::endl;
@@ -81,7 +83,8 @@ void Testing::testing_effects_stuff() {
 
 	std::cout << "player health post attack: " << player.getHealth() << std::endl;
 	
-
+	//8 of hearts healing 10 of clubs on 15 health
+	//Should only heal 5, even though the card can heal 8 due to max health restrictions
 	card2.reduceHealth(5);
 
 	std::cout << "card health pre heal" << card2.getCardHealth() << std::endl;
