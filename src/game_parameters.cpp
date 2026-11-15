@@ -5,18 +5,8 @@ Effect GameParameters::getHeartEffect() {
 	return effect;
 }
 
-Effect GameParameters::getDiamondEffect1() {
-	Effect effect(true, damageIncrease, 1.0f);
-	return effect;
-}
-
-Effect GameParameters::getDiamondEffect2() {
-	Effect effect(true, healingIncrease, 1.0f);
-	return effect;
-}
-
-Effect GameParameters::getDiamondEffect3() {
-	Effect effect(true, damageResist, 1.0f);
+Effect GameParameters::getDiamondEffect(){
+	Effect effect(true, diamondEffect, 1.0f);
 	return effect;
 }
 

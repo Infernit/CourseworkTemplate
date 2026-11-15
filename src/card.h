@@ -2,6 +2,7 @@
 #include "suit.h"
 #include "effectable.h"
 #include <vector>
+#include <map>
 
 class Card : public Effectable {
 
@@ -17,9 +18,12 @@ public:
 //___________________________//
 	bool reduceHealth(int value) override;
 	void increaseHealth(int value) override;
-	void increaseEffect(int value, EffectType type);
+	void increaseEffect(int value);
+	void reduceIncreaseEffect(int value);
+	void setDamageDecreasePercent(float percent);
 	bool applyEffect(Effect effect) override;
-	void applyCardEffect(Effectable* target);
+	bool applyCardEffect(Effectable* target);
+	void resetDamageDecrease();
 
 //____________________________//
 //          GETTTERS          //
@@ -30,7 +34,8 @@ public:
 	bool getIsRoyal();
 
 	Suit getCardSuit();
-	std::vector<Effect> getCardEffects();
+	int getEffectIncreases();
+	Effect getCardEffect();
 
 //____________________________//
 //          TOSTRING          //
@@ -42,10 +47,11 @@ protected:
 //          LOCAL VARIABLES          //
 //___________________________________//
 	int _cardRank;
-	int _effectIncrease;
 	bool _isRoyal;
 
 	Suit _cardSuit;
-	std::vector<Effect> _cardEffects;
+	std::vector<float> _damageDecreases;
+	int _effectIncrease;
+	Effect _cardEffect;
 	
 };

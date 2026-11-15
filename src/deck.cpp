@@ -98,7 +98,7 @@ void Deck::populateSuits() {
 
 	Suit hearts(hearts, params::getHeartEffect());
 	suits[0] = hearts;
-	Suit diamonds(diamonds, { params::getDiamondEffect1(), params::getDiamondEffect2(), params::getDiamondEffect3() });
+	Suit diamonds(diamonds, params::getDiamondEffect());
 	suits[1] = diamonds;
 	Suit clubs(clubs, params::getClubEffect());
 	suits[2] = clubs;

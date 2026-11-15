@@ -61,16 +61,33 @@ void Testing::testing_effects_stuff() {
 	Deck deck;
 
 	std::vector<Card> cards = deck.getCards();
-	Card card;
-	Card card2;
+	Card eightHearts;
+	Card tenClubs;
+	Card sixSpades;
+	Card twoSpades;
+	Card sevenDiamonds;
+	Card nineClubs;
 
 	for (int i = 0; i < cards.size(); i++) {
 		if (cards[i].getCardSuit().getSuitName() == hearts && cards[i].getCardRank() == 8) {
-			card = cards[i];
+			eightHearts = cards[i];
 		}
 		else if (cards[i].getCardSuit().getSuitName() == clubs && cards[i].getCardRank() == 10) {
-			card2 = cards[i];
+			tenClubs = cards[i];
 		}
+		else if (cards[i].getCardSuit().getSuitName() == spades && cards[i].getCardRank() == 6) {
+			sixSpades = cards[i];
+		}
+		else if (cards[i].getCardSuit().getSuitName() == spades && cards[i].getCardRank() == 2) {
+			twoSpades = cards[i];
+		}
+		else if (cards[i].getCardSuit().getSuitName() == clubs && cards[i].getCardRank() == 9) {
+			nineClubs = cards[i];
+		}
+		else if (cards[i].getCardSuit().getSuitName() == diamonds && cards[i].getCardRank() == 7) {
+			sevenDiamonds = cards[i];
+		}
+
 	}
 
 	//10 of clubs attacking player on 100 health
@@ -79,17 +96,40 @@ void Testing::testing_effects_stuff() {
 
 	std::cout << "player health pre attack: " << player.getHealth() << std::endl;
 
-	card2.applyCardEffect(&player);
+	tenClubs.applyCardEffect(&player);
 
 	std::cout << "player health post attack: " << player.getHealth() << std::endl;
 	
 	//8 of hearts healing 10 of clubs on 15 health
 	//Should only heal 5, even though the card can heal 8 due to max health restrictions
-	card2.reduceHealth(5);
+	tenClubs.reduceHealth(5);
 
-	std::cout << "card health pre heal" << card2.getCardHealth() << std::endl;
+	std::cout << "card health pre heal: " << tenClubs.getCardHealth() << std::endl;
 
-	card.applyCardEffect(&card2);
+	eightHearts.applyCardEffect(&tenClubs);
 
-	std::cout << "card health post heal" << card2.getCardHealth() << std::endl;
+	std::cout << "card health post heal: " << tenClubs.getCardHealth() << std::endl;
+
+	//Applying the 7 of diamonds to the 10 of clubs should give it 7 damage resist
+	sevenDiamonds.applyCardEffect(&tenClubs);
+	 
+	//Hitting the 10 of clubs with the 9 of clubs will do 7 damage to resist and 2 to the card
+	std::cout << "card health pre attack: " << tenClubs.getCardHealth() << " plus resist: " << to_string(tenClubs.getEffectIncreases()) << std::endl;
+
+	nineClubs.applyCardEffect(&tenClubs);
+
+	std::cout << "card health post attack: " << tenClubs.getCardHealth() << " plus resist: " << to_string(tenClubs.getEffectIncreases()) << std::endl;
+
+	//Applying the 6 of spades and the 2 of spades to the 10 of clubs should reduce it's damage by 68% to 32% of 10 (with int rounding that comes out to 3)
+	sixSpades.applyCardEffect(&tenClubs);
+	twoSpades.applyCardEffect(&tenClubs);
+
+	std::cout << "player health pre attack: " << player.getHealth() << std::endl;
+
+	tenClubs.applyCardEffect(&player);
+
+	std::cout << "player health post attack: " << player.getHealth() << std::endl;
+
+
+
 }

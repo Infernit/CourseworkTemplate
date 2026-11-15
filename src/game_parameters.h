@@ -7,9 +7,7 @@
 
 struct GameParameters {
 	static Effect getHeartEffect();
-	static Effect getDiamondEffect1();
-	static Effect getDiamondEffect2();
-	static Effect getDiamondEffect3();
+	static Effect getDiamondEffect();
 	static Effect getClubEffect();
 	static Effect getSpadeEffect();
 

@@ -2,11 +2,10 @@
 #include "game_parameters.h"
 
 Suit::Suit() : _suitName(noSuit) {}
-Suit::Suit(SuitName suitName, Effect effect) : _effects({ effect }), _suitName(suitName) {};
-Suit::Suit(SuitName suitName, std::vector<Effect> effects) : _effects(effects), _suitName(suitName) {};
+Suit::Suit(SuitName suitName, Effect effect) : _effect(effect), _suitName(suitName) {};
 
-std::vector<Effect> Suit::getSuitEffects() {
-	return Suit::_effects;
+Effect Suit::getSuitEffect() {
+	return Suit::_effect;
 }
 
 SuitName Suit::getSuitName() {
@@ -15,9 +14,5 @@ SuitName Suit::getSuitName() {
 
 // To string for the class for test printing
 std::string Suit::toString() {
-	std::string effectsString = "";
-	for (Effect effect : _effects) {
-		effectsString += effect.toString() + ", ";
-	}
-	return "Suit Name: " + GameParameters::suitNames[_suitName] + ", Effects: [" + effectsString + "]";
+	return "Suit Name: " + GameParameters::suitNames[_suitName] + ", Effect: " + _effect.toString();
 }

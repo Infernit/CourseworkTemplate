@@ -70,24 +70,9 @@ bool Player::applyEffect(Effect effect) {
 		increaseHealth(effect.getValue());
 		break;
 
-	case damageIncrease:
-		//increaseEffect(effect.getValue(), damage);
-		break;
-
-	case healingIncrease:
-		//increaseEffect(effect.getValue(), healing);
-		break;
-
-	case damageDecreasePercent:
-		//damage decrease percent method
-		break;
-
-	case damageResist:
-		//damage resist method
-		break;
-
 	default:
 		std::cout << "No effect applied" << std::endl;
+		return false;
 		break;
 	}
 
