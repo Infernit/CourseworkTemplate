@@ -26,8 +26,10 @@ struct GameSystem {
 	void update(const float& dt);
 	void render();
 
+	void nextTurn();
 	void playerKilledHandler(int playerNumber);
 	void createPlayers(bool isP2Ai);
+	static void raiseMaxEnergy();
 
 //____________________________//
 //          GETTTERS          //
@@ -36,8 +38,11 @@ struct GameSystem {
 	Player* getPlayer1();
 	Player* getPlayer2();
 	static int getMaxEnergy();
+	
+//___________________________//
+//          SETTERS          //
+//___________________________//
 	static void setMaxEnergy(int value);
-
 
 private:
 //___________________________________//

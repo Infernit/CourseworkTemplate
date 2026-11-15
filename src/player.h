@@ -12,6 +12,7 @@ public:
 	~Player();
 
 	void drawCard();
+	void fillHand();
 
 	int getPlayerNumber();
 	int getHealth();

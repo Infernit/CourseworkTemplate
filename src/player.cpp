@@ -25,6 +25,12 @@ void Player::drawCard() {
 	_hand.push_back(Player::_deck.drawNextCard());
 }
 
+void Player::fillHand() {
+	while (_hand.size() != GameParameters::handSize) {
+		drawCard();
+	}
+}
+
 void Player::populateDeck() {
 	Deck deck;
 	deck.shuffleDeck();

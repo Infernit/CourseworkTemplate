@@ -13,4 +13,5 @@ public:
 	static void develop_effect_testing();
 	static void fill_player_hand();
 	static void testing_effects_stuff();
+	static void mockup_round();
 };

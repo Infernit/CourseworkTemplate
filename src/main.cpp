@@ -16,5 +16,6 @@ int main()
 	Testing::develop_effect_testing();
 	Testing::fill_player_hand();
 	Testing::testing_effects_stuff();
+	Testing::mockup_round();
 	Board();
 }

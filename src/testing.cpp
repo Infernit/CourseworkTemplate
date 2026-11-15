@@ -1,6 +1,7 @@
 #include "testing.h"
 #include <vector>
 #include <iostream>
+#include "board_functionality.h"
 
 using params = GameParameters;
 using namespace std;
@@ -132,4 +133,30 @@ void Testing::testing_effects_stuff() {
 
 
 
+}
+
+void Testing::mockup_round() {
+	//Initialise Game System
+	GameSystem system;
+	system.setMaxEnergy(2);
+
+	//Create players, with both being human
+	system.createPlayers(false);
+
+	Player* player1 = system.getPlayer1();
+	player1->fillHand();
+
+	for (int i = 0; i < player1->getHand().size(); i++) {
+		std::cout << i+1 << ": " << params::cardNames[player1->getHand()[i].getCardRank()] << " of " << params::suitNames[player1->getHand()[i].getCardSuit().getSuitName()] << std::endl;
+	}
+
+	//Havent bothered validating this as it wont be the final version
+	std::cout << "Pick card to play: ";
+	int num;
+	cin >> num;
+
+	BoardFunctionality board;
+
+	board.playCard(1, &player1->getHand()[num - 1]);
+	
 }

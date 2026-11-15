@@ -44,6 +44,10 @@ void GameSystem::playerKilledHandler(int playerNumber) {
 	std::cout << playerNumber << " died" << std::endl;
 }
 
+void GameSystem::raiseMaxEnergy() {
+	_maxEnergy++;
+}
+
 //____________________________//
 //          GETTTERS          //
 //____________________________//
@@ -68,8 +72,10 @@ int GameSystem::getMaxEnergy() {
 	return _maxEnergy;
 }
 
-void GameSystem::setMaxEnergy(int value)
-{
+//___________________________//
+//          SETTERS          //
+//___________________________//
+void GameSystem::setMaxEnergy(int value) {
 	_maxEnergy = value;
 }
 

@@ -23,5 +23,6 @@ Effect GameParameters::getSpadeEffect() {
 int GameParameters::handSize = 7;
 int GameParameters::startingEnergy = 2;
 int GameParameters::maxPlayerHealth = 100;
+int GameParameters::boardSize = 5;
 std::vector<std::string> GameParameters::cardNames = {"noRank", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"};
 std::vector<std::string> GameParameters::suitNames = {"noSuit", "hearts", "diamonds", "clubs", "spades"};
