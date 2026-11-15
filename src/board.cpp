@@ -6,6 +6,10 @@
 sf::Texture spritesheet;
 sf::Sprite cards;
 
+// make tiles as wide as cards (not as tall so tiles can remain sqaure??? investigate)
+const int Board::tileWidth = 34;
+const int Board::tileHeight = 34; //maybe 46 later  
+
 // Check if the spritesheet exists
 void Board::init() {
 	// Use string(RESOURCE_DIR) to get the resource directory path across multiple computers (?) without needing to copy sprite_sheet.png as path
