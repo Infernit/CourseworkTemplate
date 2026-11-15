@@ -1,6 +1,7 @@
 #pragma once
 #include "card.h"
 #include <vector>
+#include <SFML/Graphics.hpp>
 
 class Board {
 
@@ -11,6 +12,9 @@ public:
 	static const int tileHeight;
 	static unsigned int windowWidth;
 	static unsigned int windowHeight;
+	static std::vector<sf::Sprite> cards;
+	// in cpp: std::vector<sf::Sprite> cards;
+
 
 private:
 	std::vector<Card> side1Cards;
