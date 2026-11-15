@@ -9,6 +9,8 @@ public:
 	void init();
 	static const int tileWidth;
 	static const int tileHeight;
+	static unsigned int windowWidth;
+	static unsigned int windowHeight;
 
 private:
 	std::vector<Card> side1Cards;

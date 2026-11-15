@@ -10,6 +10,10 @@ sf::Sprite cards;
 const int Board::tileWidth = 34;
 const int Board::tileHeight = 34; //maybe 46 later  
 
+// set board window size to be 10 tiles wide and 6 tiles tall
+unsigned int Board::windowWidth = Board::tileWidth * 10;
+unsigned int Board::windowHeight = Board::tileHeight * 6;
+
 // Check if the spritesheet exists
 void Board::init() {
 	// Use string(RESOURCE_DIR) to get the resource directory path across multiple computers (?) without needing to copy sprite_sheet.png as path
@@ -26,8 +30,10 @@ void Board::init() {
 }
 
 Board::Board() {
+	// get window to obey width and height constants
     init();
-    sf::RenderWindow window(sf::VideoMode({ 200, 200 }), "SFML works!");
+    // Element '2': conversion from 'const int' to 'unsigned int' requires a narrowing conversion
+    sf::RenderWindow window(sf::VideoMode({ windowWidth, windowHeight }), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
