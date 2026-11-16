@@ -25,6 +25,10 @@ public:
 	bool applyCardEffect(Effectable* target);
 	void resetDamageDecrease();
 
+	void setIsUsable(bool value);
+
+	__event void CardKilled(Card* card);
+
 //____________________________//
 //          GETTTERS          //
 //____________________________//
@@ -32,9 +36,11 @@ public:
 	int getCardHealth();
 	int getCardMaxHealth();
 	bool getIsRoyal();
+	bool getIsUsable();
 
 	Suit getCardSuit();
 	int getEffectIncreases();
+	float getDamageDecrease();
 	Effect getCardEffect();
 
 //____________________________//
@@ -48,6 +54,7 @@ protected:
 //___________________________________//
 	int _cardRank;
 	bool _isRoyal;
+	bool _isUsable;
 
 	Suit _cardSuit;
 	std::vector<float> _damageDecreases;

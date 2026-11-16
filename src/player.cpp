@@ -65,6 +65,8 @@ int Player::getCurrentEnergy() {
 }
 
 void Player::setCurrentEnergy(int value) {
+	_deck.setMaxEnergy(value);
+	_deck.shuffleDeck();
 	_currentEnergy = value;
 }
 

@@ -145,63 +145,154 @@ void Testing::mockup_round() {
 
 	Player* player1 = system.getPlayer1();
 	Player* player2 = system.getPlayer2();
-	player1->fillHand();
 
-	//Havent bothered validating this as it wont be the final version
-	
-
+	//Create board
 	BoardFunctionality board;
+	//Havent bothered validating this as it wont be the final version
 
-	player1->setCurrentEnergy(params::startingEnergy);
+	int round = 1;
 
-	while (player1->getCurrentEnergy() > 0) {
-		for (int i = 0; i < player1->getHand().size(); i++) {
+	Player* player = player1;
+	Player* opponent = player2;
+	
+	//Outmost loop, loops until a player dies.
+	while (player1->getHealth() > 0 && player2->getHealth() > 0) {
+
+		std::cout 
+			<< std::endl 
+			<< "ROUND " 
+			<< round 
+			<< ": Player 1 HP = " 
+			<< player1->getHealth() 
+			<< ", Player 2 HP = " 
+			<< player2->getHealth() 
+			<< std::endl 
+			<< std::endl;
+
+		for (int i = 0; i < 2; i++) {
+			//Player 1 turn stuff
+			if (i == 0) {
+				player = player1;
+				opponent = player2;
+			}
+			//Player 2 turn stuff
+			else {
+				player = player2;
+				opponent = player1;
+			}
+
 			std::cout
+				<< std::endl
+				<< "PLAYER "
 				<< i + 1
-				<< ": "
-				<< params::cardNames[player1->getHand()[i].getCardRank()]
-				<< " of "
-				<< params::suitNames[player1->getHand()[i].getCardSuit().getSuitName()]
+				<< "'S TURN"
+				<< std::endl
 				<< std::endl;
+
+			//Set player energy to current max energy
+			player->setCurrentEnergy(params::startingEnergy);
+			board.setPlayerCardsUsable(player);
+
+			//Fill players hand from deck
+			player->fillHand();
+
+			//Play cards from hand
+			while (player->getCurrentEnergy() > 0) {
+				std::cout
+					<< "Current Energy: "
+					<< player->getCurrentEnergy()
+					<< std::endl
+					<< "-----------------"
+					<< std::endl;
+
+				//List player cards
+				for (int i = 0; i < player->getHand().size(); i++) {
+					std::cout
+						<< i + 1
+						<< ": "
+						<< params::cardNames[player->getHand()[i].getCardRank()]
+						<< " of "
+						<< params::suitNames[player->getHand()[i].getCardSuit().getSuitName()]
+						<< std::endl;
+				}
+
+				//Get user input
+				std::cout 
+					<< std::endl 
+					<< "Pick card to play: ";
+				int num;
+				std::cin >> num;
+
+				//Try play card based on user input
+				if (!board.playCard(player, opponent, player->getHand()[num - 1])) {
+					std::cout
+						<< std::endl
+						<< "Invalid Option"
+						<< std::endl
+						<< std::endl;
+				}
+			}
+
+			//Play cards on board
+			bool keepLooping = true;
+
+			while (keepLooping) {
+				//Lower flag by default
+				keepLooping = false;
+
+				std::cout
+					<< std::endl
+					<< "Playable Cards:"
+					<< std::endl
+					<< "---------------"
+					<< std::endl;
+
+				int index = 1;
+
+				//List usable player cards
+				for (Card card : board.getFriendlyCards(player)) {
+					std::cout
+						<< index
+						<< ": "
+						<< params::cardNames[card.getCardRank()]
+						<< " of "
+						<< params::suitNames[card.getCardSuit().getSuitName()]
+						<< " - HP: "
+						<< card.getCardHealth()
+						<< ", DB: "
+						<< card.getEffectIncreases()
+						<< ", DD: "
+						<< card.getDamageDecrease()
+						<< ", Usable? "
+						<< (card.getIsUsable() ? "True" : "False")
+						<< std::endl;
+
+					index++;
+
+					//Raise flag if player has usable card on board
+					if (card.getIsUsable()) {
+						keepLooping = true;
+					}
+				}
+
+				if (!keepLooping) {
+					break;
+				}
+
+				std::cout << std::endl;
+
+				//Get user input
+				std::cout << "Pick card to use: ";
+				int num1;
+				std::cin >> num1;
+
+				std::cout << std::endl;
+
+				board.tryPlayCardToEffectable(player, opponent, board.getFriendlyCards(player)[num1 - 1]);
+			}
 		}
 
-		std::cout << "Pick card to play: ";
-		int num;
-		cin >> num;
-
-		board.playCard(player1, player1->getHand()[num - 1]);
-
-		std::cout
-			<< std::endl
-			<< "Board contents: "
-			<< std::endl;
-
-		for (int i = 0; i < board.getPlayer1BoardCards().size(); i++) {
-			std::cout
-				<< params::cardNames[board.getPlayer1BoardCards()[i].getCardRank()]
-				<< " of "
-				<< params::suitNames[board.getPlayer1BoardCards()[i].getCardSuit().getSuitName()]
-				<< std::endl;
-		}
-
-		std::cout << std::endl;
+		params::startingEnergy++;
+		round++;
 	}
-
-	std::cout
-		<< "Effectables: "
-		<< std::endl;
-
-	for (int i = 0; i < board.getEnemyCards(player2).size(); i++) {
-		std::cout
-			<< params::cardNames[board.getEnemyCards(player2)[i].getCardRank()]
-			<< " of "
-			<< params::suitNames[board.getEnemyCards(player2)[i].getCardSuit().getSuitName()]
-			<< std::endl;
-	}
-
-	if (board.getIsEnemyAttackable(player2)) {
-		std::cout << "Player1" << std::endl;
-	}
-
-	std::cout << std::endl;
 }

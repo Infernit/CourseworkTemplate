@@ -60,7 +60,7 @@ bool Card::reduceHealth(int value) {
 	_health -= value;
 
 	if (_health <= 0) {
-		//Card Dies
+		__raise CardKilled(this);
 		return true;
 	}
 
@@ -94,7 +94,6 @@ void Card::reduceIncreaseEffect(int value) {
 
 //Sets the damage decrease percentage
 void Card::setDamageDecreasePercent(float percent) {
-	//Any card can only have one damage decrease debuff at a time.
 	_damageDecreases.push_back(percent);
 }
 
@@ -153,16 +152,26 @@ bool Card::applyCardEffect(Effectable* target) {
 
 		_effectIncrease = 0;
 
-		for (int j = 0; j < _damageDecreases.size(); j++) {
-			value -= value * _damageDecreases[j];
-		}
-
+		value *= getDamageDecrease();
 
 		Effect damageEffect(false, _cardEffect.getEffectType(), value);
-		return damageEffect.applyEffect(target);
+
+		if (damageEffect.applyEffect(target)) {
+			_isUsable = false;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	else {
-		return _cardEffect.applyEffect(target);
+		if (_cardEffect.applyEffect(target)) {
+			_isUsable = false;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 		
 	
@@ -170,6 +179,10 @@ bool Card::applyCardEffect(Effectable* target) {
 
 void Card::resetDamageDecrease() {
 	_damageDecreases = {};
+}
+
+void Card::setIsUsable(bool value) {
+	_isUsable = value;
 }
 
 //____________________________//
@@ -193,8 +206,22 @@ bool Card::getIsRoyal() {
 	return _isRoyal;
 }
 
+bool Card::getIsUsable() {
+	return _isUsable;
+}
+
 int Card::getEffectIncreases() {
 	return _effectIncrease;
+}
+
+float Card::getDamageDecrease() {
+	float value = 1;
+
+	for (int j = 0; j < _damageDecreases.size(); j++) {
+		value -= value * _damageDecreases[j];
+	}
+
+	return value;
 }
 
 //Returns a vector of all card Effects 

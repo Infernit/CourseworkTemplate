@@ -69,19 +69,26 @@ void Deck::shuffleDeck() {
 	_cards = cards;
 }
 
+void Deck::setMaxEnergy(int value) {
+	populateDeck(value);
+}
+
 
 void Deck::populateDeck(int maxEnergy) {
 	std::vector<Card> cards(0);
 	bool flag = false;
 
+	//Loop through every suit
 	for (int i = 0; i < _suits.size(); i++) {
+		//Loop through all ranks up to current max energy
 		for (int j = 0; j < maxEnergy; j++) {
 			//Check if card has previously been drawn
 			for (int k = 0; k < _drawnCards.size(); k++) {
-				if (_drawnCards[k].getCardSuit().getSuitName() == i && _drawnCards[k].getCardRank() == j + 1) {
+				if (_drawnCards[k].getCardSuit().getSuitName() == i + 1 && _drawnCards[k].getCardRank() == j + 1) {
 					flag = true;
 				}
 			}
+			//Add card to cards if not already been drawn
 			if (!flag) {
 				Card card(_suits[i], j + 1);
 				cards.push_back(card);
