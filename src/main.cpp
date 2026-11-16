@@ -11,11 +11,11 @@
 int main()
 {
 	// Start to break off tests in main to keep everything tidy
+	Testing::mockup_round();
 	Testing::kill_player();
 	Testing::test_deck_attributes();
 	Testing::develop_effect_testing();
 	Testing::fill_player_hand();
 	Testing::testing_effects_stuff();
-	Testing::mockup_round();
 	Board();
 }

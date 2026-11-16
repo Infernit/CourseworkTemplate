@@ -2,6 +2,7 @@
 #include "player.h"
 #include "deck.h"
 #include "game_system.h"
+#include <algorithm>
 
 Player::Player(bool isAI, GameSystem& system) : _isAI(isAI), _system(system) {
 	std::vector<Card> hand(0);
@@ -25,6 +26,19 @@ void Player::drawCard() {
 	_hand.push_back(Player::_deck.drawNextCard());
 }
 
+void Player::removeHandCard(Card card) {
+	std::vector<Card> tempHand;
+
+	for (int i = 0; i < _hand.size(); i++) {
+		if (!(_hand[i].getCardRank() == card.getCardRank() &&
+			_hand[i].getCardSuit().getSuitName() == card.getCardSuit().getSuitName())) {
+			tempHand.push_back(_hand[i]);
+		}
+	}
+
+	_hand = tempHand;
+}
+
 void Player::fillHand() {
 	while (_hand.size() != GameParameters::handSize) {
 		drawCard();
@@ -37,9 +51,21 @@ void Player::populateDeck() {
 	Player::_deck = deck;
 }
 
+int Player::getPlayerNumber() {
+	return _playerNumber;
+}
+
 int Player::getHealth()
 {
 	return _health;
+}
+
+int Player::getCurrentEnergy() {
+	return _currentEnergy;
+}
+
+void Player::setCurrentEnergy(int value) {
+	_currentEnergy = value;
 }
 
 Deck Player::getDeck() {

@@ -144,19 +144,64 @@ void Testing::mockup_round() {
 	system.createPlayers(false);
 
 	Player* player1 = system.getPlayer1();
+	Player* player2 = system.getPlayer2();
 	player1->fillHand();
 
-	for (int i = 0; i < player1->getHand().size(); i++) {
-		std::cout << i+1 << ": " << params::cardNames[player1->getHand()[i].getCardRank()] << " of " << params::suitNames[player1->getHand()[i].getCardSuit().getSuitName()] << std::endl;
-	}
-
 	//Havent bothered validating this as it wont be the final version
-	std::cout << "Pick card to play: ";
-	int num;
-	cin >> num;
+	
 
 	BoardFunctionality board;
 
-	board.playCard(1, &player1->getHand()[num - 1]);
-	
+	player1->setCurrentEnergy(params::startingEnergy);
+
+	while (player1->getCurrentEnergy() > 0) {
+		for (int i = 0; i < player1->getHand().size(); i++) {
+			std::cout
+				<< i + 1
+				<< ": "
+				<< params::cardNames[player1->getHand()[i].getCardRank()]
+				<< " of "
+				<< params::suitNames[player1->getHand()[i].getCardSuit().getSuitName()]
+				<< std::endl;
+		}
+
+		std::cout << "Pick card to play: ";
+		int num;
+		cin >> num;
+
+		board.playCard(player1, player1->getHand()[num - 1]);
+
+		std::cout
+			<< std::endl
+			<< "Board contents: "
+			<< std::endl;
+
+		for (int i = 0; i < board.getPlayer1BoardCards().size(); i++) {
+			std::cout
+				<< params::cardNames[board.getPlayer1BoardCards()[i].getCardRank()]
+				<< " of "
+				<< params::suitNames[board.getPlayer1BoardCards()[i].getCardSuit().getSuitName()]
+				<< std::endl;
+		}
+
+		std::cout << std::endl;
+	}
+
+	std::cout
+		<< "Effectables: "
+		<< std::endl;
+
+	for (int i = 0; i < board.getEnemyCards(player2).size(); i++) {
+		std::cout
+			<< params::cardNames[board.getEnemyCards(player2)[i].getCardRank()]
+			<< " of "
+			<< params::suitNames[board.getEnemyCards(player2)[i].getCardSuit().getSuitName()]
+			<< std::endl;
+	}
+
+	if (board.getIsEnemyAttackable(player2)) {
+		std::cout << "Player1" << std::endl;
+	}
+
+	std::cout << std::endl;
 }
