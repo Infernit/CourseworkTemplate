@@ -33,10 +33,18 @@ void Board::init() {
         std::cerr << "Failed to load spritesheet!" << std::endl;
     }
 
+	std::string font_path = std::string(RESOURCE_DIR) + "/txt/PublicPixel.otf";
+	std::cout << "Loading font from: " << font_path << std::endl;
+
+	if (!GameParameters::font.loadFromFile(font_path)) {
+		std::cerr << "Failed to load font!" << std::endl;
+	}
+
     // Make individual chards accessible from this
     //sf::Texture spritesheet;
 
     // cut it
+	/*
     Suit suit(spades, GameParameters::getSpadeEffect());
     Card randomCard(suit, 5);
 
@@ -44,15 +52,16 @@ void Board::init() {
 
     // Set new position to current grid position using mouse
 
-    /*
+    
     cardTest1.setPosition(sf::Vector2f(
         0,
         0
     ));
-    */
+    
 
     Board::cards.push_back(cardTest1);
-    
+    */
+
     // Test multiple cards later
 
 }
@@ -415,6 +424,14 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		}
 
 	}
+
+	//TEST TEXT
+	sf::Text text;
+	text.setFont(GameParameters::font);
+	text.setCharacterSize(10);
+	text.setString("test");
+	text.setPosition(100, 100);
+	window.draw(text);
 
 	sf::Sprite temp;
 
