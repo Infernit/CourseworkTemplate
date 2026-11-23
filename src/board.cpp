@@ -91,11 +91,14 @@ Board::Board() {
     bool draggingCard = false;
     
     while (window.isOpen()) {
-        // Grid ? of tiles....
 
+        bool allowedToMove = true;
+
+        // Grid ? of tiles....
         for (int x = 0; x < windowWidth / tileWidth; x++) {
 
             for (int y = 0; y < windowHeight / tileHeight; y++) {
+
                 sf::RectangleShape tile(sf::Vector2f(tileWidth, tileHeight));
 
                 tile.setPosition(x * tileWidth, y * tileHeight);
@@ -106,18 +109,10 @@ Board::Board() {
                 tile.setOutlineColor(sf::Color::Black);
 
                 window.draw(tile);
+
             }
 
         }
-
-        /*
-        // card sprite logic
-        // It is drawing a white box... Not card...
-        for (sf::Sprite card : Board::cards) {
-            // Card will be obvious against green background
-            window.draw(card);
-       }
-       */
 
         // Interactable tiles (using mouse...)
          // window should recognise where mouse is
@@ -146,6 +141,7 @@ Board::Board() {
 
             // Mouse drags card
 			if (event.type == sf::Event::MouseButtonPressed) {
+
 				if (event.mouseButton.button == sf::Mouse::Left) {
 
                     // test statement
@@ -158,9 +154,11 @@ Board::Board() {
 					sf::Vector2f gridPos = pixelsToGrid(sf::Vector2f(mousePos));
 					std::cout << "Mouse pressed at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
 
+                    // Prepare for future logic with allowed to move var
                     if (cardTest1.getGlobalBounds().contains(
                         static_cast<float>(mousePos.x),
-                        static_cast<float>(mousePos.y))) {
+                        static_cast<float>(mousePos.y))
+                        && allowedToMove == true) {
                         draggingCard = true;
                     }
 
