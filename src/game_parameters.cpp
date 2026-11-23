@@ -5,18 +5,8 @@ Effect GameParameters::getHeartEffect() {
 	return effect;
 }
 
-Effect GameParameters::getDiamondEffect1() {
-	Effect effect(true, damageIncrease, 1.0f);
-	return effect;
-}
-
-Effect GameParameters::getDiamondEffect2() {
-	Effect effect(true, healingIncrease, 1.0f);
-	return effect;
-}
-
-Effect GameParameters::getDiamondEffect3() {
-	Effect effect(true, damageResist, 1.0f);
+Effect GameParameters::getDiamondEffect(){
+	Effect effect(true, diamondEffect, 1.0f);
 	return effect;
 }
 
@@ -33,5 +23,6 @@ Effect GameParameters::getSpadeEffect() {
 int GameParameters::handSize = 7;
 int GameParameters::startingEnergy = 2;
 int GameParameters::maxPlayerHealth = 100;
+int GameParameters::boardSize = 5;
 std::vector<std::string> GameParameters::cardNames = {"noRank", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"};
 std::vector<std::string> GameParameters::suitNames = {"noSuit", "hearts", "diamonds", "clubs", "spades"};

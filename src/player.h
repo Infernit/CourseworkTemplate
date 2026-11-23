@@ -12,9 +12,13 @@ public:
 	~Player();
 
 	void drawCard();
+	void fillHand();
+	void removeHandCard(Card card);
 
 	int getPlayerNumber();
 	int getHealth();
+	int getCurrentEnergy();
+	void setCurrentEnergy(int value);
 	Deck getDeck();
 	std::vector<Card> getHand();
 
@@ -29,6 +33,7 @@ public:
 private:
 	bool _isAI;
 	int _playerNumber;
+	int _currentEnergy;
 	
 	GameSystem& _system;
 	Deck _deck;

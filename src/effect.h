@@ -7,10 +7,8 @@ enum EffectType {
 	none,
 	damage,
 	healing,
-	damageIncrease,
-	healingIncrease,
+	diamondEffect,
 	damageDecreasePercent,
-	damageResist,
 };
 
 class Effect {
@@ -18,7 +16,7 @@ class Effect {
 public:
 	Effect();
 	Effect(bool isPositive, EffectType type, float value);
-	void applyEffect(Effectable* damagable);
+	bool applyEffect(Effectable* damagable);
 	bool getIsPositiveEffect();
 	EffectType getEffectType();
 	float getValue();

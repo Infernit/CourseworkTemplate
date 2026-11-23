@@ -2,6 +2,7 @@
 #include "player.h"
 #include "deck.h"
 #include "game_system.h"
+#include <algorithm>
 
 Player::Player(bool isAI, GameSystem& system) : _isAI(isAI), _system(system) {
 	std::vector<Card> hand(0);
@@ -25,15 +26,48 @@ void Player::drawCard() {
 	_hand.push_back(Player::_deck.drawNextCard());
 }
 
+void Player::removeHandCard(Card card) {
+	std::vector<Card> tempHand;
+
+	for (int i = 0; i < _hand.size(); i++) {
+		if (!(_hand[i].getCardRank() == card.getCardRank() &&
+			_hand[i].getCardSuit().getSuitName() == card.getCardSuit().getSuitName())) {
+			tempHand.push_back(_hand[i]);
+		}
+	}
+
+	_hand = tempHand;
+}
+
+void Player::fillHand() {
+	while (_hand.size() != GameParameters::handSize) {
+		drawCard();
+	}
+}
+
 void Player::populateDeck() {
 	Deck deck;
 	deck.shuffleDeck();
 	Player::_deck = deck;
 }
 
+int Player::getPlayerNumber() {
+	return _playerNumber;
+}
+
 int Player::getHealth()
 {
 	return _health;
+}
+
+int Player::getCurrentEnergy() {
+	return _currentEnergy;
+}
+
+void Player::setCurrentEnergy(int value) {
+	_deck.setMaxEnergy(value);
+	_deck.shuffleDeck();
+	_currentEnergy = value;
 }
 
 Deck Player::getDeck() {
@@ -70,24 +104,9 @@ bool Player::applyEffect(Effect effect) {
 		increaseHealth(effect.getValue());
 		break;
 
-	case damageIncrease:
-		//increaseEffect(effect.getValue(), damage);
-		break;
-
-	case healingIncrease:
-		//increaseEffect(effect.getValue(), healing);
-		break;
-
-	case damageDecreasePercent:
-		//damage decrease percent method
-		break;
-
-	case damageResist:
-		//damage resist method
-		break;
-
 	default:
 		std::cout << "No effect applied" << std::endl;
+		return false;
 		break;
 	}
 
