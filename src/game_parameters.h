@@ -4,6 +4,7 @@
 #include "game_system.h"
 #include <vector>
 #include <string>
+#include <SFML/Graphics.hpp>
 
 struct GameParameters {
 	static Effect getHeartEffect();
@@ -17,4 +18,6 @@ struct GameParameters {
 	static int boardSize;
 	static std::vector<std::string> cardNames;
 	static std::vector<std::string> suitNames;
+
+	static sf::Texture spritesheet;
 };

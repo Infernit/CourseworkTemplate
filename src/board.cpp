@@ -2,8 +2,6 @@
 #include <SFML/Graphics.hpp>
 // For cerr
 #include <iostream>
-// Sprites
-sf::Texture spritesheet;
 // Accessible throughout, cannot be const
 std::vector<sf::Sprite> Board::cards;
 
@@ -19,7 +17,7 @@ unsigned int Board::windowWidth = Board::tileWidth * 15;
 unsigned int Board::windowHeight = Board::tileHeight * 6;
 
 // Accessible throughout. For drag drop testing
-sf::Sprite cardTest1(spritesheet);
+sf::Sprite cardTest1(GameParameters::spritesheet);
 
 // Check if the spritesheet exists
 void Board::init() {
@@ -31,7 +29,7 @@ void Board::init() {
     std::string sprite_path = std::string(RESOURCE_DIR) + "/img/sprite_sheet.png";
     std::cout << "Loading spritesheet from: " << sprite_path << std::endl;
 
-    if (!spritesheet.loadFromFile(sprite_path)) {
+    if (!GameParameters::spritesheet.loadFromFile(sprite_path)) {
         std::cerr << "Failed to load spritesheet!" << std::endl;
     }
 

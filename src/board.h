@@ -1,5 +1,6 @@
 #pragma once
 #include "card.h"
+#include "game_parameters.h"
 #include <vector>
 #include <SFML/Graphics.hpp>
 
