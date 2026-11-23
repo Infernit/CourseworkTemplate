@@ -13,8 +13,8 @@ public:
 	static unsigned int windowWidth;
 	static unsigned int windowHeight;
 	static std::vector<sf::Sprite> cards;
+	sf::Vector2f gridToPixels(int gridX, int gridY);
 	// in cpp: std::vector<sf::Sprite> cards;
-
 
 private:
 	std::vector<Card> side1Cards;
