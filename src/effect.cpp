@@ -4,8 +4,8 @@
 Effect::Effect() : isPositive(false), effectType(none), value(0) {};
 Effect::Effect(bool isPositive, EffectType type, float value) : isPositive(isPositive), effectType(type), value(value) {};
 
-void Effect::applyEffect(Effectable* damagable) {
-	damagable->applyEffect(*this);
+bool Effect::applyEffect(Effectable* damagable) {
+	return damagable->applyEffect(*this);
 }
 
 bool Effect::getIsPositiveEffect() {
@@ -34,17 +34,11 @@ std::string Effect::toString() {
 		case healing:
 			effectTypeString = "heal";
 			break;
-		case damageIncrease:
-			effectTypeString = "damage increase";
-			break;
-		case healingIncrease:
-			effectTypeString = "healing increase";
+		case diamondEffect:
+			effectTypeString = "diamondEffect";
 			break;
 		case damageDecreasePercent:
 			effectTypeString = "damage decrease percent";
-			break;
-		case damageResist:
-			effectTypeString = "damage resist";
 			break;
 		default:
 			effectTypeString = "unknown";

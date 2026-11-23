@@ -16,13 +16,12 @@ class Suit {
 public:
 	Suit();
 	Suit(SuitName suitName, Effect effect);
-	Suit(SuitName suitName, std::vector<Effect> effects);
 
-	std::vector<Effect> getSuitEffects();
+	Effect getSuitEffect();
 	SuitName getSuitName();
 	std::string toString();
 
 private:
-	std::vector<Effect> _effects;
+	Effect _effect;
 	SuitName _suitName;
 };

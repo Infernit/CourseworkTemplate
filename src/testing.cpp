@@ -1,6 +1,7 @@
 #include "testing.h"
 #include <vector>
 #include <iostream>
+#include "board_functionality.h"
 
 using params = GameParameters;
 using namespace std;
@@ -61,16 +62,33 @@ void Testing::testing_effects_stuff() {
 	Deck deck;
 
 	std::vector<Card> cards = deck.getCards();
-	Card card;
-	Card card2;
+	Card eightHearts;
+	Card tenClubs;
+	Card sixSpades;
+	Card twoSpades;
+	Card sevenDiamonds;
+	Card nineClubs;
 
 	for (int i = 0; i < cards.size(); i++) {
 		if (cards[i].getCardSuit().getSuitName() == hearts && cards[i].getCardRank() == 8) {
-			card = cards[i];
+			eightHearts = cards[i];
 		}
 		else if (cards[i].getCardSuit().getSuitName() == clubs && cards[i].getCardRank() == 10) {
-			card2 = cards[i];
+			tenClubs = cards[i];
 		}
+		else if (cards[i].getCardSuit().getSuitName() == spades && cards[i].getCardRank() == 6) {
+			sixSpades = cards[i];
+		}
+		else if (cards[i].getCardSuit().getSuitName() == spades && cards[i].getCardRank() == 2) {
+			twoSpades = cards[i];
+		}
+		else if (cards[i].getCardSuit().getSuitName() == clubs && cards[i].getCardRank() == 9) {
+			nineClubs = cards[i];
+		}
+		else if (cards[i].getCardSuit().getSuitName() == diamonds && cards[i].getCardRank() == 7) {
+			sevenDiamonds = cards[i];
+		}
+
 	}
 
 	//10 of clubs attacking player on 100 health
@@ -79,17 +97,215 @@ void Testing::testing_effects_stuff() {
 
 	std::cout << "player health pre attack: " << player.getHealth() << std::endl;
 
-	card2.applyCardEffect(&player);
+	tenClubs.applyCardEffect(&player);
 
 	std::cout << "player health post attack: " << player.getHealth() << std::endl;
 	
 	//8 of hearts healing 10 of clubs on 15 health
 	//Should only heal 5, even though the card can heal 8 due to max health restrictions
-	card2.reduceHealth(5);
+	tenClubs.reduceHealth(5);
 
-	std::cout << "card health pre heal" << card2.getCardHealth() << std::endl;
+	std::cout << "card health pre heal: " << tenClubs.getCardHealth() << std::endl;
 
-	card.applyCardEffect(&card2);
+	eightHearts.applyCardEffect(&tenClubs);
 
-	std::cout << "card health post heal" << card2.getCardHealth() << std::endl;
+	std::cout << "card health post heal: " << tenClubs.getCardHealth() << std::endl;
+
+	//Applying the 7 of diamonds to the 10 of clubs should give it 7 damage resist
+	sevenDiamonds.applyCardEffect(&tenClubs);
+	 
+	//Hitting the 10 of clubs with the 9 of clubs will do 7 damage to resist and 2 to the card
+	std::cout << "card health pre attack: " << tenClubs.getCardHealth() << " plus resist: " << to_string(tenClubs.getEffectIncreases()) << std::endl;
+
+	nineClubs.applyCardEffect(&tenClubs);
+
+	std::cout << "card health post attack: " << tenClubs.getCardHealth() << " plus resist: " << to_string(tenClubs.getEffectIncreases()) << std::endl;
+
+	//Applying the 6 of spades and the 2 of spades to the 10 of clubs should reduce it's damage by 68% to 32% of 10 (with int rounding that comes out to 3)
+	sixSpades.applyCardEffect(&tenClubs);
+	twoSpades.applyCardEffect(&tenClubs);
+
+	std::cout << "player health pre attack: " << player.getHealth() << std::endl;
+
+	tenClubs.applyCardEffect(&player);
+
+	std::cout << "player health post attack: " << player.getHealth() << std::endl;
+
+
+
+}
+
+void Testing::mockup_round() {
+	//Initialise Game System
+	GameSystem system;
+	system.setMaxEnergy(2);
+
+	//Create players, with both being human
+	system.createPlayers(false);
+
+	Player* player1 = system.getPlayer1();
+	Player* player2 = system.getPlayer2();
+
+	//Create board
+	BoardFunctionality board;
+	//Havent bothered validating this as it wont be the final version
+
+	int round = 1;
+
+	Player* player = player1;
+	Player* opponent = player2;
+	
+	//Outmost loop, loops until a player dies.
+	while (player1->getHealth() > 0 && player2->getHealth() > 0) {
+		std::cout 
+			<< std::endl 
+			<< "ROUND " 
+			<< round 
+			<< ": Player 1 HP = " 
+			<< player1->getHealth() 
+			<< ", Player 2 HP = " 
+			<< player2->getHealth() 
+			<< std::endl 
+			<< std::endl;
+
+		for (int i = 0; i < 2; i++) {
+			//Player 1 turn stuff
+			if (i == 0) {
+				player = player1;
+				opponent = player2;
+			}
+			//Player 2 turn stuff
+			else {
+				player = player2;
+				opponent = player1;
+			}
+
+			//Changing turn
+			std::cout << "\x1b[2J";
+
+			int temp = 0;
+			std::cout << "TYPE A NUMBER AND PRESS ENTER TO START NEXT TURN";
+			std::cin >> temp;
+
+			std::cout
+				<< std::endl
+				<< "PLAYER "
+				<< i + 1
+				<< "'S TURN"
+				<< std::endl
+				<< std::endl;
+
+			//Set player energy to current max energy
+			player->setCurrentEnergy(params::startingEnergy);
+			board.setPlayerCardsUsable(player);
+
+			//Fill players hand from deck
+			player->fillHand();
+
+			//Play cards from hand
+			while (player->getCurrentEnergy() > 0) {
+				std::cout
+					<< "Current Energy: "
+					<< player->getCurrentEnergy()
+					<< std::endl
+					<< "-----------------"
+					<< std::endl;
+
+				//List player cards
+				for (int i = 0; i < player->getHand().size(); i++) {
+					std::cout
+						<< i + 1
+						<< ": "
+						<< params::cardNames[player->getHand()[i].getCardRank()]
+						<< " of "
+						<< params::suitNames[player->getHand()[i].getCardSuit().getSuitName()]
+						<< std::endl;
+				}
+
+				std::cout << "0: Manually End Turn" << std::endl;
+
+				//Get user input
+				std::cout 
+					<< std::endl 
+					<< "Pick card to play: ";
+				int num;
+				std::cin >> num;
+
+				//Try play card based on user input
+				if (num == 0) {
+					break;
+				}
+				else if (!board.playCard(player, opponent, player->getHand()[num - 1])) {
+					std::cout
+						<< std::endl
+						<< "Invalid Option"
+						<< std::endl
+						<< std::endl;
+				}
+			}
+
+			//Play cards on board
+			bool keepLooping = true;
+
+			while (keepLooping) {
+				//Lower flag by default
+				keepLooping = false;
+
+				std::cout
+					<< std::endl
+					<< "Playable Cards:"
+					<< std::endl
+					<< "---------------"
+					<< std::endl;
+
+				int index = 1;
+
+				//List usable player cards
+				for (Card card : board.getFriendlyCards(player)) {
+					std::cout
+						<< index
+						<< ": "
+						<< params::cardNames[card.getCardRank()]
+						<< " of "
+						<< params::suitNames[card.getCardSuit().getSuitName()]
+						<< " - HP: "
+						<< card.getCardHealth()
+						<< ", DB: "
+						<< card.getEffectIncreases()
+						<< ", DD: "
+						<< card.getDamageDecrease()
+						<< ", Usable? "
+						<< (card.getIsUsable() ? "True" : "False")
+						<< std::endl;
+
+					index++;
+
+					//Raise flag if player has usable card on board
+					if (card.getIsUsable()) {
+						keepLooping = true;
+					}
+				}
+
+				if (!keepLooping) {
+					break;
+				}
+
+				std::cout << std::endl;
+
+				//Get user input
+				std::cout << "Pick card to use: ";
+				int num1;
+				std::cin >> num1;
+
+				std::cout << std::endl;
+
+				board.tryPlayCardToEffectable(player, opponent, board.getFriendlyCards(player)[num1 - 1]);
+			}
+		}
+
+		if (params::startingEnergy < 10) {
+			params::startingEnergy++;
+		}
+		round++;
+	}
 }

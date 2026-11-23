@@ -11,6 +11,7 @@ public:
 	std::vector<Card> getCards();
 	Card drawNextCard();
 	void shuffleDeck();
+	void setMaxEnergy(int value);
 	std::string toString();
 	
 
