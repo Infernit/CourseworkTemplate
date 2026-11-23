@@ -18,6 +18,9 @@ const int Board::tileHeight = 46; //46 test
 unsigned int Board::windowWidth = Board::tileWidth * 15;
 unsigned int Board::windowHeight = Board::tileHeight * 6;
 
+// Accessible throughout. For drag drop testing
+sf::Sprite cardTest1(spritesheet);
+
 // Check if the spritesheet exists
 void Board::init() {
 
@@ -35,22 +38,43 @@ void Board::init() {
     // Make individual chards accessible from this
     //sf::Texture spritesheet;
 
-    /* starting from fifth tile on first row, and last row */
-    sf::Sprite cardTest1(spritesheet);
-
     // cut it
     
     cardTest1.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(tileWidth, tileHeight)));
 
+    // Set new position to current grid position using mouse
+
+    /*
     cardTest1.setPosition(sf::Vector2f(
         0,
         0
     ));
+    */
 
     Board::cards.push_back(cardTest1);
     
     // Test multiple cards later
 
+}
+
+/*
+    // window should recognise where mouse is
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+*/
+
+// Make the card moveable (drag and drop) with mouse
+sf::Vector2f pixelsToGrid(sf::Vector2f mousePos) {
+	int gridX = static_cast<int>(mousePos.x) / Board::tileWidth;
+	int gridY = static_cast<int>(mousePos.y) / Board::tileHeight;
+	return sf::Vector2f(gridX, gridY);
+}
+
+// Pick up a card and move it
+// Restrict it to only be able to be moved to unoccupied + certain tiles later ...
+
+// its position on the grid (x, y) in tiles, should be converted pixels
+sf::Vector2f Board::gridToPixels(int gridX, int gridY) {
+	return sf::Vector2f(gridX * tileWidth, gridY * tileHeight);
 }
 
 Board::Board() {
@@ -64,11 +88,13 @@ Board::Board() {
     //shape.setFillColor(sf::Color::Green);
 
     init();
+    bool draggingCard = false;
     
     while (window.isOpen()) {
         // Grid ? of tiles....
 
         for (int x = 0; x < windowWidth / tileWidth; x++) {
+
             for (int y = 0; y < windowHeight / tileHeight; y++) {
                 sf::RectangleShape tile(sf::Vector2f(tileWidth, tileHeight));
 
@@ -81,14 +107,17 @@ Board::Board() {
 
                 window.draw(tile);
             }
+
         }
 
+        /*
         // card sprite logic
         // It is drawing a white box... Not card...
         for (sf::Sprite card : Board::cards) {
             // Card will be obvious against green background
             window.draw(card);
        }
+       */
 
         // Interactable tiles (using mouse...)
          // window should recognise where mouse is
@@ -108,17 +137,60 @@ Board::Board() {
         window.draw(highlightTile);
 
         sf::Event event;
+
         while (window.pollEvent(event)) {
+
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
+
+            // Mouse drags card
+			if (event.type == sf::Event::MouseButtonPressed) {
+				if (event.mouseButton.button == sf::Mouse::Left) {
+
+                    // test statement
+                    std::cout << "MOUSE INTERACT\n";
+
+					// Get mouse position
+					sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+					// Convert to grid coordinates
+                    // Print out grid positions (test passed)
+					sf::Vector2f gridPos = pixelsToGrid(sf::Vector2f(mousePos));
+					std::cout << "Mouse pressed at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
+
+                    if (cardTest1.getGlobalBounds().contains(
+                        static_cast<float>(mousePos.x),
+                        static_cast<float>(mousePos.y))) {
+                        draggingCard = true;
+                    }
+
+				}
+			}
+
+            // Mouse releases card
+            if (event.type == sf::Event::MouseButtonReleased) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+
+                    std::cout << "MOUSE RELEASE\n";
+
+                    draggingCard = false;
+
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    sf::Vector2f gridPos = pixelsToGrid(sf::Vector2f(mousePos));
+                    std::cout << "Mouse released at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
+
+                    cardTest1.setPosition(gridPos.x * Board::tileWidth, gridPos.y * Board::tileHeight);
+                }
+            }
         }
+
         // problem line
         //window.clear();
   
         // display Board::cards later
         //window.draw(Board::cards);
 
+        window.draw(cardTest1);
         window.display();
         
     }
