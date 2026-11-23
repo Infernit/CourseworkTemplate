@@ -40,6 +40,23 @@ void Board::init() {
 		std::cerr << "Failed to load font!" << std::endl;
 	}
 
+	sf::Sprite temp(GameParameters::spritesheet);
+	temp.setTextureRect(
+		sf::IntRect(
+			sf::Vector2i(429, 90),
+			sf::Vector2i(16, 45)));
+	GameParameters::cardDescBar = temp;
+
+	temp.setTextureRect(sf::IntRect(
+		sf::Vector2i(445, 90),
+		sf::Vector2i(4, 4)));
+	GameParameters::club = temp;
+
+	temp.setTextureRect(sf::IntRect(
+		sf::Vector2i(445, 94),
+		sf::Vector2i(4, 4)));
+	GameParameters::heart = temp;
+
     // Make individual chards accessible from this
     //sf::Texture spritesheet;
 
@@ -407,14 +424,14 @@ std::vector<Card>& Board::getPlayer2BoardCards() {
 
 void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) {
 
-	for (int x = 0; x < windowWidth / tileWidth; x++) {
+	for (int x = 0; x < GameParameters::windowWidth / GameParameters::tileWidth; x++) {
 
 		// for p2 healthbar to appear on 0, change to 1
-		for (int y = 1; y < windowHeight / tileHeight - 1; y++) {
+		for (int y = 0; y < GameParameters::windowHeight / GameParameters::tileHeight - 1; y++) {
 
-			sf::RectangleShape tile(sf::Vector2f(tileWidth, tileHeight));
+			sf::RectangleShape tile(sf::Vector2f(GameParameters::tileWidth + GameParameters::cardDescBarWidth, GameParameters::tileHeight));
 
-			tile.setPosition(x * tileWidth, y * tileHeight);
+			tile.setPosition(x * (GameParameters::tileWidth + GameParameters::cardDescBarWidth), y * GameParameters::tileHeight + GameParameters::healthBarHeight);
 
 			// Make board yellow to test moving green health bar
 			tile.setFillColor(sf::Color::Yellow);
@@ -422,75 +439,158 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			tile.setOutlineColor(sf::Color::Black);
 
 			window.draw(tile);
-
 		}
 
 	}
 
 	//TEST TEXT
+	/*
 	sf::Text text;
 	text.setFont(GameParameters::font);
 	text.setCharacterSize(10);
 	text.setString("test");
 	text.setPosition(100, 100);
 	window.draw(text);
+	*/
 
-	sf::Sprite temp;
+	sf::Sprite tempSprite;
+	sf::Text tempText;
+	tempText.setFont(GameParameters::font);
+	tempText.setCharacterSize(4);
+	tempText.setColor(sf::Color::Black);
+	int tempPosX = 0;
+	int tempPosY = 0;
 
 	//PLAYER 1
 	//Hand
 	for (int i = 0; i < p1->getHand().size(); i++) {
-		temp = cutCard(p1->getHand()[i]);
-		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 6 * GameParameters::tileHeight + 6);
-		window.draw(temp);
+		tempSprite = cutCard(p1->getHand()[i]);
+		tempSprite.setPosition((4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth), 5 * GameParameters::tileHeight + GameParameters::healthBarHeight);
+		window.draw(tempSprite);
 	}
 
 	//Board
 	for (int i = 0; i < _player1BoardCards.size(); i++) {
-		temp = cutCard(_player1BoardCards[i]);
-		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 4 * GameParameters::tileHeight + 4);
-		window.draw(temp);
+		tempSprite = cutCard(_player1BoardCards[i]);
+		tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+		tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+		tempSprite.setPosition(tempPosX, tempPosY);
+		window.draw(tempSprite);
+		GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
+		window.draw(GameParameters::cardDescBar);
+
+		if (_player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			GameParameters::club.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
+			tempText.setColor(sf::Color(91, 110, 225, 255));
+			window.draw(GameParameters::club);
+		}
+		else {
+			GameParameters::heart.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
+			tempText.setColor(sf::Color(255, 0, 0, 255));
+			window.draw(GameParameters::heart);
+		}
+
+		tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
+		
+		window.draw(tempText);
+
+		tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+		tempText.setColor(sf::Color(255, 0, 0, 255));
+		window.draw(tempText);
+
+		tempText.setString(std::to_string((int)_player1BoardCards[i].getEffectIncreases()));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 25);
+		tempText.setColor(sf::Color(235, 134, 27, 255));
+		window.draw(tempText);
+
+		//Figure out a better way of showing numbers for this
+		tempText.setString(std::to_string((int)(1.f / _player1BoardCards[i].getDamageDecrease())));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 34);
+		tempText.setColor(sf::Color(0, 0, 0, 255));
+		window.draw(tempText);
 	}
 
 	//PLAYER 2
 	//Hand
 	for (int i = 0; i < p2->getHand().size(); i++) {
-		temp = cutCard(p2->getHand()[i]);
-		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 1 * GameParameters::tileHeight + 1);
-		window.draw(temp);
+		tempSprite = cutCard(p2->getHand()[i]);
+		tempSprite.setPosition((4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth), GameParameters::healthBarHeight);
+		window.draw(tempSprite);
 	}
 
 	//Board
 	for (int i = 0; i < _player2BoardCards.size(); i++) {
-		temp = cutCard(_player2BoardCards[i]);
-		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 3 * GameParameters::tileHeight + 3);
-		window.draw(temp);
+		tempSprite = cutCard(_player2BoardCards[i]);
+		tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+		tempPosY = 2 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+		tempSprite.setPosition(tempPosX, tempPosY);
+		window.draw(tempSprite);
+		GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
+		window.draw(GameParameters::cardDescBar);
+
+		if (_player2BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			GameParameters::club.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
+			tempText.setColor(sf::Color(91, 110, 225, 255));
+			window.draw(GameParameters::club);
+		}
+		else {
+			GameParameters::heart.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
+			tempText.setColor(sf::Color(255, 0, 0, 255));
+			window.draw(GameParameters::heart);
+		}
+
+		tempText.setString(std::to_string((int)_player2BoardCards[i].getCardEffect().getValue()));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
+
+		window.draw(tempText);
+
+		tempText.setString(std::to_string((int)_player2BoardCards[i].getCardHealth()));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+		tempText.setColor(sf::Color(255, 0, 0, 255));
+		window.draw(tempText);
+
+		tempText.setString(std::to_string((int)_player2BoardCards[i].getEffectIncreases()));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 25);
+		tempText.setColor(sf::Color(235, 134, 27, 255));
+		window.draw(tempText);
+
+		//Figure out a better way of showing numbers for this
+		tempText.setString(std::to_string((int)(1.f / _player2BoardCards[i].getDamageDecrease())));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 34);
+		tempText.setColor(sf::Color(0, 0, 0, 255));
+		window.draw(tempText);
 	}
 
 	// Player 2 healthbar space
-	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f(GameParameters::windowWidth, GameParameters::tileHeight));
+	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f(GameParameters::windowWidth, GameParameters::healthBarHeight));
 	// make sure its being positioned correctly
 	healthbarPlayer2Red.setPosition(0.f, 0.f);
 	healthbarPlayer2Red.setFillColor(sf::Color::Red);
 	window.draw(healthbarPlayer2Red);
 
 	// Place a green on top that will decrease in size as player takes damage
-	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)GameParameters::windowWidth * (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::tileHeight));
+	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)GameParameters::windowWidth * (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
 	healthbarPlayer2.setPosition(0.f, 0.f);
 	healthbarPlayer2.setFillColor(sf::Color::Green);
 	window.draw(healthbarPlayer2);
 
 	//Player 1 healthbar
-	sf::RectangleShape healthbarPlayer1Red(sf::Vector2f(GameParameters::windowWidth, GameParameters::tileHeight));
+	sf::RectangleShape healthbarPlayer1Red(sf::Vector2f(GameParameters::windowWidth, GameParameters::healthBarHeight));
 	// make sure its being positioned correctly
-	healthbarPlayer1Red.setPosition(0.f, (GameParameters::tileHeight * 7) + 7);
+	healthbarPlayer1Red.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
 	healthbarPlayer1Red.setFillColor(sf::Color::Red);
 	window.draw(healthbarPlayer1Red);
 
 	// Place a green on top that will decrease in size as player takes damage
-	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)GameParameters::windowWidth * (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::tileHeight));
+	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)GameParameters::windowWidth * (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
 	// To account for lines (1px each)
-	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 7) + 7);
+	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
 	healthbarPlayer1.setFillColor(sf::Color::Green);
 	window.draw(healthbarPlayer1);
+
+	//TESTING
+	//GameParameters::cardDescBar.setPosition(10, 10);
+	//window.draw(GameParameters::cardDescBar);
 }
