@@ -173,13 +173,17 @@ Board::Board() {
 
                     std::cout << "MOUSE RELEASE\n";
 
-                    draggingCard = false;
-
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                     sf::Vector2f gridPos = pixelsToGrid(sf::Vector2f(mousePos));
                     std::cout << "Mouse released at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
 
-                    cardTest1.setPosition(gridPos.x * Board::tileWidth, gridPos.y * Board::tileHeight);
+                    // Only move it if the tile it was on was interacted with ?
+                    if (draggingCard == true) {
+                        cardTest1.setPosition(gridPos.x * Board::tileWidth, gridPos.y * Board::tileHeight);
+                    }
+
+                    // reset to default val
+                    draggingCard = false;
                 }
             }
         }
