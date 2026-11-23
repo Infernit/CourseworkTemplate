@@ -1,6 +1,5 @@
 #include "board.h"
 #include <SFML/Graphics.hpp>
-#include "board_functionality.h"
 // For cerr
 #include <iostream>
 // Accessible throughout, cannot be const
@@ -41,9 +40,7 @@ void Board::init() {
     Suit suit(spades, GameParameters::getSpadeEffect());
     Card randomCard(suit, 5);
 
-    BoardFunctionality func;
-
-    cardTest1 = func.cutCard(randomCard);
+    cardTest1 = cutCard(randomCard);
 
     // Set new position to current grid position using mouse
 
@@ -80,8 +77,12 @@ sf::Vector2f Board::gridToPixels(int gridX, int gridY) {
 	return sf::Vector2f(gridX * tileWidth, gridY * tileHeight);
 }
 
-Board::Board() {
-    //init();
+Board::Board()  {
+    _player1BoardCards = {};
+    _player2BoardCards = {};
+	
+    init();
+	/*
     // get window to obey width and height constants
     sf::RenderWindow window(sf::VideoMode({ windowWidth, windowHeight }), "SFML works!");
 
@@ -143,7 +144,7 @@ Board::Board() {
             }
 
             // disable movement for now 
-            /*
+            
             // Mouse drags card
 			if (event.type == sf::Event::MouseButtonPressed) {
 
@@ -189,12 +190,264 @@ Board::Board() {
                     draggingCard = false;
                 }
             }
-            */
+            
         }
 
-        window.draw(cardTest1);
+        //window.draw(cardTest1);
         window.display();
-        
+		        
     }
+	*/
+}
 
+bool Board::playCard(Player* player, Player* opponent, Card& card) {
+	if (player->getCurrentEnergy() < card.getCardRank()) {
+		return false;
+	}
+
+	if (card.getCardSuit().getSuitName() == clubs || card.getCardSuit().getSuitName() == hearts) {
+		std::vector<Card>* cards;
+
+		//Determine which board to add the card to
+		if (player->getPlayerNumber() == 1) {
+			cards = &_player1BoardCards;
+		}
+		else {
+			cards = &_player2BoardCards;
+		}
+
+		//Check if board size is less than limit
+		if (cards->size() < GameParameters::boardSize) {
+			card.setIsUsable(false);
+			cards->push_back(card);
+			player->removeHandCard(card);
+			player->setCurrentEnergy(player->getCurrentEnergy() - card.getCardRank());
+			return true;
+		}
+	}
+	else {
+		if (tryPlayCardToEffectable(player, opponent, card)) {
+			player->removeHandCard(card);
+			player->setCurrentEnergy(player->getCurrentEnergy() - card.getCardRank());
+			return true;
+		}
+	}
+
+	return false;
+}
+
+std::vector<Card>& Board::getEnemyCards(Player* player) {
+	removeDeadCards();
+
+	if (player->getPlayerNumber() == 1) {
+		return _player2BoardCards;
+	}
+	else {
+		return _player1BoardCards;
+	}
+}
+
+std::vector<Card>& Board::getFriendlyCards(Player* player) {
+	removeDeadCards();
+
+	if (player->getPlayerNumber() == 1) {
+		return _player1BoardCards;
+	}
+	else {
+		return _player2BoardCards;
+	}
+}
+
+bool Board::getIsEnemyAttackable(Player* player) {
+	bool attackable = true;
+
+	if (player->getPlayerNumber() == 1) {
+		for (Card card : _player2BoardCards) {
+			if (card.getCardSuit().getSuitName() == clubs) {
+				attackable = false;
+			}
+		}
+	}
+	else {
+		for (Card card : _player1BoardCards) {
+			if (card.getCardSuit().getSuitName() == clubs) {
+				attackable = false;
+			}
+		}
+	}
+
+	return attackable;
+}
+
+void Board::removeDeadCards() {
+	int j = 0;
+
+	for (int i = 0; i < _player1BoardCards.size(); i++) {
+		if (_player1BoardCards[i].getIsDead()) {
+			_player1BoardCards.erase(_player1BoardCards.begin() + i - j);
+			j++;
+		}
+	}
+
+	j = 0;
+
+	for (int i = 0; i < _player2BoardCards.size(); i++) {
+		if (_player2BoardCards[i].getIsDead()) {
+			_player2BoardCards.erase(_player2BoardCards.begin() + i - j);
+			j++;
+		}
+	}
+}
+
+bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card) {
+	std::vector<Card>* cardsToApplyTo;
+	Player* playerToApplyTo;
+	int index = 1;
+
+	//Apply card to enemy
+	if (card.getCardSuit().getSuitName() == clubs || card.getCardSuit().getSuitName() == spades) {
+		cardsToApplyTo = &getEnemyCards(player);
+		playerToApplyTo = opponent;
+	}
+	else {
+		cardsToApplyTo = &getFriendlyCards(player);
+		playerToApplyTo = player;
+	}
+
+	bool canHaveZeroElements = false;
+
+	if (getIsEnemyAttackable(player) && card.getCardSuit().getSuitName() == clubs) {
+		std::cout
+			<< "0: Opposing Player"
+			<< std::endl;
+		canHaveZeroElements = true;
+	}
+	else if (card.getCardSuit().getSuitName() == hearts) {
+		std::cout
+			<< "0: Yourself"
+			<< std::endl;
+		canHaveZeroElements = true;
+	}
+
+	if (cardsToApplyTo->size() == 0 && !canHaveZeroElements) {
+		return false;
+	}
+
+
+	for (Card card : *cardsToApplyTo) {
+		std::cout
+			<< index
+			<< ": "
+			<< GameParameters::cardNames[card.getCardRank()]
+			<< " of "
+			<< GameParameters::suitNames[card.getCardSuit().getSuitName()]
+			<< std::endl;
+		index++;
+	}
+
+	std::cout << "Pick card to effect: ";
+	int num;
+	std::cin >> num;
+
+	//Apply card to target card
+	if (num <= cardsToApplyTo->size() && num > 0) {
+		return card.applyCardEffect(&(*cardsToApplyTo)[num - 1]);
+	}
+	else {
+		return card.applyCardEffect(playerToApplyTo);
+	}
+}
+
+void Board::setPlayerCardsUsable(Player* player) {
+	std::vector<Card>* cards;
+
+	if (player->getPlayerNumber() == 1) {
+		cards = &_player1BoardCards;
+	}
+	else {
+		cards = &_player2BoardCards;
+	}
+
+	for (int i = 0; i < cards->size(); i++) {
+		cards->at(i).setIsUsable(true);
+	}
+}
+
+sf::Sprite Board::cutCard(Card card) {
+	sf::Sprite cardSprite(GameParameters::spritesheet);
+
+	cardSprite.setTextureRect(
+		sf::IntRect(
+			sf::Vector2i(
+				(card.getCardRank() - 1) * GameParameters::tileWidth,
+				(card.getCardSuit().getSuitName() - 1) * GameParameters::tileHeight),
+			sf::Vector2i(
+				GameParameters::tileWidth,
+				GameParameters::tileHeight)));
+
+	return cardSprite;
+}
+
+std::vector<Card>& Board::getPlayer1BoardCards() {
+	return _player1BoardCards;
+}
+
+std::vector<Card>& Board::getPlayer2BoardCards() {
+	return _player2BoardCards;
+}
+
+void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) {
+
+	for (int x = 0; x < windowWidth / tileWidth; x++) {
+
+		for (int y = 0; y < windowHeight / tileHeight; y++) {
+
+			sf::RectangleShape tile(sf::Vector2f(tileWidth, tileHeight));
+
+			tile.setPosition(x * tileWidth, y * tileHeight);
+
+			// Make board green
+			tile.setFillColor(sf::Color::Green);
+			tile.setOutlineThickness(1.f);
+			tile.setOutlineColor(sf::Color::Black);
+
+			window.draw(tile);
+		}
+
+	}
+
+	sf::Sprite temp;
+
+	//PLAYER 1
+	//Hand
+	for (int i = 0; i < p1->getHand().size(); i++) {
+		temp = cutCard(p1->getHand()[i]);
+		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 5 * GameParameters::tileHeight + 5);
+		window.draw(temp);
+	}
+
+	//Board
+	for (int i = 0; i < _player1BoardCards.size(); i++) {
+		temp = cutCard(_player1BoardCards[i]);
+		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 3 * GameParameters::tileHeight + 3);
+		window.draw(temp);
+	}
+
+	//PLAYER 2
+	//Hand
+	for (int i = 0; i < p2->getHand().size(); i++) {
+		temp = cutCard(p2->getHand()[i]);
+		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 0);
+		window.draw(temp);
+	}
+
+	//Board
+	for (int i = 0; i < _player2BoardCards.size(); i++) {
+		temp = cutCard(_player2BoardCards[i]);
+		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 2 * GameParameters::tileHeight + 2);
+		window.draw(temp);
+	}
+
+
+	//place cards in specific locations
 }

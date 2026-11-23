@@ -1,7 +1,7 @@
 #include "testing.h"
 #include <vector>
 #include <iostream>
-#include "board_functionality.h"
+#include "board.h"
 
 using params = GameParameters;
 using namespace std;
@@ -147,13 +147,15 @@ void Testing::mockup_round() {
 	Player* player2 = system.getPlayer2();
 
 	//Create board
-	BoardFunctionality board;
+	Board board;
 	//Havent bothered validating this as it wont be the final version
 
 	int round = 1;
 
 	Player* player = player1;
 	Player* opponent = player2;
+
+	sf::RenderWindow window(sf::VideoMode({ (unsigned)GameParameters::tileWidth * 15, (unsigned)GameParameters::tileHeight * 6 }), "SFML works!");
 	
 	//Outmost loop, loops until a player dies.
 	while (player1->getHealth() > 0 && player2->getHealth() > 0) {
@@ -201,6 +203,9 @@ void Testing::mockup_round() {
 
 			//Fill players hand from deck
 			player->fillHand();
+
+			board.placeCardsOnBoard(player1, player2, window);
+			window.display();
 
 			//Play cards from hand
 			while (player->getCurrentEnergy() > 0) {
