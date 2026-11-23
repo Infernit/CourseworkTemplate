@@ -31,4 +31,6 @@ std::vector<std::string> GameParameters::suitNames = {"noSuit", "hearts", "diamo
 sf::Texture GameParameters::spritesheet;
 float GameParameters::tileWidth = 33;
 float GameParameters::tileHeight = 45;
+int GameParameters::windowWidth = (int)GameParameters::tileWidth * 15;
+int GameParameters::windowHeight = (int)GameParameters::tileHeight * 8;
 sf::Font GameParameters::font;

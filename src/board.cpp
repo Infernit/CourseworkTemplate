@@ -14,7 +14,7 @@ const int Board::tileHeight = 46; //46 test
 
 // set board window size to be 15 (7 Board::cards + 4 spaces either side) tiles wide and 6 tiles tall
 unsigned int Board::windowWidth = Board::tileWidth * 15;
-unsigned int Board::windowHeight = Board::tileHeight * 6;
+unsigned int Board::windowHeight = Board::tileHeight * 8;
 
 // Accessible throughout. For drag drop testing
 sf::Sprite cardTest1(GameParameters::spritesheet);
@@ -409,18 +409,20 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 	for (int x = 0; x < windowWidth / tileWidth; x++) {
 
-		for (int y = 0; y < windowHeight / tileHeight; y++) {
+		// for p2 healthbar to appear on 0, change to 1
+		for (int y = 1; y < windowHeight / tileHeight - 1; y++) {
 
 			sf::RectangleShape tile(sf::Vector2f(tileWidth, tileHeight));
 
 			tile.setPosition(x * tileWidth, y * tileHeight);
 
-			// Make board green
-			tile.setFillColor(sf::Color::Green);
+			// Make board yellow to test moving green health bar
+			tile.setFillColor(sf::Color::Yellow);
 			tile.setOutlineThickness(1.f);
 			tile.setOutlineColor(sf::Color::Black);
 
 			window.draw(tile);
+
 		}
 
 	}
@@ -439,14 +441,14 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	//Hand
 	for (int i = 0; i < p1->getHand().size(); i++) {
 		temp = cutCard(p1->getHand()[i]);
-		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 5 * GameParameters::tileHeight + 5);
+		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 6 * GameParameters::tileHeight + 6);
 		window.draw(temp);
 	}
 
 	//Board
 	for (int i = 0; i < _player1BoardCards.size(); i++) {
 		temp = cutCard(_player1BoardCards[i]);
-		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 3 * GameParameters::tileHeight + 3);
+		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 4 * GameParameters::tileHeight + 4);
 		window.draw(temp);
 	}
 
@@ -454,17 +456,41 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	//Hand
 	for (int i = 0; i < p2->getHand().size(); i++) {
 		temp = cutCard(p2->getHand()[i]);
-		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 0);
+		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 1 * GameParameters::tileHeight + 1);
 		window.draw(temp);
 	}
 
 	//Board
 	for (int i = 0; i < _player2BoardCards.size(); i++) {
 		temp = cutCard(_player2BoardCards[i]);
-		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 2 * GameParameters::tileHeight + 2);
+		temp.setPosition((4 + i) * GameParameters::tileWidth + 4 + i, 3 * GameParameters::tileHeight + 3);
 		window.draw(temp);
 	}
 
+	// Player 2 healthbar space
+	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f(GameParameters::windowWidth, GameParameters::tileHeight));
+	// make sure its being positioned correctly
+	healthbarPlayer2Red.setPosition(0.f, 0.f);
+	healthbarPlayer2Red.setFillColor(sf::Color::Red);
+	window.draw(healthbarPlayer2Red);
 
-	//place cards in specific locations
+	// Place a green on top that will decrease in size as player takes damage
+	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)GameParameters::windowWidth * (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::tileHeight));
+	healthbarPlayer2.setPosition(0.f, 0.f);
+	healthbarPlayer2.setFillColor(sf::Color::Green);
+	window.draw(healthbarPlayer2);
+
+	//Player 1 healthbar
+	sf::RectangleShape healthbarPlayer1Red(sf::Vector2f(GameParameters::windowWidth, GameParameters::tileHeight));
+	// make sure its being positioned correctly
+	healthbarPlayer1Red.setPosition(0.f, (GameParameters::tileHeight * 7) + 7);
+	healthbarPlayer1Red.setFillColor(sf::Color::Red);
+	window.draw(healthbarPlayer1Red);
+
+	// Place a green on top that will decrease in size as player takes damage
+	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)GameParameters::windowWidth * (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::tileHeight));
+	// To account for lines (1px each)
+	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 7) + 7);
+	healthbarPlayer1.setFillColor(sf::Color::Green);
+	window.draw(healthbarPlayer1);
 }

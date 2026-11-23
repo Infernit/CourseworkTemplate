@@ -155,7 +155,7 @@ void Testing::mockup_round() {
 	Player* player = player1;
 	Player* opponent = player2;
 
-	sf::RenderWindow window(sf::VideoMode({ (unsigned)GameParameters::tileWidth * 15, (unsigned)GameParameters::tileHeight * 6 }), "SFML works!");
+	sf::RenderWindow window(sf::VideoMode({ (unsigned)GameParameters::tileWidth * 15, (unsigned)GameParameters::tileHeight * 8 }), "SFML works!");
 	
 	//Outmost loop, loops until a player dies.
 	while (player1->getHealth() > 0 && player2->getHealth() > 0) {

@@ -22,6 +22,8 @@ struct GameParameters {
 	static sf::Texture spritesheet;
 	static float tileWidth;
 	static float tileHeight;
+	static int windowWidth;
+	static int windowHeight;
 
 	static sf::Font font;
 };
