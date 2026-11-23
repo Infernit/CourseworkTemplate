@@ -27,8 +27,6 @@ public:
 
 	void setIsUsable(bool value);
 
-	__event void CardKilled(Card* card);
-
 //____________________________//
 //          GETTTERS          //
 //____________________________//
@@ -37,6 +35,7 @@ public:
 	int getCardMaxHealth();
 	bool getIsRoyal();
 	bool getIsUsable();
+	bool getIsDead();
 
 	Suit getCardSuit();
 	int getEffectIncreases();
@@ -55,6 +54,7 @@ protected:
 	int _cardRank;
 	bool _isRoyal;
 	bool _isUsable;
+	bool _isDead;
 
 	Suit _cardSuit;
 	std::vector<float> _damageDecreases;

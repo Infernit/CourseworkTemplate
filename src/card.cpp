@@ -13,10 +13,15 @@ Card::Card() : _cardRank(0), _isRoyal(false) {};
 //--Declares card as invalid if rank is <= 0 && >= 14
 //--Not sure how ace handling will work yet
 Card::Card(Suit suit, int rank)
-	: _cardSuit(suit), _cardRank(rank), _cardEffect({}), _isRoyal(false)
+	: _cardSuit(suit),
+	_cardRank(rank),
+	_cardEffect({}),
+	_isRoyal(false),
+	_isUsable(false),
+	_isDead(false),
+	_effectIncrease(0)
 {
 	//All cards
-	_effectIncrease = 0;
 
 	//Numbered cards
 	if (rank >= 1 && rank <= 10) {
@@ -60,11 +65,10 @@ bool Card::reduceHealth(int value) {
 	_health -= value;
 
 	if (_health <= 0) {
-		__raise CardKilled(this);
-		return true;
+		_isDead = true;
 	}
 
-	return false;
+	return _isDead;
 }
 
 //Increases the health of the card
@@ -208,6 +212,10 @@ bool Card::getIsRoyal() {
 
 bool Card::getIsUsable() {
 	return _isUsable;
+}
+
+bool Card::getIsDead() {
+	return _isDead;
 }
 
 int Card::getEffectIncreases() {

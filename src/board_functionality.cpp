@@ -29,7 +29,6 @@ bool BoardFunctionality::playCard(Player* player, Player* opponent, Card& card) 
 		if (cards->size() < params::boardSize) {
 			card.setIsUsable(false);
 			cards->push_back(card);
-			hookCardKilled(&card);
 			player->removeHandCard(card);
 			player->setCurrentEnergy(player->getCurrentEnergy() - card.getCardRank());
 			return true;
@@ -47,6 +46,8 @@ bool BoardFunctionality::playCard(Player* player, Player* opponent, Card& card) 
 }
 
 std::vector<Card>& BoardFunctionality::getEnemyCards(Player* player) {
+	removeDeadCards();
+
 	if (player->getPlayerNumber() == 1) {
 		return _player2BoardCards;
 	}
@@ -56,6 +57,8 @@ std::vector<Card>& BoardFunctionality::getEnemyCards(Player* player) {
 }
 
 std::vector<Card>& BoardFunctionality::getFriendlyCards(Player* player) {
+	removeDeadCards();
+
 	if (player->getPlayerNumber() == 1) {
 		return _player1BoardCards;
 	}
@@ -85,25 +88,22 @@ bool BoardFunctionality::getIsEnemyAttackable(Player* player) {
 	return attackable;
 }
 
-void BoardFunctionality::hookCardKilled(Card* card) {
-	__hook(&Card::CardKilled, card, &BoardFunctionality::cardKilledHandler);
-}
+void BoardFunctionality::removeDeadCards() {
+	int j = 0;
 
-void BoardFunctionality::unhookCardKilled(Card* card) {
-	__unhook(&Card::CardKilled, card, &BoardFunctionality::cardKilledHandler);
-}
-
-void BoardFunctionality::cardKilledHandler(Card* card) {
-	for (Card card1 : _player1BoardCards) {
-		if (card == &card1) {
-			std::cout << "Found it" << std::endl;
-			unhookCardKilled(card);
+	for (int i = 0; i < _player1BoardCards.size(); i++) {
+		if (_player1BoardCards[i].getIsDead()) {
+			_player1BoardCards.erase(_player1BoardCards.begin() + i - j);
+			j++;
 		}
 	}
-	for (Card card2 : _player2BoardCards) {
-		if (card == &card2) {
-			std::cout << "Found it" << std::endl;
-			unhookCardKilled(card);
+
+	j = 0;
+
+	for (int i = 0; i < _player2BoardCards.size(); i++) {
+		if (_player2BoardCards[i].getIsDead()) {
+			_player2BoardCards.erase(_player2BoardCards.begin() + i - j);
+			j++;
 		}
 	}
 }

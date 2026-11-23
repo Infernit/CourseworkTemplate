@@ -12,9 +12,7 @@ public:
 	std::vector<Card>& getFriendlyCards(Player* player);
 	bool getIsEnemyAttackable(Player* player);
 
-	void hookCardKilled(Card* card);
-	void unhookCardKilled(Card* card);
-	void cardKilledHandler(Card* card);
+	void removeDeadCards();
 
 	bool tryPlayCardToEffectable(Player* player, Player* opponent, Card& card);
 

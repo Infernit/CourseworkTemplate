@@ -157,7 +157,6 @@ void Testing::mockup_round() {
 	
 	//Outmost loop, loops until a player dies.
 	while (player1->getHealth() > 0 && player2->getHealth() > 0) {
-
 		std::cout 
 			<< std::endl 
 			<< "ROUND " 
@@ -180,6 +179,13 @@ void Testing::mockup_round() {
 				player = player2;
 				opponent = player1;
 			}
+
+			//Changing turn
+			std::cout << "\x1b[2J";
+
+			int temp = 0;
+			std::cout << "TYPE A NUMBER AND PRESS ENTER TO START NEXT TURN";
+			std::cin >> temp;
 
 			std::cout
 				<< std::endl
@@ -216,6 +222,8 @@ void Testing::mockup_round() {
 						<< std::endl;
 				}
 
+				std::cout << "0: Manually End Turn" << std::endl;
+
 				//Get user input
 				std::cout 
 					<< std::endl 
@@ -224,7 +232,10 @@ void Testing::mockup_round() {
 				std::cin >> num;
 
 				//Try play card based on user input
-				if (!board.playCard(player, opponent, player->getHand()[num - 1])) {
+				if (num == 0) {
+					break;
+				}
+				else if (!board.playCard(player, opponent, player->getHand()[num - 1])) {
 					std::cout
 						<< std::endl
 						<< "Invalid Option"
@@ -292,7 +303,9 @@ void Testing::mockup_round() {
 			}
 		}
 
-		params::startingEnergy++;
+		if (params::startingEnergy < 10) {
+			params::startingEnergy++;
+		}
 		round++;
 	}
 }
