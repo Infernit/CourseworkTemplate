@@ -110,12 +110,14 @@ Board::Board() {
 
         }
 
+        /*
         // card sprite logic
         // It is drawing a white box... Not card...
         for (sf::Sprite card : Board::cards) {
             // Card will be obvious against green background
             window.draw(card);
        }
+       */
 
         // Interactable tiles (using mouse...)
          // window should recognise where mouse is
