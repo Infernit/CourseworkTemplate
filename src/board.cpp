@@ -142,6 +142,8 @@ Board::Board() {
                 window.close();
             }
 
+            // disable movement for now 
+            /*
             // Mouse drags card
 			if (event.type == sf::Event::MouseButtonPressed) {
 
@@ -187,13 +189,8 @@ Board::Board() {
                     draggingCard = false;
                 }
             }
+            */
         }
-
-        // problem line
-        //window.clear();
-  
-        // display Board::cards later
-        //window.draw(Board::cards);
 
         window.draw(cardTest1);
         window.display();
