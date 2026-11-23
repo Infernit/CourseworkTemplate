@@ -1,5 +1,6 @@
 #include "board.h"
 #include <SFML/Graphics.hpp>
+#include "board_functionality.h"
 // For cerr
 #include <iostream>
 // Accessible throughout, cannot be const
@@ -37,8 +38,12 @@ void Board::init() {
     //sf::Texture spritesheet;
 
     // cut it
-    
-    cardTest1.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(tileWidth, tileHeight)));
+    Suit suit(spades, GameParameters::getSpadeEffect());
+    Card randomCard(suit, 5);
+
+    BoardFunctionality func;
+
+    cardTest1 = func.cutCard(randomCard);
 
     // Set new position to current grid position using mouse
 

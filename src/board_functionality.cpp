@@ -1,6 +1,7 @@
 #include "board_functionality.h"
 #include "game_parameters.h"
 #include "player.h"
+#include "board.h"
 
 using params = GameParameters;
 
@@ -180,6 +181,21 @@ void BoardFunctionality::setPlayerCardsUsable(Player* player) {
 	for (int i = 0; i < cards->size(); i++) {
 		cards->at(i).setIsUsable(true);
 	}
+}
+
+sf::Sprite BoardFunctionality::cutCard(Card card) {
+	sf::Sprite cardSprite(GameParameters::spritesheet);
+
+	cardSprite.setTextureRect(
+		sf::IntRect(
+			sf::Vector2i(
+				(card.getCardRank() - 1) * GameParameters::tileWidth,
+				(card.getCardSuit().getSuitName() - 1) * GameParameters::tileHeight),
+			sf::Vector2i(
+				GameParameters::tileWidth,
+				GameParameters::tileHeight)));
+
+	return cardSprite;
 }
 
 std::vector<Card>& BoardFunctionality::getPlayer1BoardCards() {

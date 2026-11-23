@@ -29,3 +29,5 @@ std::vector<std::string> GameParameters::suitNames = {"noSuit", "hearts", "diamo
 // more useful here than in board (accessible from anywhere)
 // Sprites
 sf::Texture GameParameters::spritesheet;
+float GameParameters::tileWidth = 33;
+float GameParameters::tileHeight = 45;

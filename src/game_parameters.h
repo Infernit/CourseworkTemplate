@@ -20,4 +20,6 @@ struct GameParameters {
 	static std::vector<std::string> suitNames;
 
 	static sf::Texture spritesheet;
+	static float tileWidth;
+	static float tileHeight;
 };
