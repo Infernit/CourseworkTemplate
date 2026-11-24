@@ -115,6 +115,7 @@ void Player::increaseHealth(int value) {
 	}
 }
 
+// PINEAPPLE
 bool Player::applyEffect(Effect effect) {
 	switch (effect.getEffectType()) {
 	case damage:

@@ -182,6 +182,7 @@ void Card::setDamageDecreasePercent(float percent) {
 	_damageDecreases.push_back(percent);
 }
 
+// PINEAPPLE
 bool Card::applyEffect(Effect effect) {
 	switch (effect.getEffectType()) {
 	case damage:
