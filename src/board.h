@@ -4,38 +4,105 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+/// <summary>
+/// Class for board rendering and card handling.
+/// </summary>
 class Board {
 
 public:
+	/// <summary>
+	/// Constructor
+	/// </summary>
 	Board();
-	void init();
-	static const int tileWidth;
-	static const int tileHeight;
-	static unsigned int windowWidth;
-	static unsigned int windowHeight;
-	static std::vector<sf::Sprite> cards;
-	sf::Vector2f gridToPixels(int gridX, int gridY);
-	// in cpp: std::vector<sf::Sprite> cards;
 
+	/// <summary>
+	/// Converts a px position into the same location on the grid.
+	/// </summary>
+	/// <param name="mousePos">Px location on the grid.</param>
+	/// <returns>Location on grid.</returns>
+	sf::Vector2f pixelsToGrid(sf::Vector2f mousePos);
+
+	/// <summary>
+	/// Converts a grid position into the same location in px.
+	/// </summary>
+	/// <param name="gridX">X location on the grid.</param>
+	/// <param name="gridY">Y location on the grid.</param>
+	/// <returns>Location in px.</returns>
+	sf::Vector2f gridToPixels(int gridX, int gridY);
+
+	/// <summary>
+	/// Plays the referenced card. Either just plays to board if H or C, or plays to target if D or S.
+	/// </summary>
+	/// <param name="player">Player who played the card.</param>
+	/// <param name="opponent">Player who didn't play the card.</param>
+	/// <param name="card">The card that was played.</param>
+	/// <returns>True if succeeded, false if failed.</returns>
 	bool playCard(Player* player, Player* opponent, Card& card);
-	std::vector<Card>& getEnemyCards(Player* player);
+
+	/// <summary>
+	/// Gets the cards on the board for the player parameter.
+	/// </summary>
+	/// <param name="player">Player to get the cards of.</param>
+	/// <returns>Player's cards.</returns>
 	std::vector<Card>& getFriendlyCards(Player* player);
+
+	/// <summary>
+	/// Gets the cards on the board for the opponent of the player parameter.
+	/// </summary>
+	/// <param name="player">Player to get the opponent's cards of.</param>
+	/// <returns>Opponent's cards.</returns>
+	std::vector<Card>& getEnemyCards(Player* player);
+
+	/// <summary>
+	/// Gets whether the player has any clubs on their board.
+	/// </summary>
+	/// <param name="player">Player to check.</param>
+	/// <returns>True if player has no clubs on their board, otherwise false.</returns>
 	bool getIsEnemyAttackable(Player* player);
 
+	/// <summary>
+	/// Erases any cards on the board from either player that are dead.
+	/// </summary>
 	void removeDeadCards();
 
+	/// <summary>
+	/// Tries to apply the effect of a card to an effectable target.
+	/// </summary>
+	/// <param name="player">Player who played the card.</param>
+	/// <param name="opponent">Opponent of player who played the card.</param>
+	/// <param name="card">Reference to card played.</param>
+	/// <returns>True if card was played, otherwise false.</returns>
 	bool tryPlayCardToEffectable(Player* player, Player* opponent, Card& card);
 
+	/// <summary>
+	/// Sets all cards of the referenced player to be usable.
+	/// </summary>
+	/// <param name="player">Player to make cards usable.</param>
 	void setPlayerCardsUsable(Player* player);
 
+	/// <summary>
+	/// Cuts out the relevant sprite from the spritesheet based on the card parameter.
+	/// </summary>
+	/// <param name="card">Card to cut.</param>
+	/// <returns>Sprite of the card to be cut.</returns>
 	sf::Sprite cutCard(Card card);
 
-	std::vector<Card>& getPlayer1BoardCards();
-	std::vector<Card>& getPlayer2BoardCards();
-
+	/// <summary>
+	/// Renders the whole board to a window.
+	/// </summary>
+	/// <param name="p1">Player 1, to get their hand contents.</param>
+	/// <param name="p2">Player 2, to get their hand contents.</param>
+	/// <param name="window">Window to render to.</param>
 	void placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window);
 
 private:
+	/// <summary>
+	/// Vector containing all of player 1's cards on the board.
+	/// </summary>
 	std::vector<Card> _player1BoardCards;
+
+	/// <summary>
+	/// Vector containing all of player 2's cards on the board.
+	/// </summary>
 	std::vector<Card> _player2BoardCards;
 };
