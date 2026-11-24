@@ -272,6 +272,7 @@ bool Board::getIsEnemyAttackable(Player* player) {
 	return attackable;
 }
 
+// PINEAPPLE
 void Board::removeDeadCards() {
 	int j = 0;
 
@@ -366,6 +367,7 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 	}
 }
 
+// PINEAPPLE
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;
 
@@ -382,6 +384,7 @@ void Board::setPlayerCardsUsable(Player* player) {
 	}
 }
 
+// PINEAPPLE
 sf::Sprite Board::cutCard(Card card) {
 	sf::Sprite cardSprite(GameParameters::spritesheet);
 
@@ -405,8 +408,17 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	//---THIS FUNCTION IS A WIP AND VERY MUCH NOT EFFICIENT---//
 	//========================================================//
 
+	// shhhhhhhhhhh yes it is ..... ^^^
+
 	//Create tiles
-	for (int x = 0; x < GameParameters::windowWidth / GameParameters::tileWidth; x++) {
+	
+	// Regular board
+	// Change so only half
+	// Its only supposed to be 15 tiles wide
+	for (int x = 0; x < ((int)(GameParameters::windowWidth /
+		// Make sure extra space of decor accounted for
+		(GameParameters::tileWidth + GameParameters::cardDescBarWidth))
+		/ 2); x++) {
 
 		for (int y = 0; y < GameParameters::windowHeight / GameParameters::tileHeight - 1; y++) {
 
@@ -423,6 +435,27 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 			window.draw(tile);
 		}
+	}
+
+	// Last value it was on for blue grid?
+	for (int x = (((int)(GameParameters::windowWidth / (GameParameters::tileWidth + GameParameters::cardDescBarWidth)) / 2));
+		// Must be less than the max width
+		x < ((int)(GameParameters::windowWidth / (GameParameters::tileWidth + GameParameters::cardDescBarWidth))); x++) {
+
+		for (int y = 0; y < GameParameters::windowHeight / GameParameters::tileHeight - 1; y++) {
+
+			sf::RectangleShape tile(sf::Vector2f(GameParameters::tileWidth + GameParameters::cardDescBarWidth, GameParameters::tileHeight));
+
+			tile.setPosition(x * (GameParameters::tileWidth + GameParameters::cardDescBarWidth), y * GameParameters::tileHeight + GameParameters::healthBarHeight);
+
+			// Make board blue to contrast
+			tile.setFillColor(sf::Color::Cyan);
+			tile.setOutlineThickness(1.f);
+			tile.setOutlineColor(sf::Color::Black);
+
+			window.draw(tile);
+		}
+
 	}
 
 	//Temp sprite storing variable.
@@ -587,29 +620,29 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		tempText.setColor(sf::Color(0, 0, 0, 255));
 		window.draw(tempText);
 	}
-
 	// Player 2 healthbar space
-	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f(GameParameters::windowWidth, GameParameters::healthBarHeight));
+	
+	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f((GameParameters::windowWidth / 2), GameParameters::healthBarHeight));
 	// make sure its being positioned correctly
 	healthbarPlayer2Red.setPosition(0.f, 0.f);
 	healthbarPlayer2Red.setFillColor(sf::Color::Red);
 	window.draw(healthbarPlayer2Red);
 
 	// Place a green on top that will decrease in size as player takes damage
-	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)GameParameters::windowWidth * (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
+	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)(GameParameters::windowWidth / 2)* (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
 	healthbarPlayer2.setPosition(0.f, 0.f);
 	healthbarPlayer2.setFillColor(sf::Color::Green);
 	window.draw(healthbarPlayer2);
 
 	//Player 1 healthbar
-	sf::RectangleShape healthbarPlayer1Red(sf::Vector2f(GameParameters::windowWidth, GameParameters::healthBarHeight));
+	sf::RectangleShape healthbarPlayer1Red(sf::Vector2f((GameParameters::windowWidth / 2), GameParameters::healthBarHeight));
 	// make sure its being positioned correctly
 	healthbarPlayer1Red.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
 	healthbarPlayer1Red.setFillColor(sf::Color::Red);
 	window.draw(healthbarPlayer1Red);
 
 	// Place a green on top that will decrease in size as player takes damage
-	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)GameParameters::windowWidth * (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
+	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)(GameParameters::windowWidth / 2)* (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
 	// To account for lines (1px each)
 	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
 	healthbarPlayer1.setFillColor(sf::Color::Green);
