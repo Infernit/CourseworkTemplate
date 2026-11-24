@@ -306,9 +306,56 @@ void Testing::mockup_round() {
 
 				//SWITCH CASE
 
-				//IF NORMAL CARD
-				board.tryPlayCardToEffectable(player, opponent, board.getFriendlyCards(player)[num1 - 1]);
+				switch (board.getFriendlyCards(player)[num1 - 1].getCardRank()) {
+					// Ace
+					case 1:
+						// Check turn-number/current energy
+						// Special if 11 ace
+						if (params::startingEnergy >= 11) {
 
+						}
+
+						break;
+					// Jack
+					case 11:
+
+						switch (board.getFriendlyCards(player)[num1 - 1].getCardSuit().getSuitName()) {
+							
+							case hearts:
+								// Cleanse
+								for (Card card : board.getFriendlyCards(player)) {
+									// Pointer 
+									card.resetDamageDecrease();
+								}
+
+								break;
+
+							case clubs:
+								//
+								break;
+							case spades:
+								break;
+							case diamonds:
+								break;
+							default:
+								break;
+						}
+						break;
+					// Queen
+					case 12:
+						//
+						break;
+					// King
+					case 13:
+						//
+						break;
+					//IF NORMAL CARD
+					default:
+						board.tryPlayCardToEffectable(player, opponent, board.getFriendlyCards(player)[num1 - 1]);
+						break;
+				}
+
+				
 				//... SPECIAL CARD
 				//LOOP THROUGH ALL CARDS AND EFFECT THEM
 				//modified version of tryPlayCardToEffectable that just effects all of them instead of targeting.
