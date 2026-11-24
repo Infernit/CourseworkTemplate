@@ -304,7 +304,14 @@ void Testing::mockup_round() {
 
 				std::cout << std::endl;
 
+				//SWITCH CASE
+
+				//IF NORMAL CARD
 				board.tryPlayCardToEffectable(player, opponent, board.getFriendlyCards(player)[num1 - 1]);
+
+				//... SPECIAL CARD
+				//LOOP THROUGH ALL CARDS AND EFFECT THEM
+				//modified version of tryPlayCardToEffectable that just effects all of them instead of targeting.
 			}
 		}
 
