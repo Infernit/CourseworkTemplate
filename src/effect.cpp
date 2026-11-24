@@ -12,10 +12,6 @@ bool Effect::getIsPositiveEffect() {
 	return Effect::isPositive;
 }
 
-bool Effect::getIsSpreadableEffect() {
-	return Effect::spreadable;
-}
-
 EffectType Effect::getEffectType() {
 	return Effect::effectType;
 }
