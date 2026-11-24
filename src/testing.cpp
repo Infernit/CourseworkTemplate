@@ -321,13 +321,18 @@ void Testing::mockup_round() {
 					case 11:
 
 						switch (cardToUse->getCardSuit().getSuitName()) {
+							// hearts elsewhere
 							case clubs:
+								// 5 and 20
 								cardToUse->generateJackDamage();
 								board.tryPlayCardToEffectable(player, opponent, *cardToUse);
 								break;
 							case spades:
+								// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
+								board.jackSpadeEffectable(player);
 								break;
 							case diamonds:
+								board.jackDiamondEffectable(player);
 								break;
 							default:
 								break;

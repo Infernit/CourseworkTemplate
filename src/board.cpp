@@ -207,21 +207,21 @@ bool Board::playCard(Player* player, Player* opponent, Card& card) {
 		}
 	}
 
-	//Cards that are played straight from the hand.
+	// Cards that are played straight from the hand.
 	else {
-		//Try to play the card.
+		// Try to play the card.
 		if (tryPlayCardToEffectable(player, opponent, card)) {
 			//If succeeds remove card from hand and reduce player energy by card cost.
 			player->removeHandCard(card);
 			// Then add to graveyard
 			player->addToGraveyard(card);
 			player->setCurrentEnergy(player->getCurrentEnergy() - card.getCardRank());
-			//Card played successfully.
+			// Card played successfully.
 			return true;
 		}
 	}
 
-	//Otherwise card was not played.
+	// Otherwise card was not played.
 	return false;
 }
 
@@ -310,16 +310,18 @@ void Board::removeDeadCards() {
 }
 
 bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card) {
+	
 	std::vector<Card>* cardsToApplyTo;
 	Player* playerToApplyTo;
 	int index = 1;
 
-	//Apply card to enemy.
+	// Apply card to enemy.
 	if (card.getCardSuit().getSuitName() == clubs || card.getCardSuit().getSuitName() == spades) {
 		cardsToApplyTo = &getEnemyCards(player);
 		playerToApplyTo = opponent;
 	}
-	//Apply card to ally.
+
+	// Apply card to ally.
 	else {
 		cardsToApplyTo = &getFriendlyCards(player);
 		playerToApplyTo = player;
@@ -375,6 +377,28 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 		//Attempt to apply effect.
 		return card.applyCardEffect(playerToApplyTo);
 	}
+}
+
+bool Board::jackSpadeEffectable(Player* opponent) {
+
+	// potential issue / may require different function in card (?)
+	std::vector<Card>* cardsToApplyTo = &opponent->getHand();
+
+	for (int i = 0; i < cardsToApplyTo->size(); i++) {
+		cardsToApplyTo->at(i).setCardEnergyCost(cardsToApplyTo->at(i).getCardEnergyCost() * 2);
+	}
+
+}
+
+bool Board::jackDiamondEffectable(Player* player) {
+
+	// potential issue / may require different function in card (?)
+	std::vector<Card>* cardsToApplyTo = &player->getHand();
+
+	for (int i = 0; i < cardsToApplyTo->size(); i++) {
+		cardsToApplyTo->at(i).setCardEnergyCost(cardsToApplyTo->at(i).getCardEnergyCost() / 2);
+	}
+
 }
 
 // PINEAPPLE

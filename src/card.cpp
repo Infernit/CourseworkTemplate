@@ -327,6 +327,10 @@ Suit Card::getCardSuit() {
 	return _cardSuit;
 }
 
+int Card::getCardEnergyCost() {
+	return _cardEnergyCost;
+}
+
 // Setter
 void Card::setCardEnergyCost(int energyCost) {
 	_cardEnergyCost = energyCost;

@@ -73,6 +73,8 @@ public:
 	/// <param name="card">Reference to card played.</param>
 	/// <returns>True if card was played, otherwise false.</returns>
 	bool tryPlayCardToEffectable(Player* player, Player* opponent, Card& card);
+	bool jackSpadeEffectable(Player* opponent);
+	bool jackDiamondEffectable(Player* player);
 
 	/// <summary>
 	/// Sets all cards of the referenced player to be usable.
