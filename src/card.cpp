@@ -192,6 +192,7 @@ bool Card::applyEffect(Effect effect) {
 
 			//If damage resist is less than hit value, apply some to actual health and reduce resist to 0
 			if (value < 0) {
+				// Jack???
 				reduceHealth(effect.getValue() - _effectIncrease);
 				reduceIncreaseEffect(_effectIncrease);
 			}
