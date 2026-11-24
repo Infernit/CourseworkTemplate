@@ -12,8 +12,12 @@ public:
 	~Player();
 
 	void drawCard();
+	// Add card to players graveyard
+	void addToGraveyard(Card card);
 	void fillHand();
 	void removeHandCard(Card card);
+	// Remove a revived card
+	void removeGraveyardCard(Card card);
 
 	int getPlayerNumber();
 	int getHealth();
@@ -21,6 +25,7 @@ public:
 	void setCurrentEnergy(int value);
 	Deck getDeck();
 	std::vector<Card> getHand();
+	std::vector<Card> getGraveyard();
 
 	void populateDeck();
 	
@@ -39,4 +44,5 @@ private:
 	Deck _deck;
 	
 	std::vector<Card> _hand;
+	std::vector<Card> _graveyard;
 };

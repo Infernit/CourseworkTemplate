@@ -105,4 +105,7 @@ private:
 	/// Vector containing all of player 2's cards on the board.
 	/// </summary>
 	std::vector<Card> _player2BoardCards;
+
+	std::vector<Card> _player1GraveyardCards;
+	std::vector<Card> _player2GraveyardCards;
 };

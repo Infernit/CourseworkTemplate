@@ -7,6 +7,9 @@
 Player::Player(bool isAI, GameSystem& system) : _isAI(isAI), _system(system) {
 	std::vector<Card> hand(0);
 	Player::_hand = hand;
+	// Graveyard
+	std::vector<Card> graveyard(0);
+	Player::_graveyard = graveyard;
 	Player::populateDeck();
 	Player::_playerNumber = system.getNextPlayerNumber();
 	_system.hookPlayerKilled(this);
@@ -26,6 +29,10 @@ void Player::drawCard() {
 	_hand.push_back(Player::_deck.drawNextCard());
 }
 
+void Player::addToGraveyard(Card card) {
+	_graveyard.push_back(card);
+}
+
 void Player::removeHandCard(Card card) {
 	std::vector<Card> tempHand;
 
@@ -37,6 +44,20 @@ void Player::removeHandCard(Card card) {
 	}
 
 	_hand = tempHand;
+}
+
+// When/if revived(?)
+void Player::removeGraveyardCard(Card card) {
+	std::vector<Card> tempGraveyard;
+
+	for (int i = 0; i < _graveyard.size(); i++) {
+		if (!(_graveyard[i].getCardRank() == card.getCardRank() &&
+			_graveyard[i].getCardSuit().getSuitName() == card.getCardSuit().getSuitName())) {
+			tempGraveyard.push_back(_graveyard[i]);
+		}
+	}
+
+	_graveyard = tempGraveyard;
 }
 
 void Player::fillHand() {
@@ -115,4 +136,8 @@ bool Player::applyEffect(Effect effect) {
 
 std::vector<Card> Player::getHand() {
 	return _hand;
+}
+
+std::vector<Card> Player::getGraveyard() {
+	return _graveyard;
 }
