@@ -308,9 +308,54 @@ void Testing::mockup_round() {
 			}
 		}
 
+		/*
 		if (params::startingEnergy < 10) {
 			params::startingEnergy++;
 		}
+		*/
+
+		// Turn number and energy increase together
+		params::startingEnergy++;
+
+		// Loop through each players hand and deck if turn  number 11 is reached
+
+		if (params::startingEnergy == 11) {
+			// PLAYER 1
+			// Loop deck
+			for (int i = 0; i < player1->getDeck().getCards().size(); i++) {
+				if (player1->getDeck().getCards()[i].getCardRank() == 1) {
+					// Change energy cost to 11
+					player1->getDeck().getCards()[i].setCardEnergyCost(11);
+				}
+			}
+
+			// Loop hand 
+			for (int i = 0; i < player1->getHand().size(); i++) {
+				if (player1->getDeck().getCards()[i].getCardRank() == 1) {
+					// Change energy cost to 11
+					player1->getDeck().getCards()[i].setCardEnergyCost(11);
+				}
+			}
+
+			// PLAYER 2
+			// loop deck
+			for (int i = 0; i < player2->getDeck().getCards().size(); i++) {
+				if (player2->getDeck().getCards()[i].getCardRank() == 1) {
+					// Change energy cost to 11
+					player2->getDeck().getCards()[i].setCardEnergyCost(11);
+				}
+			}
+
+			// Loop hand 
+			for (int i = 0; i < player2->getHand().size(); i++) {
+				if (player2->getDeck().getCards()[i].getCardRank() == 1) {
+					// Change energy cost to 11
+					player2->getDeck().getCards()[i].setCardEnergyCost(11);
+				}
+			}
+
+		}
+
 		round++;
 	}
 }

@@ -7,55 +7,135 @@
 
 Card::Card() 
 	: _cardRank(0), 
+	_cardEnergyCost(0),
 	_isRoyal(false), 
+	// Use for capturing logic. Trap: card auto sets to usable again next turn???
 	_isUsable(false),
 	_isDead(false),
+	// Is a usable card auto set to dead ???
+	//_isCaptured(false),
 	_effectIncrease(0) {};
 
 Card::Card(Suit suit, int rank)
 	: _cardSuit(suit),
+	_cardEnergyCost(0),
 	_cardRank(rank),
 	_cardEffect({}),
 	_isRoyal(false),
 	_isUsable(false),
 	_isDead(false),
-	_effectIncrease(0)
-{
-	//All cards
-	// NO CODE YET, WILL BE SOME STUFF
+	_effectIncrease(0) {
 
-	//Numbered cards
-	if (rank >= 1 && rank <= 10) {
-		_cardEffect = Effect(suit.getSuitEffect().getIsPositiveEffect(),
-			suit.getSuitEffect().getEffectType(),
-			suit.getSuitEffect().getValue() * rank);
+		//All cards
+		// NO CODE YET, WILL BE SOME STUFF
 
-		//Set a max health and set health to max health based on suit and rank
-		if (suit.getSuitName() == clubs) {
-			_maxHealth = rank * 2;
-		}
-		else if (suit.getSuitName() == hearts) {
-			_maxHealth = rank;
-		}
-		else {
-			_maxHealth = 0;
-		}
+		//Numbered cards
+		if (rank >= 1 && rank <= 10) {
+			_cardEffect = Effect(suit.getSuitEffect().getIsPositiveEffect(),
+				suit.getSuitEffect().getEffectType(),
+				suit.getSuitEffect().getValue() * rank);
+
+			//Set a max health and set health to max health based on suit and rank
+			if (suit.getSuitName() == clubs) {
+				_maxHealth = rank * 2;
+			}
+			else if (suit.getSuitName() == hearts) {
+				_maxHealth = rank;
+			}
+			else {
+				_maxHealth = 0;
+			}
 		
-		_health = _maxHealth;
-	}
+			_health = _maxHealth;
+		}
 
-	//Royalty
-	else if (rank >= 11 && rank <= 13) {
-		_isRoyal = true;
-		//Will need a way to figure out royalty effects in here
-	}
+		//Royalty
+		else if (rank >= 11 && rank <= 13) {
+			
+			int damage_val = 0;
+			_isRoyal = true;
+			_cardEnergyCost = 10;
 
-	//Invalid Cards
-	else {
-		std::cout << "Invalid Card Rank" << std::endl;
-	}
+			// Rank and suit are the determining factors for what it does
+			switch(suit.getSuitName()) {
+
+				// Club royals
+				case clubs:
+
+					switch (rank) {
+
+					// Jack of Clubs
+					case 11:
+						// Jack - Randomly deals between 5 and 20 damage.
+						// Set it to a random int between 5 and 20
+						// Function so its damage can be changed per turn
+						damage_val = Card::generateJackDamage();
+
+						_cardEffect = Effect(false, damage, damage_val);
+						break;
+
+					// Queen of Clubs
+					case 12:
+						// Queen - Damage dealt is spread evenly across all enemy minions.
+						// ??????
+						break;
+
+					// King of Clubs
+					case 13:
+						// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
+						_health = 40;
+						_cardEffect = Effect(false, damage, 5);
+						break;
+					}
+
+					break;
+
+				// ALIGATOR
+				// Property of effect: Spread
+
+				// Queen clubs damages all played cards, 
+				// Jack spades doubles all energy cost of hand cards,
+				// Queen spades halves all enemy damage of played cards,
+				// Jack diamonds halves energy cost of player hand cards,
+				// King diamonds grants all played cards 10 extra health,
+				// Jack hearts removes all debuffs from played cards
+
+				//* Heart Ace heals all played cards by 5 every turn present
+				
+				// Graveyard
+
+				// Queen hearts brings back next numbered card once every 3 turns until dead
+				// Queen diamond brings back one non ace then perishes
+
+				// ?????
+		
+				// King sucks all damage until dead
+				//* Ace clubs captures and deals 11 damage until capatured dies etc. 
+					// Property Captured ^^^
+				// King spades skips turn
+
+
+				// Heart royals
+				case hearts:
+					//
+					break;
+				case spades:
+					//
+					break;
+				case diamonds:
+					//
+					break;
+			}
+			//Will need a way to figure out royalty effects in here
+		}
+
+		//Invalid Cards
+		else {
+			std::cout << "Invalid Card Rank" << std::endl;
+		}
 	
-}
+	} // constructor end
+
 
 //___________________________//
 //          METHODS          //
@@ -190,6 +270,8 @@ void Card::setIsUsable(bool value) {
 	_isUsable = value;
 }
 
+
+
 //____________________________//
 //          GETTTERS          //
 //____________________________//
@@ -243,7 +325,21 @@ Suit Card::getCardSuit() {
 	return _cardSuit;
 }
 
+// Setter
+void Card::setCardEnergyCost(int energyCost) {
+	_cardEnergyCost = energyCost;
+}
 
+// Helper
+int Card::generateJackDamage() {
+	std::random_device random;
+	std::mt19937 rng(random());
+	std::uniform_int_distribution<> dis(5, 20);
+
+	int damage_val = dis(rng);
+
+	return damage_val;
+}
 
 //____________________________//
 //          TOSTRING          //

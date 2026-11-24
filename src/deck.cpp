@@ -39,7 +39,18 @@ Card Deck::drawNextCard() {
 
 	_cards = cards;
 	_drawnCards.push_back(card);
+
+	// test
+	// Aces are programmed as rank 1
+	/*
+	if (card.getCardRank() == 1) {
+		// Look at the card ...
+		return card;
+	}
+	*/
+
 	return card;
+
 }
 
 void Deck::shuffleDeck() {

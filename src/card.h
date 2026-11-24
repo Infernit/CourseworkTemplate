@@ -3,6 +3,8 @@
 #include "effectable.h"
 #include <vector>
 #include <map>
+// for jack club damage
+#include <random>
 
 class Card : public Effectable {
 
@@ -83,6 +85,8 @@ public:
 	/// <param name="value">Value to set to.</param>
 	void setIsUsable(bool value);
 
+	int generateJackDamage();
+
 //____________________________//
 //          GETTTERS          //
 //____________________________//
@@ -98,6 +102,10 @@ public:
 	float getDamageDecrease();
 	Effect getCardEffect();
 
+	// Setters
+	void setCardEnergyCost(int energyCost);
+
+
 //____________________________//
 //          TOSTRING          //
 //____________________________//
@@ -112,6 +120,9 @@ protected:
 	/// Number rank of the card (11 - 13 are Royals).
 	/// </summary>
 	int _cardRank;
+
+	// Rank of ace stays as 1 as 11 is jack, so this must be a separate property
+	int _cardEnergyCost;
 
 	/// <summary>
 	/// Determines if the card is a royal.
