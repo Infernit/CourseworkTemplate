@@ -305,8 +305,9 @@ void Testing::mockup_round() {
 				std::cout << std::endl;
 
 				//SWITCH CASE
+				Card* cardToUse = &board.getFriendlyCards(player)[num1 - 1];
 
-				switch (board.getFriendlyCards(player)[num1 - 1].getCardRank()) {
+				switch (cardToUse->getCardRank()) {
 					// Ace
 					case 1:
 						// Check turn-number/current energy
@@ -319,19 +320,10 @@ void Testing::mockup_round() {
 					// Jack
 					case 11:
 
-						switch (board.getFriendlyCards(player)[num1 - 1].getCardSuit().getSuitName()) {
-							
-							case hearts:
-								// Cleanse
-								for (Card card : board.getFriendlyCards(player)) {
-									// Pointer 
-									card.resetDamageDecrease();
-								}
-
-								break;
-
+						switch (cardToUse->getCardSuit().getSuitName()) {
 							case clubs:
-								//
+								cardToUse->generateJackDamage();
+								board.tryPlayCardToEffectable(player, opponent, *cardToUse);
 								break;
 							case spades:
 								break;
@@ -351,7 +343,7 @@ void Testing::mockup_round() {
 						break;
 					//IF NORMAL CARD
 					default:
-						board.tryPlayCardToEffectable(player, opponent, board.getFriendlyCards(player)[num1 - 1]);
+						board.tryPlayCardToEffectable(player, opponent, *cardToUse);
 						break;
 				}
 

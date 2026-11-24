@@ -85,7 +85,7 @@ public:
 	/// <param name="value">Value to set to.</param>
 	void setIsUsable(bool value);
 
-	int generateJackDamage();
+	void generateJackDamage();
 
 //____________________________//
 //          GETTTERS          //

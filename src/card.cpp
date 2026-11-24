@@ -58,35 +58,41 @@ Card::Card(Suit suit, int rank)
 
 			// Rank and suit are the determining factors for what it does
 			switch(suit.getSuitName()) {
+				case hearts:
+					switch (rank) {
+						//Jack of hearts
+						case 11:
+							_cardEffect = Effect(true, cleanse, 0);
+							break;
+						}
+						break;
 
 				// Club royals
 				case clubs:
-
 					switch (rank) {
+						// Jack of Clubs
+						case 11:
+							// Jack - Randomly deals between 5 and 20 damage.
+							// Set it to a random int between 5 and 20
+							// Function so its damage can be changed per turn
+							damage_val = Card::generateJackDamage();
 
-					// Jack of Clubs
-					case 11:
-						// Jack - Randomly deals between 5 and 20 damage.
-						// Set it to a random int between 5 and 20
-						// Function so its damage can be changed per turn
-						damage_val = Card::generateJackDamage();
+							_cardEffect = Effect(false, damage, damage_val);
+							break;
 
-						_cardEffect = Effect(false, damage, damage_val);
-						break;
+						// Queen of Clubs
+						case 12:
+							// Queen - Damage dealt is spread evenly across all enemy minions.
+							// ??????
+							break;
 
-					// Queen of Clubs
-					case 12:
-						// Queen - Damage dealt is spread evenly across all enemy minions.
-						// ??????
-						break;
-
-					// King of Clubs
-					case 13:
-						// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
-						_health = 40;
-						_cardEffect = Effect(false, damage, 5);
-						break;
-					}
+						// King of Clubs
+						case 13:
+							// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
+							_health = 40;
+							_cardEffect = Effect(false, damage, 5);
+							break;
+						}
 
 					break;
 
@@ -116,15 +122,6 @@ Card::Card(Suit suit, int rank)
 
 
 				// Heart royals
-				case hearts:
-					//
-					break;
-				case spades:
-					//
-					break;
-				case diamonds:
-					//
-					break;
 			}
 			//Will need a way to figure out royalty effects in here
 		}
@@ -218,6 +215,9 @@ bool Card::applyEffect(Effect effect) {
 	case damageDecreasePercent:
 		setDamageDecreasePercent(effect.getValue());
 		break;
+
+	case cleanse:
+		resetDamageDecrease();
 
 	default:
 		std::cout << "No effect applied" << std::endl;
@@ -333,14 +333,12 @@ void Card::setCardEnergyCost(int energyCost) {
 }
 
 // Helper
-int Card::generateJackDamage() {
+void Card::generateJackDamage() {
 	std::random_device random;
 	std::mt19937 rng(random());
 	std::uniform_int_distribution<> dis(5, 20);
 
-	int damage_val = dis(rng);
-
-	return damage_val;
+	_cardEffect = Effect(false, damage, dis(rng));
 }
 
 //____________________________//

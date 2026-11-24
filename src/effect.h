@@ -5,7 +5,9 @@ class Effectable;
 
 enum EffectType {
 	none,
+	// Clubs Queen - Damage dealt is spread evenly across all enemy minions.
 	damage,
+	// Hearts 11 Ace - Heal all friendly minions by 5 every turn while on the board.
 	healing,
 	diamondEffect,
 	damageDecreasePercent,
@@ -16,16 +18,12 @@ enum EffectType {
 	graveyard,
 	// Hearts King - Cannot heal or be healed.All damage dealt to any friendly card is dealt to this card instead.Has 100 health.
 	heartsKing,
-	// Hearts 11 Ace - Heal all friendly minions by 5 every turn while on the board.
-	healAll,
 	// Diamond Jack - Halves energy cost of all other cards currently in hand.
 	// Diamonds 11 Ace - Fully restore energy plus gain an extra 11.
 	// Spades Jack - Doubles mana cost of all cards in the opponent’s hand(to a cap of their max mana).
 	mana,
 	// Diamonds King - Rally effect.Grant all cards on board 10 overhealth.
 	overhealth,
-	// Clubs Queen - Damage dealt is spread evenly across all enemy minions.
-	damageAll,
 	// Spades Queen - Halves all enemy damage dealt by enemies for 2 turns.
 	debuffDamageAll,
 	// Clubs 11 Ace - Captures an enemy minion. The captured cannot do any action, and takes 11 damage every turn until they die. Can only be freed by cleanse or capturing/killing. Once the captured card dies, the ace can capture another card. The captured does not start taking damage until the turn after the capture.
