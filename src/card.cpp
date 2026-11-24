@@ -4,14 +4,14 @@
 //________________________________//
 //          CONSTRUCTORS          //
 //________________________________//
-//Default Constructor
-Card::Card() : _cardRank(0), _isRoyal(false) {};
 
-//Constructor for Suit and Rank
-//--Sets effects and effect strength based off Suit and Rank if rank is >= 1 && <= 10
-//--Declares card as royalty if rank is >= 11 && <= 13
-//--Declares card as invalid if rank is <= 0 && >= 14
-//--Not sure how ace handling will work yet
+Card::Card() 
+	: _cardRank(0), 
+	_isRoyal(false), 
+	_isUsable(false),
+	_isDead(false),
+	_effectIncrease(0) {};
+
 Card::Card(Suit suit, int rank)
 	: _cardSuit(suit),
 	_cardRank(rank),
@@ -22,6 +22,7 @@ Card::Card(Suit suit, int rank)
 	_effectIncrease(0)
 {
 	//All cards
+	// NO CODE YET, WILL BE SOME STUFF
 
 	//Numbered cards
 	if (rank >= 1 && rank <= 10) {

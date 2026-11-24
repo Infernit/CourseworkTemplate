@@ -556,28 +556,13 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	}
 
 	//PLAYER 1
-	// Graveyard
-	for (int i = 0; i < p1->getGraveyard().size(); i++) {
-		//Cut each hand card.
-		tempSprite = cutCard(p1->getGraveyard()[i]);
-
-		//Place card in relevant location based on loop.
-		// CHANGE(?)
-		tempSprite.setPosition(
-			(4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth),
-			5 * GameParameters::tileHeight + GameParameters::healthBarHeight);
-
-		//Draw card in window.
-		window.draw(tempSprite);
-	}
-
 	//Board
 	for (int i = 0; i < _player1GraveyardCards.size(); i++) {
 		//Cut each board card.
 		tempSprite = cutCard(_player1GraveyardCards[i]);
 
 		//Set temp variables to position of card.
-		tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+		tempPosX = (15 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
 		tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
 
 		//Set location based on temp variables.
@@ -708,33 +693,13 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	
 	//PLAYER 2
 	//Graveyard
-
-	if (p2->getGraveyard().size() > 0) {
-		const int breakMe = p2->getGraveyard().size();
-	}
-
-	for (int i = 0; i < p2->getGraveyard().size(); i++) {
-		//Cut each hand card.
-		tempSprite = cutCard(p2->getGraveyard()[i]);
-
-		//Place card in relevant location based on loop.
-		// CHANGE(?)
-		tempSprite.setPosition(
-			(4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth),
-			5 * GameParameters::tileHeight + GameParameters::healthBarHeight);
-
-		//Draw card in window.
-		window.draw(tempSprite);
-	}
-
-	//Board
 	for (int i = 0; i < _player2GraveyardCards.size(); i++) {
 		//Cut each board card.
 		tempSprite = cutCard(_player2GraveyardCards[i]);
 
 		//Set temp variables to position of card.
-		tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-		tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+		tempPosX = (15 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+		tempPosY = 2 * GameParameters::tileHeight + GameParameters::healthBarHeight;
 
 		//Set location based on temp variables.
 		tempSprite.setPosition(tempPosX, tempPosY);
