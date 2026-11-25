@@ -165,5 +165,8 @@ protected:
 
 	// for rally effect
 	int _overhealth;
+
+	// For king of hearts
+	bool _healable;
 	
 };

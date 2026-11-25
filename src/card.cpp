@@ -9,6 +9,7 @@ Card::Card()
 	: _cardRank(0), 
 	_cardEnergyCost(0),
 	_overhealth(0),
+	_healable(true),
 	_isRoyal(false), 
 	// Use for capturing logic. Trap: card auto sets to usable again next turn???
 	_isUsable(false),
@@ -23,6 +24,7 @@ Card::Card(Suit suit, int rank)
 	_overhealth(0),
 	_cardRank(rank),
 	_cardEffect({}),
+	_healable(true),
 	_isRoyal(false),
 	_isUsable(false),
 	_isDead(false),
@@ -61,14 +63,20 @@ Card::Card(Suit suit, int rank)
 			_health = 10;
 
 			// Rank and suit are the determining factors for what it does
-			switch(suit.getSuitName()) {
-				case hearts:
-					switch (rank) {
+			switch (suit.getSuitName()) {
+			case hearts:
+				switch (rank) {
 						//Jack of hearts
-						case 11:
-							_cardEffect = Effect(true, cleanse, 0);
-							break;
-						}
+					case 11:
+						_cardEffect = Effect(true, cleanse, 0);
+						break;
+
+					// King of hearts
+					case 13:
+						_healable = false;
+						break;
+				}
+
 						break;
 
 				// Club royals
