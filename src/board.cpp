@@ -289,7 +289,6 @@ bool Board::getIsEnemyAttackable(Player* player) {
 	return attackable;
 }
 
-// PINEAPPLE
 void Board::removeDeadCards() {
 	int j = 0;
 
@@ -397,25 +396,21 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 				// Cannot heal or be healed. All damage dealt to any friendly card is dealt to this card instead. Has 100 health.
 				// ????
 				case hearts:
-					/*
-					if (queenHeartsEffectable(player)) {
-						card.setIsUsable(false);
-						return true;
-					}
-					*/
+					//
 					break;
-					// hearts elsewhere
-				// Rally effect. Grant all cards on board 10 overhealth.
 				case clubs:
-					// Damage dealt is spread evenly across all enemy minions.
-					kingClubsEffectable(player);
+					// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
+					// Should be in card / hardcoded
+					tryPlayCardToEffectable(player, opponent, card);
 					break;
 				case spades:
-					// Halves all enemy damage dealt for 2 turns.
-					queenSpadeEffectable(player);
+					// King - Skips the opponent’s next turn.
+					// NON FUNCTIONAL
+					kingSpadeEffectable(player);
 					break;
 				case diamonds:
-					queenDiamondEffectable(player);
+					// King - Rally effect. Grant all cards on board 10 overhealth.
+					kingDiamondEffectable(player);
 					break;
 				default:
 					break;
@@ -690,13 +685,10 @@ bool Board::kingSpadeEffectable(Player* player) {
 	// ?????
 }
 
-// Handled/Handleable in card
-/*
 // King - Has 40 health instead of 20. Deals 5 damage instead of 10.
 bool Board::kingClubsEffectable(Player* player) {
 
 }
-*/
 
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;

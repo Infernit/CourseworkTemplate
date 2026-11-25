@@ -74,10 +74,6 @@ Card::Card(Suit suit, int rank)
 				// Club royals
 				case clubs:
 					switch (rank) {
-						case 12:
-							// Queen - Damage dealt is spread evenly across all enemy minions.
-							// ??????
-							break;
 
 						// King of Clubs
 						case 13:
