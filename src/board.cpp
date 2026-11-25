@@ -500,10 +500,49 @@ bool Board::jackDiamondEffectable(Player* player) {
 // Where to record the turn this starts on (so it can occur every 3 ...)?
 bool Board::queenHeartsEffectable(Player* player) {
 
+	return graveyardTemplate(player, 1);
+
+	return true;
+	
+}
+
+// Avoid copy paste between heart and diamond
+bool Board::graveyardTemplate(Player* player, int num) {
+
 	//Allow player to choose card / player to apply effect to.
 	bool validating = true;
 
-	std::vector<Card>* cardsToApplyTo = &getFriendlyGraveyardCards(player);
+
+	std::vector<Card>* cardsToApplyTo = {};
+	std::vector<Card>* potentialCardsToApplyTo = &getFriendlyGraveyardCards(player);
+
+		// 1 for hearts, 2 for diamonds
+
+		switch (num) {
+			// Hearts
+			case 1:
+				// for loop from &friendly
+				for (int i = 0; i < potentialCardsToApplyTo->size(); i++) {
+					// Only ranks
+					if (potentialCardsToApplyTo->at(i).getCardRank() < 11) {
+						cardsToApplyTo->push_back(potentialCardsToApplyTo->at(i));
+					}
+				}
+
+				break;
+
+				// Diamond
+			case 2:
+				// for loop from &friendly
+				for (int i = 0; i < getFriendlyGraveyardCards(player).size(); i++) {
+					// Any non-ace
+					if (potentialCardsToApplyTo->at(i).getCardRank() != 1) {
+						cardsToApplyTo->push_back(potentialCardsToApplyTo->at(i));
+					}
+				}
+
+				break;
+		}
 
 	while (validating) {
 
@@ -554,7 +593,7 @@ bool Board::queenHeartsEffectable(Player* player) {
 	}
 
 	return true;
-	
+
 }
 
 bool Board::queenClubsEffectable(Player* player) {
@@ -593,7 +632,7 @@ bool Board::queenSpadeEffectable(Player* player) {
 // Queen - Bring back one non-ace from graveyard (then Queen disappears).
 bool Board::queenDiamondEffectable(Player* player) {
 
-
+	return graveyardTemplate(player, 2);
 
 	// Will it dissapear itself as property of being a diamond or will this manually have to be handled (ie code from effectable?)
 }

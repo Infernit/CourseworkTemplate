@@ -85,6 +85,8 @@ public:
 	bool queenSpadeEffectable(Player* player);
 	bool queenDiamondEffectable(Player* player);
 
+	bool graveyardTemplate(Player* player, int num);
+
 	/// <summary>
 	/// Sets all cards of the referenced player to be usable.
 	/// </summary>
