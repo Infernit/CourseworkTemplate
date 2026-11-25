@@ -676,9 +676,10 @@ bool Board::kingDiamondEffectable(Player* player) {
 	std::vector<Card>* cardsToApplyTo = &getFriendlyCards(player);
 
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {
-		// attack each card on the board by 10
-		// Does this function act as a heal, or increase max health? How to do this so that the overhealth cannot be healed ....
-		cardsToApplyTo->at(i).increaseHealth(10);
+		// Give 10 overhealth. Cannot be healed
+		// In the situation that the king dies, and is revived whilst cards have overhealth ...
+		// Just set back to 10
+		cardsToApplyTo->at(i).setOverhealth(10);
 	}
 	return true;
 
@@ -686,13 +687,16 @@ bool Board::kingDiamondEffectable(Player* player) {
 
 // King - Skips the opponent’s next turn.
 bool Board::kingSpadeEffectable(Player* player) {
-
+	// ?????
 }
 
+// Handled/Handleable in card
+/*
 // King - Has 40 health instead of 20. Deals 5 damage instead of 10.
 bool Board::kingClubsEffectable(Player* player) {
 
 }
+*/
 
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;
