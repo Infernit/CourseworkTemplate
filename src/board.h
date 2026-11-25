@@ -87,9 +87,9 @@ public:
 
 	bool graveyardTemplate(Player* player, int num);
 
-	bool kingClubsEffectable(Player* player);
 	bool kingSpadeEffectable(Player* player);
 	bool kingDiamondEffectable(Player* player);
+	bool isKingOfHeartsOnBoard(Player* opponent); 
 
 	/// <summary>
 	/// Sets all cards of the referenced player to be usable.

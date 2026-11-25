@@ -394,9 +394,9 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 			// Suits
 			switch (card.getCardSuit().getSuitName()) {
 				// Cannot heal or be healed. All damage dealt to any friendly card is dealt to this card instead. Has 100 health.
-				// ????
 				case hearts:
-					//
+					// When an attack is made, just check if its on the board
+					//kingHeartsEffectable(player);
 					break;
 				case clubs:
 					// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
@@ -685,10 +685,22 @@ bool Board::kingSpadeEffectable(Player* player) {
 	// ?????
 }
 
-// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
-bool Board::kingClubsEffectable(Player* player) {
+bool isKingOfHeartsOnBoard(Player* opponent) {
+	// potential issue / may require different function in card (?)
+	std::vector<Card>* cardsToApplyTo = &opponent->getHand();
 
+	for (int i = 0; i < cardsToApplyTo->size(); i++) {
+		// Enum?
+		if (cardsToApplyTo->at(i).getCardSuit().getSuitName() == hearts && cardsToApplyTo->at(i).getCardRank() == 13) {
+			// Then apply the damage to the king of hearts instead. Return true
+			return true;
+		}
+	}
+
+	// Else, return false
+	return false;
 }
+
 
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;

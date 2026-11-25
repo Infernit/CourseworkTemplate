@@ -66,7 +66,7 @@ Card::Card(Suit suit, int rank)
 			switch (suit.getSuitName()) {
 			case hearts:
 				switch (rank) {
-						//Jack of hearts
+					//Jack of hearts
 					case 11:
 						_cardEffect = Effect(true, cleanse, 0);
 						break;
@@ -121,10 +121,12 @@ bool Card::reduceHealth(int value) {
 //Increases the health of the card
 //Cannot go higher than max health
 void Card::increaseHealth(int value) {
-	_health += value;
+	if (_healable == true) {
+		_health += value;
 
-	if (_health > _maxHealth) {
-		_health = _maxHealth;
+		if (_health > _maxHealth) {
+			_health = _maxHealth;
+		}
 	}
 }
 
@@ -275,8 +277,6 @@ void Card::resetDamageDecrease() {
 void Card::setIsUsable(bool value) {
 	_isUsable = value;
 }
-
-
 
 //____________________________//
 //          GETTTERS          //

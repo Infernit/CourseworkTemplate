@@ -216,7 +216,6 @@ void Testing::mockup_round() {
 				std::cout << params::cardNames[card1.getCardRank()] << " of " << params::suitNames[card1.getCardSuit().getSuitName()] << std::endl;
 			}
 
-
 			board.placeCardsOnBoard(player1, player2, window);
 			window.display();
 
