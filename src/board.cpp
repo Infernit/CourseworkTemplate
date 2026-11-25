@@ -363,36 +363,64 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 		case 12:
 
 			switch (card.getCardSuit().getSuitName()) {
-			case hearts:
-				// Graveyard
-				// Bring back the next numbered card from the graveyard once every 3 turns 
-				if (queenHeartsEffectable(player)) {
-					card.setIsUsable(false);
-					return true;
-				}
-				break;
-				// hearts elsewhere
-			case clubs:
-				// Damage dealt is spread evenly across all enemy minions.
-				queenClubsEffectable(player);
-				break;
-			case spades:
-				// Halves all enemy damage dealt for 2 turns.
-				queenSpadeEffectable(player);
-				break;
-			case diamonds:
-				//
-				//board.queenDiamondEffectable(player);
-				break;
-			default:
-				break;
+				case hearts:
+					// Graveyard
+					// Bring back the next numbered card from the graveyard once every 3 turns 
+					if (queenHeartsEffectable(player)) {
+						card.setIsUsable(false);
+						return true;
+					}
+					break;
+					// hearts elsewhere
+				case clubs:
+					// Damage dealt is spread evenly across all enemy minions.
+					queenClubsEffectable(player);
+					break;
+				case spades:
+					// Halves all enemy damage dealt for 2 turns.
+					kingSpadeEffectable(player);
+					break;
+				case diamonds:
+					// Bring back one non-ace from graveyard (then Queen disappears).
+					kingDiamondEffectable(player);
+					break;
+				default:
+					break;
 			}
 
 			break;
 
 		// King
 		case 13:
-			//
+			// Suits
+			switch (card.getCardSuit().getSuitName()) {
+				// Cannot heal or be healed. All damage dealt to any friendly card is dealt to this card instead. Has 100 health.
+				// ????
+				case hearts:
+					/*
+					if (queenHeartsEffectable(player)) {
+						card.setIsUsable(false);
+						return true;
+					}
+					*/
+					break;
+					// hearts elsewhere
+				// Rally effect. Grant all cards on board 10 overhealth.
+				case clubs:
+					// Damage dealt is spread evenly across all enemy minions.
+					kingClubsEffectable(player);
+					break;
+				case spades:
+					// Halves all enemy damage dealt for 2 turns.
+					queenSpadeEffectable(player);
+					break;
+				case diamonds:
+					queenDiamondEffectable(player);
+					break;
+				default:
+					break;
+			}
+
 
 			break;
 
@@ -519,6 +547,7 @@ bool Board::graveyardTemplate(Player* player, int num) {
 		// 1 for hearts, 2 for diamonds
 
 		switch (num) {
+
 			// Hearts
 			case 1:
 				// for loop from &friendly
@@ -542,6 +571,7 @@ bool Board::graveyardTemplate(Player* player, int num) {
 				}
 
 				break;
+
 		}
 
 	while (validating) {
@@ -604,10 +634,13 @@ bool Board::queenClubsEffectable(Player* player) {
 		// attack each card on the board by 10
 		cardsToApplyTo->at(i).reduceHealth(10);
 	}
+
 	return true;
+
 }
 
 // For two turns implementation ...
+// Queen - Halves all enemy damage dealt for 2 turns.
 bool Board::queenSpadeEffectable(Player* player) {
 
 	std::vector<Card>* cardsToApplyTo = {};
@@ -635,6 +668,30 @@ bool Board::queenDiamondEffectable(Player* player) {
 	return graveyardTemplate(player, 2);
 
 	// Will it dissapear itself as property of being a diamond or will this manually have to be handled (ie code from effectable?)
+}
+
+// King - Rally effect. Grant all cards on board 10 overhealth.
+bool Board::kingDiamondEffectable(Player* player) {
+
+	std::vector<Card>* cardsToApplyTo = &getFriendlyCards(player);
+
+	for (int i = 0; i < cardsToApplyTo->size(); i++) {
+		// attack each card on the board by 10
+		// Does this function act as a heal, or increase max health? How to do this so that the overhealth cannot be healed ....
+		cardsToApplyTo->at(i).increaseHealth(10);
+	}
+	return true;
+
+}
+
+// King - Skips the opponent’s next turn.
+bool Board::kingSpadeEffectable(Player* player) {
+
+}
+
+// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
+bool Board::kingClubsEffectable(Player* player) {
+
 }
 
 void Board::setPlayerCardsUsable(Player* player) {

@@ -222,6 +222,14 @@ void Testing::mockup_round() {
 
 			//Play cards from hand
 			while (player->getCurrentEnergy() > 0) {
+				// Turn number
+				std::cout
+					<< "Turn Number: "
+					<< GameParameters::turnNumber
+					<< std::endl
+					<< "-----------------"
+					<< std::endl;
+
 				std::cout
 					<< "Current Energy: "
 					<< player->getCurrentEnergy()
@@ -337,6 +345,7 @@ void Testing::mockup_round() {
 
 		// Turn number and energy increase together
 		params::startingEnergy++;
+		params::turnNumber++;
 
 		// Loop through each players hand and deck if turn  number 11 is reached
 

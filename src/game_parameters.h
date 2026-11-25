@@ -118,4 +118,7 @@ struct GameParameters {
 	/// Height (in px) of the whole window, which is 6 tiles wide (currently (tileHeight * 6) + (healthBarHeight * 2).
 	/// </summary>
 	static int windowHeight;
+
+	// Important to track for special card effects
+	static int turnNumber;
 };
