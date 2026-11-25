@@ -174,6 +174,36 @@ Board::Board()  {
 	*/
 }
 
+void Board::removeDeadCards() {
+	int j = 0;
+
+	//Loop through all player 1 cards
+	for (int i = 0; i < _player1BoardCards.size(); i++) {
+		if (_player1BoardCards[i].getIsDead()) {
+			// Add to the graveyard
+			_player1GraveyardCards.push_back(_player1BoardCards[i - j]);
+			//If card is dead erase it from the list.
+			_player1BoardCards.erase(_player1BoardCards.begin() + i - j);
+			//Increment removed cards.
+			j++;
+		}
+	}
+
+	j = 0;
+
+	//Loop through all player 2 cards
+	for (int i = 0; i < _player2BoardCards.size(); i++) {
+		if (_player2BoardCards[i].getIsDead()) {
+			// Add to the graveyard
+			_player2GraveyardCards.push_back(_player2BoardCards[i - j]);
+			//If card is dead erase it from the list.
+			_player2BoardCards.erase(_player2BoardCards.begin() + i - j);
+			//Increment removed cards.
+			j++;
+		}
+	}
+}
+
 bool Board::playCard(Player* player, Player* opponent, Card& card) {
 	//Don't let the card be played if the player doesn't have enough energy.
 	if (player->getCurrentEnergy() < card.getCardEnergyCost()) {
@@ -237,6 +267,32 @@ std::vector<Card>& Board::getEnemyCards(Player* player) {
 	}
 }
 
+Card &Board::getEnemyKingOfHearts(Player* player) {
+	//Make sure all dead cards are removed before getting cards.
+	removeDeadCards();
+
+	if (player->getPlayerNumber() == 1) {
+		for (Card card : _player2BoardCards) {
+			if (card.getCardRank() == 13 && card.getCardSuit().getSuitName() == hearts) {
+				return card;
+			}
+		}
+	}
+	else {
+		for (Card card : _player1BoardCards) {
+			if (card.getCardRank() == 13 && card.getCardSuit().getSuitName() == hearts) {
+				return card;
+			}
+		}
+	}
+
+	// should not trigger
+	Card testCard = Card();
+	return testCard;
+
+}
+
+
 std::vector<Card>& Board::getFriendlyCards(Player* player) {
 	//Make sure all dead cards are removed before getting cards.
 	removeDeadCards();
@@ -287,36 +343,6 @@ bool Board::getIsEnemyAttackable(Player* player) {
 
 	//Return flag.
 	return attackable;
-}
-
-void Board::removeDeadCards() {
-	int j = 0;
-
-	//Loop through all player 1 cards
-	for (int i = 0; i < _player1BoardCards.size(); i++) {
-		if (_player1BoardCards[i].getIsDead()) {
-			// Add to the graveyard
-			_player1GraveyardCards.push_back(_player1BoardCards[i - j]);
-			//If card is dead erase it from the list.
-			_player1BoardCards.erase(_player1BoardCards.begin() + i - j);
-			//Increment removed cards.
-			j++;
-		}
-	}
-
-	j = 0;
-
-	//Loop through all player 2 cards
-	for (int i = 0; i < _player2BoardCards.size(); i++) {
-		if (_player2BoardCards[i].getIsDead()) {
-			// Add to the graveyard
-			_player2GraveyardCards.push_back(_player2BoardCards[i - j]);
-			//If card is dead erase it from the list.
-			_player2BoardCards.erase(_player2BoardCards.begin() + i - j);
-			//Increment removed cards.
-			j++;
-		}
-	}
 }
 
 bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
@@ -432,10 +458,21 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 	std::vector<Card>* cardsToApplyTo;
 	Player* playerToApplyTo;
 	int index = 1;
+	bool kingOfHeartsPresentInEnemyHand = false;
 
 	// Apply card to enemy.
 	if (card.getCardSuit().getSuitName() == clubs || card.getCardSuit().getSuitName() == spades) {
-		cardsToApplyTo = &getEnemyCards(player);
+
+		kingOfHeartsPresentInEnemyHand = isKingOfHeartsOnBoard(opponent);
+
+		if (kingOfHeartsPresentInEnemyHand) {
+			cardsToApplyTo->push_back(getEnemyKingOfHearts(opponent));
+		}
+
+		else {
+			cardsToApplyTo = &getEnemyCards(player);
+		}
+
 		playerToApplyTo = opponent;
 	}
 
@@ -499,8 +536,21 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 
 bool Board::jackSpadeEffectable(Player* opponent) {
 
+	std::vector<Card>* cardsToApplyTo;
+	bool kingOfHeartsPresentInEnemyHand = false;
+
+	// First, is there a king of hearts?
+	kingOfHeartsPresentInEnemyHand = isKingOfHeartsOnBoard(opponent);
+
+	if (kingOfHeartsPresentInEnemyHand) {
+		cardsToApplyTo->push_back(getEnemyKingOfHearts(opponent));
+	}
+
 	// potential issue / may require different function in card (?)
-	std::vector<Card>* cardsToApplyTo = &opponent->getHand();
+	else {
+		cardsToApplyTo = &opponent->getHand();
+	}
+
 
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {
 		cardsToApplyTo->at(i).setCardEnergyCost(cardsToApplyTo->at(i).getCardEnergyCost() * 2);
@@ -700,7 +750,6 @@ bool isKingOfHeartsOnBoard(Player* opponent) {
 	// Else, return false
 	return false;
 }
-
 
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;

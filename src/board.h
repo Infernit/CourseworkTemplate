@@ -39,6 +39,8 @@ public:
 	/// <returns>True if succeeded, false if failed.</returns>
 	bool playCard(Player* player, Player* opponent, Card& card);
 
+	Card& Board::getEnemyKingOfHearts(Player* player);
+
 	/// <summary>
 	/// Gets the cards on the board for the player parameter.
 	/// </summary>
