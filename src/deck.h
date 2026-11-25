@@ -9,6 +9,7 @@ public:
 	Deck();
 	int getCardCount();
 	std::vector<Card> getCards();
+	std::vector<Card> getDrawnCards();
 	Card drawNextCard();
 	void shuffleDeck();
 	void setMaxEnergy(int value);

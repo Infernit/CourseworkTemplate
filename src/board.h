@@ -75,6 +75,11 @@ public:
 	bool tryPlayCardToEffectable(Player* player, Player* opponent, Card& card);
 	bool jackSpadeEffectable(Player* opponent);
 	bool jackDiamondEffectable(Player* player);
+	
+	bool queenHeartsEffectable(Player* player);
+	bool queenClubsEffectable(Player* player);
+	bool queenSpadeEffectable(Player* player);
+	bool queenDiamondEffectable(Player* player);
 
 	/// <summary>
 	/// Sets all cards of the referenced player to be usable.

@@ -401,6 +401,81 @@ bool Board::jackDiamondEffectable(Player* player) {
 
 }
 
+// Where to record the turn this starts on (so it can occur every 3 ...)?
+bool Board::queenHeartsEffectable(Player* player) {
+
+	int index = 1;
+
+	//Allow player to choose card / player to apply effect to.
+	bool validating = true;
+	std::vector<int> acceptableNums = {};
+
+	while (validating) {
+
+		if (player->getPlayerNumber() == 1) {
+			// choose a card from the graveyard
+
+			//Prints out a list of numebered cards that could be revived 
+			std::cout << "Select card to revive:\n";
+
+			for (int i = 0; i < _player1GraveyardCards.size(); i++) {
+				// numbered only
+				if (_player1GraveyardCards[i].getCardRank() < 11) {
+					std::cout
+						<< (i + 1)
+						<< ": "
+						<< GameParameters::cardNames[_player1GraveyardCards[i].getCardRank()]
+						<< " of "
+						<< GameParameters::suitNames[_player1GraveyardCards[i].getCardSuit().getSuitName()]
+						<< std::endl;
+
+					acceptableNums.push_back(i + 1);
+				}
+			}
+
+			int num;
+			std::cin >> num;
+
+			// Apply card to target card.
+			if (num <= _player1GraveyardCards.size() && num > 0) {
+
+				// Make sure its acceptable
+				for (int presentNum : acceptableNums) {
+					if (presentNum == num) {
+						// Remove from drawn
+						player->getDeck().getDrawnCards().erase(_player1GraveyardCards.begin() + num);
+						// Remove from graveyard
+						_player1GraveyardCards.erase(_player1GraveyardCards.begin() + num);
+
+						validating = false;
+						// break loop
+						break;
+					}
+				}
+
+			}
+
+		}
+
+		else {
+
+		}
+
+	}
+
+}
+
+bool Board::queenClubsEffectable(Player* player) {
+
+	std::vector<Card>* cardsToApplyTo = &getEnemyCards(player);
+
+	for (int i = 0; i < cardsToApplyTo->size(); i++) {
+		// attack each card on the board by 10
+		cardsToApplyTo->at(i).reduceHealth(10);
+	}
+
+}
+
 // PINEAPPLE
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;

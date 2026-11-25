@@ -309,39 +309,62 @@ void Testing::mockup_round() {
 
 				switch (cardToUse->getCardRank()) {
 					// Ace
-					case 1:
-						// Check turn-number/current energy
-						// Special if 11 ace
-						if (params::startingEnergy >= 11) {
+				case 1:
+					// Check turn-number/current energy
+					// Special if 11 ace
+					if (params::startingEnergy >= 11) {
 
-						}
+					}
 
-						break;
+					break;
 					// Jack
-					case 11:
+				case 11:
 
-						switch (cardToUse->getCardSuit().getSuitName()) {
-							// hearts elsewhere
-							case clubs:
-								// 5 and 20
-								cardToUse->generateJackDamage();
-								board.tryPlayCardToEffectable(player, opponent, *cardToUse);
-								break;
-							case spades:
-								// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
-								board.jackSpadeEffectable(player);
-								break;
-							case diamonds:
-								board.jackDiamondEffectable(player);
-								break;
-							default:
-								break;
-						}
+					switch (cardToUse->getCardSuit().getSuitName()) {
+						// hearts elsewhere
+					case clubs:
+						// 5 and 20
+						cardToUse->generateJackDamage();
+						board.tryPlayCardToEffectable(player, opponent, *cardToUse);
 						break;
+					case spades:
+						// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
+						board.jackSpadeEffectable(player);
+						break;
+					case diamonds:
+						board.jackDiamondEffectable(player);
+						break;
+					default:
+						break;
+					}
+
+					break;
 					// Queen
-					case 12:
-						//
+				case 12:	
+					
+					switch (cardToUse->getCardSuit().getSuitName()) {
+					case hearts:
+						// Graveyard
+						// Bring back the next numbered card from the graveyard once every 3 turns 
+						board.queenHeartsEffectable(player);
 						break;
+					// hearts elsewhere
+					case clubs:
+						// Damage dealt is spread evenly across all enemy minions.
+						board.queenClubsEffectable(player);
+						break;
+					case spades:
+						// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
+						board.queenSpadeEffectable(player);
+						break;
+					case diamonds:
+						board.queenDiamondEffectable(player);
+						break;
+					default:
+						break;
+					}
+
+					break;
 					// King
 					case 13:
 						//
