@@ -91,7 +91,7 @@ void Player::setCurrentEnergy(int value) {
 	_currentEnergy = value;
 }
 
-Deck Player::getDeck() {
+Deck& Player::getDeck() {
 	return Player::_deck;
 }
 
@@ -141,4 +141,9 @@ std::vector<Card> Player::getHand() {
 
 std::vector<Card> Player::getGraveyard() {
 	return _graveyard;
+}
+
+void Player::forceCardIntoHand(Card &card) {
+	_hand.erase(_hand.begin());
+	_hand.push_back(card);
 }

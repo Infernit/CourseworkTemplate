@@ -176,7 +176,7 @@ Board::Board()  {
 
 bool Board::playCard(Player* player, Player* opponent, Card& card) {
 	//Don't let the card be played if the player doesn't have enough energy.
-	if (player->getCurrentEnergy() < card.getCardRank()) {
+	if (player->getCurrentEnergy() < card.getCardEnergyCost()) {
 		return false;
 	}
 
@@ -201,7 +201,7 @@ bool Board::playCard(Player* player, Player* opponent, Card& card) {
 			//Remove card from hand.
 			player->removeHandCard(card);
 			//Reduce player energy by card cost.
-			player->setCurrentEnergy(player->getCurrentEnergy() - card.getCardRank());
+			player->setCurrentEnergy(player->getCurrentEnergy() - card.getCardEnergyCost());
 			//Card played successfully.
 			return true;
 		}
@@ -215,7 +215,7 @@ bool Board::playCard(Player* player, Player* opponent, Card& card) {
 			player->removeHandCard(card);
 			// Then add to graveyard
 			player->addToGraveyard(card);
-			player->setCurrentEnergy(player->getCurrentEnergy() - card.getCardRank());
+			player->setCurrentEnergy(player->getCurrentEnergy() - card.getCardEnergyCost());
 			// Card played successfully.
 			return true;
 		}
@@ -246,6 +246,17 @@ std::vector<Card>& Board::getFriendlyCards(Player* player) {
 	}
 	else {
 		return _player2BoardCards;
+	}
+}
+
+std::vector<Card>& Board::getFriendlyGraveyardCards(Player* player) {
+	removeDeadCards();
+
+	if (player->getPlayerNumber() == 1) {
+		return _player1GraveyardCards;
+	}
+	else {
+		return _player2GraveyardCards;
 	}
 }
 
@@ -309,6 +320,84 @@ void Board::removeDeadCards() {
 	}
 }
 
+bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
+	switch (card.getCardRank()) {
+		// Ace
+		case 1:
+			// Check turn-number/current energy
+			// Special if 11 ace
+			if (GameParameters::startingEnergy >= 11) {
+
+			}
+			else {
+				tryPlayCardToEffectable(player, opponent, card);
+			}
+
+			break;
+		// Jack
+		case 11:
+			switch (card.getCardSuit().getSuitName()) {
+				case hearts:
+					tryPlayCardToEffectable(player, opponent, card);
+					break;
+				case clubs:
+					// damage between 5 and 20
+					card.generateJackDamage();
+					tryPlayCardToEffectable(player, opponent, card);
+					break;
+				case spades:
+					// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
+					jackSpadeEffectable(player);
+					break;
+				case diamonds:
+					jackDiamondEffectable(player);
+					break;
+				default:
+					break;
+				}
+
+			break;
+			// Queen
+		case 12:
+
+			switch (card.getCardSuit().getSuitName()) {
+			case hearts:
+				// Graveyard
+				// Bring back the next numbered card from the graveyard once every 3 turns 
+				if (queenHeartsEffectable(player)) {
+					card.setIsUsable(false);
+					return true;
+				}
+				break;
+				// hearts elsewhere
+			case clubs:
+				// Damage dealt is spread evenly across all enemy minions.
+				queenClubsEffectable(player);
+				break;
+			case spades:
+				// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
+				//board.queenSpadeEffectable(player);
+				break;
+			case diamonds:
+				//board.queenDiamondEffectable(player);
+				break;
+			default:
+				break;
+			}
+
+			break;
+			// King
+		case 13:
+			//
+			break;
+			//IF NORMAL CARD
+		default:
+			tryPlayCardToEffectable(player, opponent, card);
+			break;
+		}
+	return true;
+}
+
 bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card) {
 	
 	std::vector<Card>* cardsToApplyTo;
@@ -338,7 +427,7 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 		canHaveZeroElements = true;
 	}
 	//If card is a heart, current player is a target.
-	else if (card.getCardSuit().getSuitName() == hearts) {
+	else if (card.getCardSuit().getSuitName() == hearts && card.getCardRank() <= 10) {
 		std::cout
 			<< "0: Yourself"
 			<< std::endl;
@@ -387,7 +476,7 @@ bool Board::jackSpadeEffectable(Player* opponent) {
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {
 		cardsToApplyTo->at(i).setCardEnergyCost(cardsToApplyTo->at(i).getCardEnergyCost() * 2);
 	}
-
+	return true;
 }
 
 bool Board::jackDiamondEffectable(Player* player) {
@@ -398,71 +487,66 @@ bool Board::jackDiamondEffectable(Player* player) {
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {
 		cardsToApplyTo->at(i).setCardEnergyCost(cardsToApplyTo->at(i).getCardEnergyCost() / 2);
 	}
-
+	return true;
 }
 
 // Where to record the turn this starts on (so it can occur every 3 ...)?
 bool Board::queenHeartsEffectable(Player* player) {
 
-	int index = 1;
-
 	//Allow player to choose card / player to apply effect to.
 	bool validating = true;
-	std::vector<int> acceptableNums = {};
+
+	std::vector<Card>* cardsToApplyTo = &getFriendlyGraveyardCards(player);
 
 	while (validating) {
 
-		if (player->getPlayerNumber() == 1) {
-			// choose a card from the graveyard
-
-			//Prints out a list of numebered cards that could be revived 
-			std::cout << "Select card to revive:\n";
-
-			for (int i = 0; i < _player1GraveyardCards.size(); i++) {
-				// numbered only
-				if (_player1GraveyardCards[i].getCardRank() < 11) {
-					std::cout
-						<< (i + 1)
-						<< ": "
-						<< GameParameters::cardNames[_player1GraveyardCards[i].getCardRank()]
-						<< " of "
-						<< GameParameters::suitNames[_player1GraveyardCards[i].getCardSuit().getSuitName()]
-						<< std::endl;
-
-					acceptableNums.push_back(i + 1);
-				}
-			}
-
-			int num;
-			std::cin >> num;
-
-			// Apply card to target card.
-			if (num <= _player1GraveyardCards.size() && num > 0) {
-
-				// Make sure its acceptable
-				for (int presentNum : acceptableNums) {
-					if (presentNum == num) {
-						// Remove from drawn
-						player->getDeck().getDrawnCards().erase(_player1GraveyardCards.begin() + num);
-						// Remove from graveyard
-						_player1GraveyardCards.erase(_player1GraveyardCards.begin() + num);
-
-						validating = false;
-						// break loop
-						break;
-					}
-				}
-
-			}
-
+		//Breaks out if no cards to revive
+		if (cardsToApplyTo->size() == 0) {
+			return true;
 		}
 
-		else {
+		//Prints out a list of numebered cards that could be revived
+		std::cout << "Select card to revive:\n";
 
+		int limit = 1;
+
+		for (int i = 0; i < cardsToApplyTo->size(); i++) {
+			// numbered only
+			if (cardsToApplyTo->at(i).getCardRank() < 11) {
+				std::cout
+					<< (i + 1)
+					<< ": "
+					<< GameParameters::cardNames[cardsToApplyTo->at(i).getCardRank()]
+					<< " of "
+					<< GameParameters::suitNames[cardsToApplyTo->at(i).getCardSuit().getSuitName()]
+					<< std::endl;
+
+				limit++;
+			}
 		}
 
+		int num;
+		std::cin >> num;
+
+		//Within bounds of options
+		if (num < limit && num > 0) {
+			for (int i = 0; i < player->getDeck().getDrawnCards().size(); i++) {
+				if (player->getDeck().getDrawnCards()[i].getCardRank() == cardsToApplyTo->at(num - 1).getCardRank()
+					&& player->getDeck().getDrawnCards()[i].getCardSuit().getSuitName() == cardsToApplyTo->at(num - 1).getCardSuit().getSuitName()) {
+					//Removes Card from drawn cards
+					player->getDeck().eraseAt(i);
+
+					//Removes card from graveyard cards.
+					cardsToApplyTo->erase(cardsToApplyTo->begin() + num - 1);
+
+					validating = false;
+					break;
+				}
+			}
+		}
 	}
 
+	return true;
 }
 
 bool Board::queenClubsEffectable(Player* player) {
@@ -473,7 +557,7 @@ bool Board::queenClubsEffectable(Player* player) {
 		// attack each card on the board by 10
 		cardsToApplyTo->at(i).reduceHealth(10);
 	}
-
+	return true;
 }
 
 // PINEAPPLE

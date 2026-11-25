@@ -23,9 +23,11 @@ public:
 	int getHealth();
 	int getCurrentEnergy();
 	void setCurrentEnergy(int value);
-	Deck getDeck();
+	Deck& getDeck();
 	std::vector<Card> getHand();
 	std::vector<Card> getGraveyard();
+
+	void forceCardIntoHand(Card &card);
 
 	void populateDeck();
 	

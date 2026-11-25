@@ -24,6 +24,10 @@ std::vector<Card> Deck::getDrawnCards() {
 	return _drawnCards;
 }
 
+void Deck::eraseAt(int index) {
+	_drawnCards.erase(_drawnCards.begin() + index);
+}
+
 Card Deck::drawNextCard() {
 	//Best i can do for now
 	if (_cards.size() == 0) {

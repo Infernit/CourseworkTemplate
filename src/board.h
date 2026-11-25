@@ -46,6 +46,8 @@ public:
 	/// <returns>Player's cards.</returns>
 	std::vector<Card>& getFriendlyCards(Player* player);
 
+	std::vector<Card>& getFriendlyGraveyardCards(Player* player);
+
 	/// <summary>
 	/// Gets the cards on the board for the opponent of the player parameter.
 	/// </summary>
@@ -64,6 +66,8 @@ public:
 	/// Erases any cards on the board from either player that are dead.
 	/// </summary>
 	void removeDeadCards();
+
+	bool playCardRankAndSuit(Player* player, Player* opponent, Card& card);
 
 	/// <summary>
 	/// Tries to apply the effect of a card to an effectable target.

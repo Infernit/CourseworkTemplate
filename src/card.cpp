@@ -31,6 +31,7 @@ Card::Card(Suit suit, int rank)
 
 		//Numbered cards
 		if (rank >= 1 && rank <= 10) {
+			_cardEnergyCost = rank; //Fine for now, might need to change will 11 aces.
 			_cardEffect = Effect(suit.getSuitEffect().getIsPositiveEffect(),
 				suit.getSuitEffect().getEffectType(),
 				suit.getSuitEffect().getValue() * rank);
@@ -55,6 +56,7 @@ Card::Card(Suit suit, int rank)
 			int damage_val = 0;
 			_isRoyal = true;
 			_cardEnergyCost = 10;
+			_health = 10;
 
 			// Rank and suit are the determining factors for what it does
 			switch(suit.getSuitName()) {
@@ -70,17 +72,6 @@ Card::Card(Suit suit, int rank)
 				// Club royals
 				case clubs:
 					switch (rank) {
-						// Jack of Clubs
-						case 11:
-							// Jack - Randomly deals between 5 and 20 damage.
-							// Set it to a random int between 5 and 20
-							// Function so its damage can be changed per turn
-							damage_val = Card::generateJackDamage();
-
-							_cardEffect = Effect(false, damage, damage_val);
-							break;
-
-						// Queen of Clubs
 						case 12:
 							// Queen - Damage dealt is spread evenly across all enemy minions.
 							// ??????
@@ -218,6 +209,7 @@ bool Card::applyEffect(Effect effect) {
 
 	case cleanse:
 		resetDamageDecrease();
+		break;
 
 	default:
 		std::cout << "No effect applied" << std::endl;

@@ -14,6 +14,8 @@ public:
 	void shuffleDeck();
 	void setMaxEnergy(int value);
 	std::string toString();
+
+	void eraseAt(int index);
 	
 
 private:
