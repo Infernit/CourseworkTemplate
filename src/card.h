@@ -98,6 +98,7 @@ public:
 	bool getIsRoyal();
 	bool getIsUsable();
 	bool getIsDead();
+	int getOverhealth();
 
 	Suit getCardSuit();
 	int getEffectIncreases();
@@ -106,6 +107,7 @@ public:
 
 	// Setters
 	void setCardEnergyCost(int energyCost);
+	void setOverhealth(int value);
 
 
 //____________________________//
@@ -160,5 +162,8 @@ protected:
 	/// The effect that the card applies.
 	/// </summary>
 	Effect _cardEffect;
+
+	// for rally effect
+	int _overhealth;
 	
 };

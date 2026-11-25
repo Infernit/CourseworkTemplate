@@ -8,6 +8,7 @@
 Card::Card() 
 	: _cardRank(0), 
 	_cardEnergyCost(0),
+	_overhealth(0),
 	_isRoyal(false), 
 	// Use for capturing logic. Trap: card auto sets to usable again next turn???
 	_isUsable(false),
@@ -19,6 +20,7 @@ Card::Card()
 Card::Card(Suit suit, int rank)
 	: _cardSuit(suit),
 	_cardEnergyCost(0),
+	_overhealth(0),
 	_cardRank(rank),
 	_cardEffect({}),
 	_isRoyal(false),
@@ -86,35 +88,7 @@ Card::Card(Suit suit, int rank)
 						}
 
 					break;
-
-				// ALIGATOR
-				// Property of effect: Spread
-
-				// Queen clubs damages all played cards, 
-				// Jack spades doubles all energy cost of hand cards,
-				// Queen spades halves all enemy damage of played cards,
-				// Jack diamonds halves energy cost of player hand cards,
-				// King diamonds grants all played cards 10 extra health,
-				// Jack hearts removes all debuffs from played cards
-
-				//* Heart Ace heals all played cards by 5 every turn present
-				
-				// Graveyard
-
-				// Queen hearts brings back next numbered card once every 3 turns until dead
-				// Queen diamond brings back one non ace then perishes
-
-				// ?????
-		
-				// King sucks all damage until dead
-				//* Ace clubs captures and deals 11 damage until capatured dies etc. 
-					// Property Captured ^^^
-				// King spades skips turn
-
-
-				// Heart royals
 			}
-			//Will need a way to figure out royalty effects in here
 		}
 
 		//Invalid Cards
@@ -170,7 +144,6 @@ void Card::setDamageDecreasePercent(float percent) {
 	_damageDecreases.push_back(percent);
 }
 
-// PINEAPPLE
 bool Card::applyEffect(Effect effect) {
 	switch (effect.getEffectType()) {
 	case damage:
@@ -180,21 +153,56 @@ bool Card::applyEffect(Effect effect) {
 
 			//If damage resist is less than hit value, apply some to actual health and reduce resist to 0
 			if (value < 0) {
-				// Jack???
-				reduceHealth(effect.getValue() - _effectIncrease);
+				if (_overhealth == 0) {
+					reduceHealth(effect.getValue() - _effectIncrease);
+				}
+
+				else {
+					_overhealth -= (effect.getValue() - _effectIncrease);
+
+					// no negatives
+					if (_overhealth < 0) {
+						_overhealth = 0;
+					}
+				}
 				reduceIncreaseEffect(_effectIncrease);
 			}
+
 			//Otherwise just take it from damage resist
 			else {
-				reduceIncreaseEffect(effect.getValue());
+				if (_overhealth == 0) {
+					reduceIncreaseEffect(effect.getValue());
+				}
+
+				else {
+					_overhealth -= (effect.getValue());
+
+					// no negatives
+					if (_overhealth < 0) {
+						_overhealth = 0;
+					}
+				}
 			}
 		}
 		//If card does not have damage resist
 		else {
+			if (_overhealth == 0) {
+				reduceIncreaseEffect(effect.getValue());
+			}
+
+			else {
+				_overhealth -= (effect.getValue());
+
+				// no negatives
+				if (_overhealth < 0) {
+					_overhealth = 0;
+				}
+			}
 			reduceHealth(effect.getValue());
 		}
 		break;
 
+	// Healing is not allowed to be applied to overhealth so this is fine
 	case healing:
 		increaseHealth(effect.getValue());
 		break;
@@ -309,6 +317,10 @@ float Card::getDamageDecrease() {
 	return value;
 }
 
+int Card::getOverhealth() {
+	return _overhealth;
+}
+
 //Returns a vector of all card Effects 
 Effect Card::getCardEffect() {
 	return _cardEffect;
@@ -326,6 +338,10 @@ int Card::getCardEnergyCost() {
 // Setter
 void Card::setCardEnergyCost(int energyCost) {
 	_cardEnergyCost = energyCost;
+}
+
+void Card::setOverhealth(int value) {
+	_overhealth = value;
 }
 
 // Helper
@@ -346,4 +362,5 @@ std::string Card::toString() {
 		+ ", Card Suit: [" + _cardSuit.toString()
 		+ "], Card Royalty: " + std::to_string(_isRoyal)
 		+ ", Card Effects: " + _cardEffect.toString();
+
 }
