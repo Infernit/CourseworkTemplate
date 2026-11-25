@@ -338,6 +338,7 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 		case 11:
 			switch (card.getCardSuit().getSuitName()) {
 				case hearts:
+					// effect handled elsewhere
 					tryPlayCardToEffectable(player, opponent, card);
 					break;
 				case clubs:
@@ -357,7 +358,8 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 				}
 
 			break;
-			// Queen
+
+		// Queen
 		case 12:
 
 			switch (card.getCardSuit().getSuitName()) {
@@ -375,10 +377,11 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 				queenClubsEffectable(player);
 				break;
 			case spades:
-				// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
-				//board.queenSpadeEffectable(player);
+				// Halves all enemy damage dealt for 2 turns.
+				queenSpadeEffectable(player);
 				break;
 			case diamonds:
+				//
 				//board.queenDiamondEffectable(player);
 				break;
 			default:
@@ -386,10 +389,13 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 			}
 
 			break;
-			// King
+
+		// King
 		case 13:
 			//
+
 			break;
+
 			//IF NORMAL CARD
 		default:
 			tryPlayCardToEffectable(player, opponent, card);
@@ -476,6 +482,7 @@ bool Board::jackSpadeEffectable(Player* opponent) {
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {
 		cardsToApplyTo->at(i).setCardEnergyCost(cardsToApplyTo->at(i).getCardEnergyCost() * 2);
 	}
+
 	return true;
 }
 
@@ -547,6 +554,7 @@ bool Board::queenHeartsEffectable(Player* player) {
 	}
 
 	return true;
+	
 }
 
 bool Board::queenClubsEffectable(Player* player) {
@@ -560,7 +568,36 @@ bool Board::queenClubsEffectable(Player* player) {
 	return true;
 }
 
-// PINEAPPLE
+// For two turns implementation ...
+bool Board::queenSpadeEffectable(Player* player) {
+
+	std::vector<Card>* cardsToApplyTo = {};
+
+	// potential issue / may require different function in card (?)
+	if (player->getPlayerNumber() == 1) {
+		cardsToApplyTo = &_player2BoardCards;
+	}
+
+	else {
+		cardsToApplyTo = &_player1BoardCards;
+	}
+
+	for (int i = 0; i < cardsToApplyTo->size(); i++) {
+		cardsToApplyTo->at(i).setDamageDecreasePercent(0.5f);
+	}
+
+	return true;
+
+}
+
+// Queen - Bring back one non-ace from graveyard (then Queen disappears).
+bool Board::queenDiamondEffectable(Player* player) {
+
+
+
+	// Will it dissapear itself as property of being a diamond or will this manually have to be handled (ie code from effectable?)
+}
+
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;
 
@@ -577,7 +614,6 @@ void Board::setPlayerCardsUsable(Player* player) {
 	}
 }
 
-// PINEAPPLE
 sf::Sprite Board::cutCard(Card card) {
 	sf::Sprite cardSprite(GameParameters::spritesheet);
 
@@ -594,6 +630,9 @@ sf::Sprite Board::cutCard(Card card) {
 	//Return cut sprite.
 	return cardSprite;
 }
+
+// Implement turn number tracker for Queen Spades and Queen Hearts
+// AND king skipping (spades)
 
 void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) {
 
