@@ -357,10 +357,15 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 				case hearts:
 					// effect handled elsewhere
 					//tryPlayCardToEffectable(player, opponent, card);
+					// 11 Ace - Heal all friendly minions by 5 every turn while on the board.
+					aceHeartsEffectable(player);
 					break;
 				case clubs:
-					// damage between 5 and 20
-					//card.generateJackDamage();
+					/*
+					11 Ace - Captures an enemy minion. The captured cannot do any action, and takes 11 damage every turn until they die. 
+					Can only be freed by cleanse or capturing/killing. Once the captured card dies, the ace can capture another card. 
+					The captured does not start taking damage until the turn after the capture.
+					*/
 					//tryPlayCardToEffectable(player, opponent, card);
 					break;
 				case spades:
@@ -774,11 +779,23 @@ bool isKingOfHeartsOnBoard(Player* opponent) {
 	return false;
 }
 
-/*
-bool Board::aceSpadeEffectable(Player* opponent) {
+// 11 Ace - Heal all friendly minions by 5 every turn while on the board.
+bool Board::aceHeartsEffectable(Player* player) {
+	
+	std::vector<Card>* cardsToApplyTo = &player->getHand();
+	bool kingOfHeartsPresentInEnemyHand = false;
+
+	// Healable for king of hearts is set to false and this is checked in effects, so no problems should arise
+
+	// 11 Ace - Heal all friendly minions by 5 every turn while on the board.
+	for (int i = 0; i < cardsToApplyTo->size(); i++) {
+		Effect heal = Effect(true, healing, 5);
+		cardsToApplyTo->at(i).applyEffect(heal);
+	}
+
+	return true;
 
 }
-*/
 
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;
