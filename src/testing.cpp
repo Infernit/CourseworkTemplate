@@ -208,8 +208,8 @@ void Testing::mockup_round() {
 			//COMMENT THIS OUT FOR A STANDARD GAME
 			//Replace below card with card that needs testing
 			Suit heartsSuit(hearts, GameParameters::getHeartEffect());
-			Card jackOfHearts(heartsSuit, 12);
-			player->setCurrentEnergy(jackOfHearts.getCardEnergyCost());
+			Card jackOfHearts(heartsSuit, 13);
+			player->setCurrentEnergy(12);
 			player->forceCardIntoHand(jackOfHearts);
 
 			for (Card card1 : player->getDeck().getDrawnCards()) {

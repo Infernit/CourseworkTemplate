@@ -73,6 +73,7 @@ Card::Card(Suit suit, int rank)
 
 					// King of hearts
 					case 13:
+						_health = 100;
 						_healable = false;
 						break;
 				}

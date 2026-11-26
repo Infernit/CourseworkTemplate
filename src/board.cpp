@@ -267,29 +267,28 @@ std::vector<Card>& Board::getEnemyCards(Player* player) {
 	}
 }
 
-Card &Board::getEnemyKingOfHearts(Player* player) {
+std::vector<Card&>& Board::getEnemyKingOfHearts(Player* player) {
 	//Make sure all dead cards are removed before getting cards.
 	removeDeadCards();
 
+	_kingOfHearts = std::vector<Card&>(1);
+
 	if (player->getPlayerNumber() == 1) {
-		for (Card card : _player2BoardCards) {
-			if (card.getCardRank() == 13 && card.getCardSuit().getSuitName() == hearts) {
-				return card;
+		for (int i = 0; i < _player2BoardCards.size(); i++) {
+			if (_player2BoardCards[i].getCardRank() == 13 && _player2BoardCards[i].getCardSuit().getSuitName() == hearts) {
+				_kingOfHearts.push_back(_player2BoardCards[i]);
 			}
 		}
 	}
 	else {
-		for (Card card : _player1BoardCards) {
-			if (card.getCardRank() == 13 && card.getCardSuit().getSuitName() == hearts) {
-				return card;
+		for (int i = 0; i < _player1BoardCards.size(); i++) {
+			if (_player1BoardCards[i].getCardRank() == 13 && _player1BoardCards[i].getCardSuit().getSuitName() == hearts) {
+				_kingOfHearts.push_back(_player1BoardCards[i]);
 			}
 		}
 	}
 
-	// should not trigger
-	Card testCard = Card();
-	return testCard;
-
+	return _kingOfHearts;
 }
 
 
@@ -353,6 +352,8 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 			// Special if 11 ace
 			if (GameParameters::startingEnergy >= 11) {
 
+				Effect effect;
+
 				switch (card.getCardSuit().getSuitName()) {
 				case hearts:
 					// effect handled elsewhere
@@ -370,7 +371,7 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 					break;
 				case spades:
 					// 11 Ace - Instakills anything it is applied to.
-					Effect effect = Effect(false, damage, 2000.f);
+					effect = Effect(false, damage, 2000.f);
 					card.applyEffect(effect);
 					tryPlayCardToEffectable(player, opponent, card);
 					break;
@@ -451,6 +452,7 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 				case hearts:
 					// When an attack is made, just check if its on the board
 					//kingHeartsEffectable(player);
+					card.setIsUsable(false);
 					break;
 				case clubs:
 					// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
@@ -486,15 +488,15 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 	std::vector<Card>* cardsToApplyTo;
 	Player* playerToApplyTo;
 	int index = 1;
-	bool kingOfHeartsPresentInEnemyHand = false;
+	bool kingOfHeartsPresentOnEnemyBoard = false;
 
 	// Apply card to enemy.
 	if (card.getCardSuit().getSuitName() == clubs || card.getCardSuit().getSuitName() == spades) {
 
-		kingOfHeartsPresentInEnemyHand = isKingOfHeartsOnBoard(opponent);
+		kingOfHeartsPresentOnEnemyBoard = isKingOfHeartsOnBoard(opponent);
 
-		if (kingOfHeartsPresentInEnemyHand) {
-			cardsToApplyTo->push_back(getEnemyKingOfHearts(opponent));
+		if (kingOfHeartsPresentOnEnemyBoard) {
+			cardsToApplyTo = &getEnemyKingOfHearts(player);
 		}
 
 		else {
@@ -514,7 +516,7 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 	bool canHaveZeroElements = false;
 
 	//If opponent is attackable, and card is a club, opposing player is a target.
-	if (getIsEnemyAttackable(player) && card.getCardSuit().getSuitName() == clubs) {
+	if (getIsEnemyAttackable(player) && card.getCardSuit().getSuitName() == clubs && !kingOfHeartsPresentOnEnemyBoard) {
 		std::cout
 			<< "0: Opposing Player"
 			<< std::endl;
@@ -571,7 +573,7 @@ bool Board::jackSpadeEffectable(Player* opponent) {
 	kingOfHeartsPresentInEnemyHand = isKingOfHeartsOnBoard(opponent);
 
 	if (kingOfHeartsPresentInEnemyHand) {
-		cardsToApplyTo->push_back(getEnemyKingOfHearts(opponent));
+		cardsToApplyTo = &getEnemyKingOfHearts(opponent);
 	}
 
 	// potential issue / may require different function in card (?)
@@ -761,11 +763,12 @@ bool Board::kingDiamondEffectable(Player* player) {
 // King - Skips the opponent’s next turn.
 bool Board::kingSpadeEffectable(Player* player) {
 	// ?????
+	return true;
 }
 
-bool isKingOfHeartsOnBoard(Player* opponent) {
+bool Board::isKingOfHeartsOnBoard(Player* opponent) {
 	// potential issue / may require different function in card (?)
-	std::vector<Card>* cardsToApplyTo = &opponent->getHand();
+	std::vector<Card>* cardsToApplyTo = &getFriendlyCards(opponent);
 
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {
 		// Enum?
