@@ -207,14 +207,10 @@ void Testing::mockup_round() {
 			//==============TESTING=============//
 			//COMMENT THIS OUT FOR A STANDARD GAME
 			//Replace below card with card that needs testing
-			Suit heartsSuit(hearts, GameParameters::getHeartEffect());
-			Card jackOfHearts(heartsSuit, 13);
+			Suit diamondsSuit(diamonds, GameParameters::getDiamondEffect());
+			Card jackOfDiamonds(diamondsSuit, 12);
 			player->setCurrentEnergy(12);
-			player->forceCardIntoHand(jackOfHearts);
-
-			for (Card card1 : player->getDeck().getDrawnCards()) {
-				std::cout << params::cardNames[card1.getCardRank()] << " of " << params::suitNames[card1.getCardSuit().getSuitName()] << std::endl;
-			}
+			player->forceCardIntoHand(jackOfDiamonds);
 
 			board.placeCardsOnBoard(player1, player2, window);
 			window.display();

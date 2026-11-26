@@ -19,6 +19,9 @@ public:
 	// Remove a revived card
 	void removeGraveyardCard(Card card);
 
+	bool halfHandEnergyCost();
+	bool doubleHandEnergyCost();
+
 	int getPlayerNumber();
 	int getHealth();
 	int getCurrentEnergy();

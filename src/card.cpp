@@ -60,7 +60,7 @@ Card::Card(Suit suit, int rank)
 			int damage_val = 0;
 			_isRoyal = true;
 			_cardEnergyCost = 10;
-			_health = 10;
+			_maxHealth = 10;
 
 			// Rank and suit are the determining factors for what it does
 			switch (suit.getSuitName()) {
@@ -73,7 +73,7 @@ Card::Card(Suit suit, int rank)
 
 					// King of hearts
 					case 13:
-						_health = 100;
+						_maxHealth = 100;
 						_healable = false;
 						break;
 				}
@@ -83,11 +83,21 @@ Card::Card(Suit suit, int rank)
 				// Club royals
 				case clubs:
 					switch (rank) {
+						// Jack of Clubs
+						case 11:
+							_maxHealth = 20;
+							generateJackDamage();
+							break;
+
+						// Queen of Clubs
+						case 12:
+							_maxHealth = 20;
+							break;
 
 						// King of Clubs
 						case 13:
 							// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
-							_health = 40;
+							_maxHealth = 40;
 							_cardEffect = Effect(false, damage, 5);
 							break;
 						}
@@ -95,11 +105,12 @@ Card::Card(Suit suit, int rank)
 					break;
 			}
 		}
-
 		//Invalid Cards
 		else {
 			std::cout << "Invalid Card Rank" << std::endl;
 		}
+
+		_health = _maxHealth;
 	
 	} // constructor end
 
@@ -114,6 +125,7 @@ bool Card::reduceHealth(int value) {
 
 	if (_health <= 0) {
 		_isDead = true;
+		_health = 0;
 	}
 
 	return _isDead;

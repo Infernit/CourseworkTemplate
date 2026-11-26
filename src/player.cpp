@@ -3,6 +3,7 @@
 #include "deck.h"
 #include "game_system.h"
 #include <algorithm>
+#include <cmath>
 
 Player::Player(bool isAI, GameSystem& system) : _isAI(isAI), _system(system) {
 	std::vector<Card> hand(0);
@@ -58,6 +59,22 @@ void Player::removeGraveyardCard(Card card) {
 	}
 
 	_graveyard = tempGraveyard;
+}
+
+bool Player::halfHandEnergyCost()
+{
+	for (int i = 0; i < _hand.size(); i++) {
+		_hand[i].setCardEnergyCost(ceil((float)_hand[i].getCardEnergyCost() / 2.f));
+	}
+	return true;
+}
+
+bool Player::doubleHandEnergyCost()
+{
+	for (int i = 0; i < _hand.size(); i++) {
+		_hand[i].setCardEnergyCost((_hand[i].getCardEnergyCost() * 2 > GameParameters::startingEnergy ? GameParameters::startingEnergy : _hand[i].getCardEnergyCost() * 2));
+	}
+	return true;
 }
 
 void Player::fillHand() {

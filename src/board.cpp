@@ -176,9 +176,10 @@ Board::Board()  {
 
 void Board::removeDeadCards() {
 	int j = 0;
+	int size = _player1BoardCards.size();
 
 	//Loop through all player 1 cards
-	for (int i = 0; i < _player1BoardCards.size(); i++) {
+	for (int i = 0; i < size; i++) {
 		if (_player1BoardCards[i].getIsDead()) {
 			// Add to the graveyard
 			_player1GraveyardCards.push_back(_player1BoardCards[i - j]);
@@ -190,10 +191,11 @@ void Board::removeDeadCards() {
 	}
 
 	j = 0;
+	size = _player2BoardCards.size();
 
 	//Loop through all player 2 cards
-	for (int i = 0; i < _player2BoardCards.size(); i++) {
-		if (_player2BoardCards[i].getIsDead()) {
+	for (int i = 0; i < size; i++) {
+		if (_player2BoardCards[i - j].getIsDead()) {
 			// Add to the graveyard
 			_player2GraveyardCards.push_back(_player2BoardCards[i - j]);
 			//If card is dead erase it from the list.
@@ -240,7 +242,7 @@ bool Board::playCard(Player* player, Player* opponent, Card& card) {
 	// Cards that are played straight from the hand.
 	else {
 		// Try to play the card.
-		if (tryPlayCardToEffectable(player, opponent, card)) {
+		if (playCardRankAndSuit(player, opponent, card)) {
 			//If succeeds remove card from hand and reduce player energy by card cost.
 			player->removeHandCard(card);
 			// Then add to graveyard
@@ -288,7 +290,6 @@ bool Board::effectEnemyKingOfHearts(Player* player, Effect effect) {
 
 	return false;
 }
-
 
 std::vector<Card>& Board::getFriendlyCards(Player* player) {
 	//Make sure all dead cards are removed before getting cards.
@@ -374,13 +375,14 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 					tryPlayCardToEffectable(player, opponent, card);
 					break;
 				case diamonds:
-					//jackDiamondEffectable(player);
+					jackDiamondEffectable(player);
 					break;
 				default:
 					break;
 				}
 
 			}
+			
 			else {
 				tryPlayCardToEffectable(player, opponent, card);
 			}
@@ -395,15 +397,21 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 					break;
 				case clubs:
 					// damage between 5 and 20
-					card.generateJackDamage();
 					tryPlayCardToEffectable(player, opponent, card);
+					card.generateJackDamage();
 					break;
 				case spades:
 					// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
-					jackSpadeEffectable(player);
+					if (jackSpadeEffectable(player)) {
+						card.setIsUsable(false);
+						return true;
+					}
 					break;
 				case diamonds:
-					jackDiamondEffectable(player);
+					if (jackDiamondEffectable(player)) {
+						card.setIsUsable(false);
+						return true;
+					}
 					break;
 				default:
 					break;
@@ -422,19 +430,39 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 						card.setIsUsable(false);
 						return true;
 					}
+
+					else {
+						std::cout << "\nERROR: No card in graveyard.\n\n";
+						return false;
+					}
+
 					break;
 					// hearts elsewhere
 				case clubs:
 					// Damage dealt is spread evenly across all enemy minions.
-					queenClubsEffectable(player);
+					if (queenClubsEffectable(player)) {
+						card.setIsUsable(false);
+						return true;
+					}
 					break;
 				case spades:
 					// Halves all enemy damage dealt for 2 turns.
-					kingSpadeEffectable(player);
+					if (queenSpadeEffectable(player)) {
+						card.setIsUsable(false);
+						return true;
+					}
 					break;
 				case diamonds:
 					// Bring back one non-ace from graveyard (then Queen disappears).
-					kingDiamondEffectable(player);
+					if (queenDiamondEffectable(player)) {
+						card.setIsUsable(false);
+						return true;
+					}
+
+					else {
+						std::cout << "\nERROR: No card in graveyard.\n\n";
+						return false;
+					}
 					break;
 				default:
 					break;
@@ -444,6 +472,7 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 
 		// King
 		case 13:
+
 			// Suits
 			switch (card.getCardSuit().getSuitName()) {
 				// Cannot heal or be healed. All damage dealt to any friendly card is dealt to this card instead. Has 100 health.
@@ -460,16 +489,18 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 				case spades:
 					// King - Skips the opponent’s next turn.
 					// NON FUNCTIONAL
-					kingSpadeEffectable(player);
+					//kingSpadeEffectable(player);
 					break;
 				case diamonds:
 					// King - Rally effect. Grant all cards on board 10 overhealth.
-					kingDiamondEffectable(player);
+					if (kingDiamondEffectable(player)) {
+						card.setIsUsable(false);
+						return true;
+					}
 					break;
 				default:
 					break;
 			}
-
 
 			break;
 
@@ -597,13 +628,7 @@ bool Board::jackSpadeEffectable(Player* opponent) {
 
 bool Board::jackDiamondEffectable(Player* player) {
 
-	// potential issue / may require different function in card (?)
-	std::vector<Card>* cardsToApplyTo = &player->getHand();
-
-	for (int i = 0; i < cardsToApplyTo->size(); i++) {
-		cardsToApplyTo->at(i).setCardEnergyCost(cardsToApplyTo->at(i).getCardEnergyCost() / 2);
-	}
-	return true;
+	return player->halfHandEnergyCost();
 }
 
 // Where to record the turn this starts on (so it can occur every 3 ...)?
@@ -611,7 +636,7 @@ bool Board::queenHeartsEffectable(Player* player) {
 
 	return graveyardTemplate(player, 1);
 
-	return true;
+	//return true;
 	
 }
 
@@ -622,38 +647,13 @@ bool Board::graveyardTemplate(Player* player, int num) {
 	bool validating = true;
 
 
-	std::vector<Card>* cardsToApplyTo = {};
-	std::vector<Card>* potentialCardsToApplyTo = &getFriendlyGraveyardCards(player);
+	std::vector<Card>* cardsToApplyTo = &getFriendlyGraveyardCards(player);
 
-		// 1 for hearts, 2 for diamonds
+	if (cardsToApplyTo->size() == 0) {
+		return false;
+	}
 
-		switch (num) {
-
-			// Hearts
-			case 1:
-				// for loop from &friendly
-				for (int i = 0; i < potentialCardsToApplyTo->size(); i++) {
-					// Only ranks
-					if (potentialCardsToApplyTo->at(i).getCardRank() < 11) {
-						cardsToApplyTo->push_back(potentialCardsToApplyTo->at(i));
-					}
-				}
-
-				break;
-
-				// Diamond
-			case 2:
-				// for loop from &friendly
-				for (int i = 0; i < getFriendlyGraveyardCards(player).size(); i++) {
-					// Any non-ace
-					if (potentialCardsToApplyTo->at(i).getCardRank() != 1) {
-						cardsToApplyTo->push_back(potentialCardsToApplyTo->at(i));
-					}
-				}
-
-				break;
-
-		}
+	// 1 for hearts, 2 for diamonds
 
 	while (validating) {
 
@@ -669,35 +669,67 @@ bool Board::graveyardTemplate(Player* player, int num) {
 
 		for (int i = 0; i < cardsToApplyTo->size(); i++) {
 			// numbered only
-			if (cardsToApplyTo->at(i).getCardRank() < 11) {
-				std::cout
-					<< (i + 1)
-					<< ": "
-					<< GameParameters::cardNames[cardsToApplyTo->at(i).getCardRank()]
-					<< " of "
-					<< GameParameters::suitNames[cardsToApplyTo->at(i).getCardSuit().getSuitName()]
-					<< std::endl;
+			if (num == 1) {
+				if (cardsToApplyTo->at(i).getCardRank() < 11) {
+					std::cout
+						<< (i + 1)
+						<< ": "
+						<< GameParameters::cardNames[cardsToApplyTo->at(i).getCardRank()]
+						<< " of "
+						<< GameParameters::suitNames[cardsToApplyTo->at(i).getCardSuit().getSuitName()]
+						<< std::endl;
 
-				limit++;
+					limit++;
+				}
 			}
+			else if (num == 2) {
+				if (cardsToApplyTo->at(i).getCardRank() != 1) {
+					std::cout
+						<< (i + 1)
+						<< ": "
+						<< GameParameters::cardNames[cardsToApplyTo->at(i).getCardRank()]
+						<< " of "
+						<< GameParameters::suitNames[cardsToApplyTo->at(i).getCardSuit().getSuitName()]
+						<< std::endl;
+
+					limit++;
+				}
+			}
+
 		}
 
-		int num;
-		std::cin >> num;
+		int num1;
+		std::cin >> num1;
+		int index = 0;
+		bool doCheck = false;
 
 		//Within bounds of options
-		if (num < limit && num > 0) {
+		if (num1 < limit && num1 > 0) {
 			for (int i = 0; i < player->getDeck().getDrawnCards().size(); i++) {
-				if (player->getDeck().getDrawnCards()[i].getCardRank() == cardsToApplyTo->at(num - 1).getCardRank()
-					&& player->getDeck().getDrawnCards()[i].getCardSuit().getSuitName() == cardsToApplyTo->at(num - 1).getCardSuit().getSuitName()) {
-					//Removes Card from drawn cards
-					player->getDeck().eraseAt(i);
+				doCheck = false;
 
-					//Removes card from graveyard cards.
-					cardsToApplyTo->erase(cardsToApplyTo->begin() + num - 1);
+				if (num == 1 && cardsToApplyTo->at(num1 - 1).getCardRank() < 11) {
+					doCheck = true;
+				}
 
-					validating = false;
-					break;
+				else if (num == 2 && cardsToApplyTo->at(num1 - 1).getCardRank() != 1) {
+					doCheck = true;
+				}
+
+				if (doCheck) {
+					if (player->getDeck().getDrawnCards()[index].getCardRank() == cardsToApplyTo->at(num1 - 1).getCardRank()
+						&& player->getDeck().getDrawnCards()[index].getCardSuit().getSuitName() == cardsToApplyTo->at(num1 - 1).getCardSuit().getSuitName()) {
+						//Removes Card from drawn cards
+						player->getDeck().eraseAt(index);
+
+						//Removes card from graveyard cards.
+						cardsToApplyTo->erase(cardsToApplyTo->begin() + num1 - 1);
+
+						validating = false;
+						break;
+					}
+
+					index++;
 				}
 			}
 		}
@@ -712,8 +744,8 @@ bool Board::queenClubsEffectable(Player* player) {
 	std::vector<Card>* cardsToApplyTo = &getEnemyCards(player);
 
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {
-		// attack each card on the board by 10
-		cardsToApplyTo->at(i).reduceHealth(10);
+		// attack each card on the board by 10 / the number of cards on the board
+		cardsToApplyTo->at(i).reduceHealth(10 / cardsToApplyTo->size());
 	}
 
 	return true;
@@ -844,6 +876,11 @@ sf::Sprite Board::cutCard(Card card) {
 // Implement turn number tracker for Queen Spades and Queen Hearts
 // AND king skipping (spades)
 
+// Return the tile a card is on
+//? Board::returnCardTile(Card card) {
+//
+//}
+
 void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) {
 
 	//========================================================//
@@ -964,7 +1001,16 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		}
 
 		//Set the text to the value of the card's effect and draw it.
-		tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
+		if (_player1BoardCards[i].getCardRank() == 11 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			tempText.setString("?");
+		}
+		else if (_player1BoardCards[i].getCardRank() == 12 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			tempText.setString(std::to_string((int)(10 / (_player2BoardCards.size() == 0 ? 1 : _player2BoardCards.size()))) + "*" + std::to_string(_player2BoardCards.size()));
+		}
+		else {
+			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
+		}
+		
 		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
 		window.draw(tempText);
 
@@ -1024,7 +1070,15 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		}
 
 		//Set the text to the value of the card's effect and draw it.
-		tempText.setString(std::to_string((int)_player1GraveyardCards[i].getCardEffect().getValue()));
+		if (_player1GraveyardCards[i].getCardRank() == 11 && _player1GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
+			tempText.setString("?");
+		}
+		else if (_player1GraveyardCards[i].getCardRank() == 12 && _player1GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
+			tempText.setString("0");
+		}
+		else {
+			tempText.setString(std::to_string((int)_player1GraveyardCards[i].getCardEffect().getValue()));
+		}
 		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
 		window.draw(tempText);
 
@@ -1100,7 +1154,15 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		}
 
 		//Set the text to the value of the card's effect and draw it.
-		tempText.setString(std::to_string((int)_player2BoardCards[i].getCardEffect().getValue()));
+		if (_player2BoardCards[i].getCardRank() == 11 && _player2BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			tempText.setString("?");
+		}
+		else if (_player2BoardCards[i].getCardRank() == 12 && _player2BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			tempText.setString(std::to_string(10 / (_player1BoardCards.size() == 0 ? 1 : _player1BoardCards.size())) + "*" + std::to_string(_player1BoardCards.size()));
+		}
+		else {
+			tempText.setString(std::to_string((int)_player2BoardCards[i].getCardEffect().getValue()));
+		}
 		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
 		window.draw(tempText);
 
@@ -1160,7 +1222,15 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		}
 
 		//Set the text to the value of the card's effect and draw it.
-		tempText.setString(std::to_string((int)_player2GraveyardCards[i].getCardEffect().getValue()));
+		if (_player2GraveyardCards[i].getCardRank() == 11 && _player2GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
+			tempText.setString("?");
+		}
+		else if (_player2GraveyardCards[i].getCardRank() == 12 && _player2GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
+			tempText.setString("0");
+		}
+		else {
+			tempText.setString(std::to_string((int)_player2GraveyardCards[i].getCardEffect().getValue()));
+		}
 		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
 		window.draw(tempText);
 
