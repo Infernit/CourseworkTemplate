@@ -308,6 +308,10 @@ bool Card::getIsDead() {
 	return _isDead;
 }
 
+bool Card::getIsHealable() {
+	return _healable;
+}
+
 int Card::getEffectIncreases() {
 	return _effectIncrease;
 }

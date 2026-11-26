@@ -539,15 +539,17 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 	}
 
 	//Prints out a list of cards that effect can be applied to.
-	for (Card card : *cardsToApplyTo) {
-		std::cout
-			<< index
-			<< ": "
-			<< GameParameters::cardNames[card.getCardRank()]
-			<< " of "
-			<< GameParameters::suitNames[card.getCardSuit().getSuitName()]
-			<< std::endl;
-		index++;
+	for (Card card1 : *cardsToApplyTo) {
+		if (!(!card1.getIsHealable() && card.getCardSuit().getSuitName() == hearts)) {
+			std::cout
+				<< index
+				<< ": "
+				<< GameParameters::cardNames[card1.getCardRank()]
+				<< " of "
+				<< GameParameters::suitNames[card1.getCardSuit().getSuitName()]
+				<< std::endl;
+			index++;
+		}
 	}
 
 	//Allow player to choose card / player to apply effect to.
@@ -816,7 +818,9 @@ void Board::setPlayerCardsUsable(Player* player) {
 
 	//Loop through all of player's cards and set them as usable.
 	for (int i = 0; i < cards->size(); i++) {
-		cards->at(i).setIsUsable(true);
+		if (!(cards->at(i).getCardRank() == 13 && cards->at(i).getCardSuit().getSuitName() == hearts)) {
+			cards->at(i).setIsUsable(true);
+		}
 	}
 }
 

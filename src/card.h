@@ -99,7 +99,7 @@ public:
 	bool getIsUsable();
 	bool getIsDead();
 	int getOverhealth();
-
+	bool getIsHealable();
 	Suit getCardSuit();
 	int getEffectIncreases();
 	float getDamageDecrease();
