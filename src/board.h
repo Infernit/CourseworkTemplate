@@ -93,6 +93,11 @@ public:
 	bool kingDiamondEffectable(Player* player);
 	bool isKingOfHeartsOnBoard(Player* opponent); 
 
+	bool aceSpadeEffectable(Player* player);
+	bool aceDiamondEffectable(Player* player);
+	bool aceClubsEffectable(Player* player);
+	bool aceHeartsEffectable(Player* player);
+
 	/// <summary>
 	/// Sets all cards of the referenced player to be usable.
 	/// </summary>

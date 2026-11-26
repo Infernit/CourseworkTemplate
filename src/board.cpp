@@ -353,6 +353,29 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 			// Special if 11 ace
 			if (GameParameters::startingEnergy >= 11) {
 
+				switch (card.getCardSuit().getSuitName()) {
+				case hearts:
+					// effect handled elsewhere
+					//tryPlayCardToEffectable(player, opponent, card);
+					break;
+				case clubs:
+					// damage between 5 and 20
+					//card.generateJackDamage();
+					//tryPlayCardToEffectable(player, opponent, card);
+					break;
+				case spades:
+					// 11 Ace - Instakills anything it is applied to.
+					Effect effect = Effect(false, damage, 2000.f);
+					card.applyEffect(effect);
+					tryPlayCardToEffectable(player, opponent, card);
+					break;
+				case diamonds:
+					//jackDiamondEffectable(player);
+					break;
+				default:
+					break;
+				}
+
 			}
 			else {
 				tryPlayCardToEffectable(player, opponent, card);
@@ -750,6 +773,12 @@ bool isKingOfHeartsOnBoard(Player* opponent) {
 	// Else, return false
 	return false;
 }
+
+/*
+bool Board::aceSpadeEffectable(Player* opponent) {
+
+}
+*/
 
 void Board::setPlayerCardsUsable(Player* player) {
 	std::vector<Card>* cards;
