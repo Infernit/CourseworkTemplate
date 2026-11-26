@@ -39,7 +39,7 @@ public:
 	/// <returns>True if succeeded, false if failed.</returns>
 	bool playCard(Player* player, Player* opponent, Card& card);
 
-	std::vector<Card&>& Board::getEnemyKingOfHearts(Player* player);
+	bool effectEnemyKingOfHearts(Player* player, Effect effect);
 
 	/// <summary>
 	/// Gets the cards on the board for the player parameter.
@@ -132,6 +132,4 @@ private:
 
 	std::vector<Card> _player1GraveyardCards;
 	std::vector<Card> _player2GraveyardCards;
-
-	std::vector<Card&> _kingOfHearts;
 };

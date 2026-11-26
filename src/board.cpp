@@ -267,28 +267,26 @@ std::vector<Card>& Board::getEnemyCards(Player* player) {
 	}
 }
 
-std::vector<Card&>& Board::getEnemyKingOfHearts(Player* player) {
+bool Board::effectEnemyKingOfHearts(Player* player, Effect effect) {
 	//Make sure all dead cards are removed before getting cards.
 	removeDeadCards();
-
-	_kingOfHearts = std::vector<Card&>(1);
 
 	if (player->getPlayerNumber() == 1) {
 		for (int i = 0; i < _player2BoardCards.size(); i++) {
 			if (_player2BoardCards[i].getCardRank() == 13 && _player2BoardCards[i].getCardSuit().getSuitName() == hearts) {
-				_kingOfHearts.push_back(_player2BoardCards[i]);
+				return effect.applyEffect(&_player2BoardCards[i]);
 			}
 		}
 	}
 	else {
 		for (int i = 0; i < _player1BoardCards.size(); i++) {
 			if (_player1BoardCards[i].getCardRank() == 13 && _player1BoardCards[i].getCardSuit().getSuitName() == hearts) {
-				_kingOfHearts.push_back(_player1BoardCards[i]);
+				return effect.applyEffect(&_player1BoardCards[i]);
 			}
 		}
 	}
 
-	return _kingOfHearts;
+	return false;
 }
 
 
@@ -496,7 +494,12 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 		kingOfHeartsPresentOnEnemyBoard = isKingOfHeartsOnBoard(opponent);
 
 		if (kingOfHeartsPresentOnEnemyBoard) {
-			cardsToApplyTo = &getEnemyKingOfHearts(player);
+			if (effectEnemyKingOfHearts(player, card.getCardEffect())) {
+				card.setIsUsable(false);
+				return true;
+			}
+
+			return false;
 		}
 
 		else {
@@ -573,7 +576,8 @@ bool Board::jackSpadeEffectable(Player* opponent) {
 	kingOfHeartsPresentInEnemyHand = isKingOfHeartsOnBoard(opponent);
 
 	if (kingOfHeartsPresentInEnemyHand) {
-		cardsToApplyTo = &getEnemyKingOfHearts(opponent);
+		//fix ts
+		return false;
 	}
 
 	// potential issue / may require different function in card (?)
