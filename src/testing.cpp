@@ -208,7 +208,7 @@ void Testing::mockup_round() {
 			//COMMENT THIS OUT FOR A STANDARD GAME
 			//Replace below card with card that needs testing
 			Suit diamondsSuit(diamonds, GameParameters::getDiamondEffect());
-			Card jackOfDiamonds(diamondsSuit, 12);
+			Card jackOfDiamonds(diamondsSuit, 13);
 			player->setCurrentEnergy(12);
 			player->forceCardIntoHand(jackOfDiamonds);
 
@@ -291,6 +291,8 @@ void Testing::mockup_round() {
 						<< params::suitNames[card.getCardSuit().getSuitName()]
 						<< " - HP: "
 						<< card.getCardHealth()
+						<< " - OH: "
+						<< card.getOverhealth()
 						<< ", DB: "
 						<< card.getEffectIncreases()
 						<< ", DD: "

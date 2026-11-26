@@ -497,6 +497,11 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 						card.setIsUsable(false);
 						return true;
 					}
+
+					else {
+						std::cout << "\nERROR: No cards to apply overhealth.\n\n";
+						return false;
+					}
 					break;
 				default:
 					break;
@@ -788,6 +793,10 @@ bool Board::kingDiamondEffectable(Player* player) {
 
 	std::vector<Card>* cardsToApplyTo = &getFriendlyCards(player);
 
+	if (cardsToApplyTo->size() == 0) {
+		return false;
+	}
+
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {
 		// Give 10 overhealth. Cannot be healed
 		// In the situation that the king dies, and is revived whilst cards have overhealth ...
@@ -886,8 +895,6 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	//========================================================//
 	//---THIS FUNCTION IS A WIP AND VERY MUCH NOT EFFICIENT---//
 	//========================================================//
-
-	// shhhhhhhhhhh yes it is ..... ^^^
 
 	//Create tiles
 	
@@ -1015,9 +1022,18 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		window.draw(tempText);
 
 		//Set the text to the value of the card's health and draw it.
-		tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-		tempText.setColor(sf::Color(255, 0, 0, 255));
+		if (_player1BoardCards[i].getOverhealth() != 0) {
+			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth() 
+								+ (int)_player1BoardCards[i].getOverhealth()));
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+			tempText.setColor(sf::Color(231, 48, 209, 255));
+		}
+
+		else {
+			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+			tempText.setColor(sf::Color(255, 0, 0, 255));
+		}
 		window.draw(tempText);
 
 		//Set the text to the value of the card's diamond effect and draw it.
@@ -1083,9 +1099,19 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		window.draw(tempText);
 
 		//Set the text to the value of the card's health and draw it.
-		tempText.setString(std::to_string((int)_player1GraveyardCards[i].getCardHealth()));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-		tempText.setColor(sf::Color(255, 0, 0, 255));
+		if (_player1BoardCards[i].getOverhealth() != 0) {
+			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
+				+ (int)_player1BoardCards[i].getOverhealth()));
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+			tempText.setColor(sf::Color(231, 48, 209, 255));
+		}
+
+		else {
+			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+			tempText.setColor(sf::Color(255, 0, 0, 255));
+		}
+
 		window.draw(tempText);
 
 		//Set the text to the value of the card's diamond effect and draw it.
@@ -1167,9 +1193,18 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		window.draw(tempText);
 
 		//Set the text to the value of the card's health and draw it.
-		tempText.setString(std::to_string((int)_player2BoardCards[i].getCardHealth()));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-		tempText.setColor(sf::Color(255, 0, 0, 255));
+		if (_player1BoardCards[i].getOverhealth() != 0) {
+			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
+				+ (int)_player1BoardCards[i].getOverhealth()));
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+			tempText.setColor(sf::Color(231, 48, 209, 255));
+		}
+
+		else {
+			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+			tempText.setColor(sf::Color(255, 0, 0, 255));
+		}
 		window.draw(tempText);
 
 		//Set the text to the value of the card's diamond effect and draw it.
