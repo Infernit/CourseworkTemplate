@@ -149,6 +149,10 @@ void Deck::turnAcesInto11Aces()
 	for (int i = 0; i < _cards.size(); i++) {
 		if (_cards[i].getCardRank() == 1) {
 			_cards[i].setCardEnergyCost(11);
+
+			_cards[i].setCardHealth((_cards[i].getCardSuit().getSuitName() == clubs ? 22 : 11) - (_cards[i].getCardMaxHealth() - _cards[i].getCardHealth()));
+
+			_cards[i].setMaxHealth((_cards[i].getCardSuit().getSuitName() == clubs ? 22 : 11));
 		}
 	}
 }

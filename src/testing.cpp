@@ -139,7 +139,7 @@ void Testing::mockup_round() {
 	//Initialise Game System
 	GameSystem system;
 	system.init();
-	GameSystem::setMaxEnergy(10);
+	GameSystem::setMaxEnergy(GameParameters::startingEnergy);
 
 	Player* player1 = system.getPlayer1();
 	Player* player2 = system.getPlayer2();
@@ -199,17 +199,19 @@ void Testing::mockup_round() {
 
 		//Set player energy to current max energy
 		player->setCurrentEnergy(GameSystem::getMaxEnergy());
-		board.setPlayerCardsUsable(player);
 
 		//Fill players hand from deck
 		player->fillHand();
+		board.aceDamageCard(player);
+
+		board.setPlayerCardsUsable(player);
 
 		//==============TESTING=============//
 		//COMMENT THIS OUT FOR A STANDARD GAME
 		//Replace below card with card that needs testing
 		/*
-		Suit spadesSuit(hearts, GameParameters::getHeartEffect());
-		Card jackOfSpades(spadesSuit, 1);
+		Suit spadesSuit(clubs, GameParameters::getClubEffect());
+		Card jackOfSpades(spadesSuit, 13);
 		//player->setCurrentEnergy(12);
 		player->forceCardIntoHand(jackOfSpades);
 		*/
