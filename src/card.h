@@ -104,11 +104,16 @@ public:
 	int getEffectIncreases();
 	float getDamageDecrease();
 	Effect getCardEffect();
+	bool getCaptured();
 
 	// Setters
 	void setCardEnergyCost(int energyCost);
 	void setOverhealth(int value);
 	void setEffect(Effect effect);
+	void setCaptured(bool value);
+	void setCardRank(int value);
+	void setMaxHealth(int value);
+	void setCardHealth(int value);
 
 //____________________________//
 //          TOSTRING          //
@@ -168,5 +173,7 @@ protected:
 
 	// For king of hearts
 	bool _healable;
+
+	bool _captured = false;
 	
 };

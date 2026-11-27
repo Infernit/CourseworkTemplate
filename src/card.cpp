@@ -347,6 +347,11 @@ Effect Card::getCardEffect() {
 	return _cardEffect;
 }
 
+bool Card::getCaptured()
+{
+	return _captured;
+}
+
 //Returns the suit of the card
 Suit Card::getCardSuit() {
 	return _cardSuit;
@@ -368,6 +373,26 @@ void Card::setOverhealth(int value) {
 void Card::setEffect(Effect effect)
 {
 	_cardEffect = effect;
+}
+
+void Card::setCaptured(bool value)
+{
+	_captured = value;
+}
+
+void Card::setCardRank(int value)
+{
+	_cardRank = value;
+}
+
+void Card::setMaxHealth(int value)
+{
+	_maxHealth = value;
+}
+
+void Card::setCardHealth(int value)
+{
+	_health = value;
 }
 
 // Helper

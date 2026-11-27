@@ -66,6 +66,10 @@ void Player::turnHandAcesInto11Aces()
 	for (int i = 0; i < _hand.size(); i++) {
 		if (_hand[i].getCardRank() == 1) {
 			_hand[i].setCardEnergyCost(11);
+
+			_hand[i].setCardHealth((_hand[i].getCardSuit().getSuitName() == clubs ? 22 : 11) - (_hand[i].getCardMaxHealth() - _hand[i].getCardHealth()));
+
+			_hand[i].setMaxHealth((_hand[i].getCardSuit().getSuitName() == clubs ? 22 : 11));
 		}
 	}
 }

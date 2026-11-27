@@ -94,11 +94,15 @@ public:
 	bool kingSpadeEffectable(Player* player);
 	bool kingDiamondEffectable(Player* player);
 	bool isKingOfHeartsOnBoard(Player* opponent); 
+	Card* getEnemyKingOfHearts(Player* opponent);
 
-	bool aceSpadeEffectable(Player* player);
-	bool aceDiamondEffectable(Player* player);
-	bool aceClubsEffectable(Player* player);
+	//bool aceSpadeEffectable(Player* player);
+	//bool aceDiamondEffectable(Player* player);
 	bool aceHeartsEffectable(Player* player);
+
+	bool aceHasCapturedCard(Player* player);
+	bool aceCaptureCard(Player* player, Card* card);
+	bool aceDamageCard(Player * player);
 
 	/// <summary>
 	/// Sets all cards of the referenced player to be usable.
@@ -131,6 +135,9 @@ private:
 	/// Vector containing all of player 2's cards on the board.
 	/// </summary>
 	std::vector<Card> _player2BoardCards;
+
+	Card _player1CapturedCard = Card();
+	Card _player2CapturedCard = Card();
 
 	std::vector<Card> _player1GraveyardCards;
 	std::vector<Card> _player2GraveyardCards;
