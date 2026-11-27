@@ -27,7 +27,7 @@ public:
 	/// </summary>
 	/// <param name="mousePos">Px location on the grid.</param>
 	/// <returns>Location on grid.</returns>
-	sf::Vector2f pixelsToGrid(sf::Vector2f mousePos);
+	static sf::Vector2f pixelsToGrid(sf::Vector2f mousePos);
 
 	/// <summary>
 	/// Converts a grid position into the same location in px.
@@ -35,7 +35,7 @@ public:
 	/// <param name="gridX">X location on the grid.</param>
 	/// <param name="gridY">Y location on the grid.</param>
 	/// <returns>Location in px.</returns>
-	sf::Vector2f gridToPixels(int gridX, int gridY);
+	static sf::Vector2f gridToPixels(int gridX, int gridY);
 
 	//
 	sf::Vector2f getCardPosition(sf::Sprite cardSprite);

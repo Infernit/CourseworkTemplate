@@ -94,6 +94,93 @@ Board::Board(GameSystem* system)  {
 		sf::Vector2i(4, 4)));
 	GameParameters::heart = temp;
 
+	/*
+    bool draggingCard = false;
+    
+    while (window.isOpen()) {
+
+        bool allowedToMove = true;
+
+        // Interactable tiles (using mouse...)
+         // window should recognise where mouse is
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
+        // breakpoint to check mouse position
+        // Continously calculates as prog runs (good)
+        int currentTileX = mousePos.x / Board::tileWidth;
+        int currentTileY = mousePos.y / Board::tileHeight;
+
+        // highlights (reactive)
+        // do not work in fs, only minimised / default window
+        sf::RectangleShape highlightTile(sf::Vector2f(Board::tileWidth, Board::tileHeight));
+
+        highlightTile.setPosition(currentTileX * Board::tileWidth, currentTileY * Board::tileHeight);
+        highlightTile.setFillColor(sf::Color(255, 255, 0, 100)); // Yellow with transparency  
+        window.draw(highlightTile);
+
+        sf::Event event;
+
+        while (window.pollEvent(event)) {
+
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+
+            // disable movement for now 
+            
+            // Mouse drags card
+			if (event.type == sf::Event::MouseButtonPressed) {
+
+				if (event.mouseButton.button == sf::Mouse::Left) {
+
+                    // test statement
+                    std::cout << "MOUSE INTERACT\n";
+
+					// Get mouse position
+					sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+					// Convert to grid coordinates
+                    // Print out grid positions (test passed)
+					sf::Vector2f gridPos = pixelsToGrid(sf::Vector2f(mousePos));
+					std::cout << "Mouse pressed at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
+
+                    // Prepare for future logic with allowed to move var
+                    if (cardTest1.getGlobalBounds().contains(
+                        static_cast<float>(mousePos.x),
+                        static_cast<float>(mousePos.y))
+                        && allowedToMove == true) {
+                        draggingCard = true;
+                    }
+
+				}
+			}
+
+            // Mouse releases card
+            if (event.type == sf::Event::MouseButtonReleased) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+
+                    std::cout << "MOUSE RELEASE\n";
+
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    sf::Vector2f gridPos = pixelsToGrid(sf::Vector2f(mousePos));
+                    std::cout << "Mouse released at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
+
+                    // Only move it if the tile it was on was interacted with ?
+                    if (draggingCard == true) {
+                        cardTest1.setPosition(gridPos.x * Board::tileWidth, gridPos.y * Board::tileHeight);
+                    }
+
+                    // reset to default val
+                    draggingCard = false;
+                }
+            }
+            
+        }
+
+        //window.draw(cardTest1);
+        window.display();
+		        
+    }
+	*/
 }
 
 void Board::removeDeadCards() {
