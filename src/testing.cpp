@@ -151,8 +151,6 @@ void Testing::mockup_round() {
 	Board board(&system);
 	//Havent bothered validating this as it wont be the final version
 
-	int round = 1;
-
 	Player* player = player1;
 	Player* opponent = player2;
 
@@ -163,7 +161,7 @@ void Testing::mockup_round() {
 		std::cout 
 			<< std::endl 
 			<< "ROUND " 
-			<< round 
+			<< GameParameters::turnNumber
 			<< ": Player 1 HP = " 
 			<< player1->getHealth() 
 			<< ", Player 2 HP = " 
@@ -370,7 +368,7 @@ void Testing::mockup_round() {
 				player2->turnDeckAcesInto11Aces();
 			}
 
-			round++;
+			//round++;
 		}
 
 		system.nextTurn();
