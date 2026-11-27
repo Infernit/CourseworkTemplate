@@ -72,7 +72,7 @@ bool Player::halfHandEnergyCost()
 bool Player::doubleHandEnergyCost()
 {
 	for (int i = 0; i < _hand.size(); i++) {
-		_hand[i].setCardEnergyCost((_hand[i].getCardEnergyCost() * 2 > GameParameters::startingEnergy ? GameParameters::startingEnergy : _hand[i].getCardEnergyCost() * 2));
+		_hand[i].setCardEnergyCost((_hand[i].getCardEnergyCost() * 2 > GameSystem::getMaxEnergy() ? GameSystem::getMaxEnergy() : _hand[i].getCardEnergyCost() * 2));
 	}
 	return true;
 }

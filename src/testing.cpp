@@ -138,16 +138,16 @@ void Testing::testing_effects_stuff() {
 void Testing::mockup_round() {
 	//Initialise Game System
 	GameSystem system;
-	system.setMaxEnergy(2);
-
-	//Create players, with both being human
-	system.createPlayers(false);
+	system.init();
 
 	Player* player1 = system.getPlayer1();
 	Player* player2 = system.getPlayer2();
 
+	player1->fillHand();
+	player2->fillHand();
+
 	//Create board
-	Board board;
+	Board board(&system);
 	//Havent bothered validating this as it wont be the final version
 
 	int round = 1;
@@ -170,219 +170,230 @@ void Testing::mockup_round() {
 			<< std::endl 
 			<< std::endl;
 
-		for (int i = 0; i < 2; i++) {
-			//Player 1 turn stuff
-			if (i == 0) {
-				player = player1;
-				opponent = player2;
-			}
-			//Player 2 turn stuff
-			else {
-				player = player2;
-				opponent = player1;
-			}
+		//Player 1 turn stuff
+		if (system.getTurn() == 1) {
+			player = player1;
+			opponent = player2;
+		}
+		//Player 2 turn stuff
+		else {
+			player = player2;
+			opponent = player1;
+		}
 
-			//Changing turn
-			std::cout << "\x1b[2J";
+		//Changing turn
+		std::cout << "\x1b[2J";
 
-			int temp = 0;
-			std::cout << "TYPE A NUMBER AND PRESS ENTER TO START NEXT TURN";
-			std::cin >> temp;
+		int temp = 0;
+		std::cout << "TYPE A NUMBER AND PRESS ENTER TO START NEXT TURN";
+		std::cin >> temp;
 
+		std::cout
+			<< std::endl
+			<< "PLAYER "
+			<< system.getTurn()
+			<< "'S TURN"
+			<< std::endl
+			<< std::endl;
+
+		//Set player energy to current max energy
+		player->setCurrentEnergy(GameSystem::getMaxEnergy());
+		board.setPlayerCardsUsable(player);
+
+		//Fill players hand from deck
+		player->fillHand();
+
+		//==============TESTING=============//
+		//COMMENT THIS OUT FOR A STANDARD GAME
+		//Replace below card with card that needs testing
+		/*
+		Suit spadesSuit(spades, GameParameters::getSpadeEffect());
+		Card jackOfSpades(spadesSuit, 13);
+		player->setCurrentEnergy(12);
+		player->forceCardIntoHand(jackOfSpades);
+		*/
+
+		board.placeCardsOnBoard(player1, player2, window);
+		window.display();
+
+		//Play cards from hand
+		while (player->getCurrentEnergy() > 0) {
+			// Turn number
 			std::cout
+				<< "Turn Number: "
+				<< GameParameters::turnNumber
 				<< std::endl
-				<< "PLAYER "
-				<< i + 1
-				<< "'S TURN"
-				<< std::endl
+				<< "-----------------"
 				<< std::endl;
 
-			//Set player energy to current max energy
-			player->setCurrentEnergy(params::startingEnergy);
-			board.setPlayerCardsUsable(player);
+			std::cout
+				<< "Current Energy: "
+				<< player->getCurrentEnergy()
+				<< std::endl
+				<< "-----------------"
+				<< std::endl;
 
-			//Fill players hand from deck
-			player->fillHand();
-
-			//==============TESTING=============//
-			//COMMENT THIS OUT FOR A STANDARD GAME
-			//Replace below card with card that needs testing
-			Suit diamondsSuit(diamonds, GameParameters::getDiamondEffect());
-			Card jackOfDiamonds(diamondsSuit, 13);
-			player->setCurrentEnergy(12);
-			player->forceCardIntoHand(jackOfDiamonds);
-
-			board.placeCardsOnBoard(player1, player2, window);
-			window.display();
-
-			//Play cards from hand
-			while (player->getCurrentEnergy() > 0) {
-				// Turn number
+			//List player cards
+			for (int i = 0; i < player->getHand().size(); i++) {
 				std::cout
-					<< "Turn Number: "
-					<< GameParameters::turnNumber
-					<< std::endl
-					<< "-----------------"
+					<< i + 1
+					<< ": "
+					<< params::cardNames[player->getHand()[i].getCardRank()]
+					<< " of "
+					<< params::suitNames[player->getHand()[i].getCardSuit().getSuitName()]
 					<< std::endl;
-
-				std::cout
-					<< "Current Energy: "
-					<< player->getCurrentEnergy()
-					<< std::endl
-					<< "-----------------"
-					<< std::endl;
-
-				//List player cards
-				for (int i = 0; i < player->getHand().size(); i++) {
-					std::cout
-						<< i + 1
-						<< ": "
-						<< params::cardNames[player->getHand()[i].getCardRank()]
-						<< " of "
-						<< params::suitNames[player->getHand()[i].getCardSuit().getSuitName()]
-						<< std::endl;
-				}
-
-				std::cout << "0: Manually End Turn" << std::endl;
-
-				//Get user input
-				std::cout 
-					<< std::endl 
-					<< "Pick card to play: ";
-				int num;
-				std::cin >> num;
-
-				//Try play card based on user input
-				if (num == 0) {
-					break;
-				}
-				else if (!board.playCard(player, opponent, player->getHand()[num - 1])) {
-					std::cout
-						<< std::endl
-						<< "Invalid Option"
-						<< std::endl
-						<< std::endl;
-				}
 			}
 
-			//Play cards on board
-			bool keepLooping = true;
+			std::cout << "0: Manually End Turn" << std::endl;
 
-			while (keepLooping) {
-				//Lower flag by default
-				keepLooping = false;
+			//Get user input
+			std::cout 
+				<< std::endl 
+				<< "Pick card to play: ";
+			int num;
+			std::cin >> num;
 
+			//Try play card based on user input
+			if (num == 0) {
+				break;
+			}
+			else if (!board.playCard(player, opponent, player->getHand()[num - 1])) {
 				std::cout
 					<< std::endl
-					<< "Playable Cards:"
+					<< "Invalid Option"
 					<< std::endl
-					<< "---------------"
 					<< std::endl;
-
-				int index = 1;
-
-				//List usable player cards
-				for (Card card : board.getFriendlyCards(player)) {
-					std::cout
-						<< index
-						<< ": "
-						<< params::cardNames[card.getCardRank()]
-						<< " of "
-						<< params::suitNames[card.getCardSuit().getSuitName()]
-						<< " - HP: "
-						<< card.getCardHealth()
-						<< " - OH: "
-						<< card.getOverhealth()
-						<< ", DB: "
-						<< card.getEffectIncreases()
-						<< ", DD: "
-						<< card.getDamageDecrease()
-						<< ", Usable? "
-						<< (card.getIsUsable() ? "True" : "False")
-						<< std::endl;
-
-					index++;
-
-					//Raise flag if player has usable card on board
-					if (card.getIsUsable()) {
-						keepLooping = true;
-					}
-				}
-
-				if (!keepLooping) {
-					break;
-				}
-
-				std::cout << std::endl;
-
-				//Get user input
-				std::cout << "Pick card to use: ";
-				int num1;
-				std::cin >> num1;
-
-				std::cout << std::endl;
-
-				//SWITCH CASE
-				Card* cardToUse = &board.getFriendlyCards(player)[num1 - 1];
-
-				board.playCardRankAndSuit(player, opponent, *cardToUse);
-
-				
-				//... SPECIAL CARD
-				//LOOP THROUGH ALL CARDS AND EFFECT THEM
-				//modified version of tryPlayCardToEffectable that just effects all of them instead of targeting.
 			}
 		}
 
+		//Play cards on board
+		bool keepLooping = true;
+
+		while (keepLooping) {
+			//Lower flag by default
+			keepLooping = false;
+
+			std::cout
+				<< std::endl
+				<< "Playable Cards:"
+				<< std::endl
+				<< "---------------"
+				<< std::endl;
+
+			int index = 1;
+
+			//List usable player cards
+			for (Card card : board.getFriendlyCards(player)) {
+				std::cout
+					<< index
+					<< ": "
+					<< params::cardNames[card.getCardRank()]
+					<< " of "
+					<< params::suitNames[card.getCardSuit().getSuitName()]
+					<< " - HP: "
+					<< card.getCardHealth()
+					<< " - OH: "
+					<< card.getOverhealth()
+					<< ", DB: "
+					<< card.getEffectIncreases()
+					<< ", DD: "
+					<< card.getDamageDecrease()
+					<< ", Usable? "
+					<< (card.getIsUsable() ? "True" : "False")
+					<< std::endl;
+
+				index++;
+
+				//Raise flag if player has usable card on board
+				if (card.getIsUsable()) {
+					keepLooping = true;
+				}
+			}
+
+			if (!keepLooping) {
+				break;
+			}
+
+			std::cout << std::endl;
+
+			//Get user input
+			std::cout << "Pick card to use: ";
+			int num1;
+			std::cin >> num1;
+
+			std::cout << std::endl;
+
+			//SWITCH CASE
+				
+			Card* cardToUse = &board.getFriendlyCards(player)[num1 - 1];
+
+			if (cardToUse->getIsUsable()) {
+				board.playCardRankAndSuit(player, opponent, *cardToUse);
+			}
+			else {
+				std::cout << "Card cannot be used" << std::endl;
+			}
+				
+			//... SPECIAL CARD
+			//LOOP THROUGH ALL CARDS AND EFFECT THEM
+			//modified version of tryPlayCardToEffectable that just effects all of them instead of targeting.
+		}
+
+		board.resetDamageDebuffs(player);
+		
 		/*
 		if (params::startingEnergy < 10) {
 			params::startingEnergy++;
 		}
 		*/
+		if (system.getTurn() == 2 && !system.getSkipTurn()) {
 
-		// Turn number and energy increase together
-		params::startingEnergy++;
-		params::turnNumber++;
+			// Turn number and energy increase together
+			GameSystem::setMaxEnergy(GameSystem::getMaxEnergy() + 1);
+			params::turnNumber++;
 
-		// Loop through each players hand and deck if turn  number 11 is reached
+			// Loop through each players hand and deck if turn  number 11 is reached
 
-		if (params::startingEnergy == 11) {
-			// PLAYER 1
-			// Loop deck
-			for (int i = 0; i < player1->getDeck().getCards().size(); i++) {
-				if (player1->getDeck().getCards()[i].getCardRank() == 1) {
-					// Change energy cost to 11
-					player1->getDeck().getCards()[i].setCardEnergyCost(11);
+			if (GameSystem::getMaxEnergy() == 11) {
+				// PLAYER 1
+				// Loop deck
+				for (int i = 0; i < player1->getDeck().getCards().size(); i++) {
+					if (player1->getDeck().getCards()[i].getCardRank() == 1) {
+						// Change energy cost to 11
+						player1->getDeck().getCards()[i].setCardEnergyCost(11);
+					}
 				}
+
+				// Loop hand 
+				for (int i = 0; i < player1->getHand().size(); i++) {
+					if (player1->getHand()[i].getCardRank() == 1) {
+						// Change energy cost to 11
+						player1->getHand()[i].setCardEnergyCost(11);
+					}
+				}
+
+				// PLAYER 2
+				// loop deck
+				for (int i = 0; i < player2->getDeck().getCards().size(); i++) {
+					if (player2->getDeck().getCards()[i].getCardRank() == 1) {
+						// Change energy cost to 11
+						player2->getDeck().getCards()[i].setCardEnergyCost(11);
+					}
+				}
+
+				// Loop hand 
+				for (int i = 0; i < player2->getHand().size(); i++) {
+					if (player2->getHand()[i].getCardRank() == 1) {
+						// Change energy cost to 11
+						player2->getHand()[i].setCardEnergyCost(11);
+					}
+				}
+
 			}
 
-			// Loop hand 
-			for (int i = 0; i < player1->getHand().size(); i++) {
-				if (player1->getDeck().getCards()[i].getCardRank() == 1) {
-					// Change energy cost to 11
-					player1->getDeck().getCards()[i].setCardEnergyCost(11);
-				}
-			}
-
-			// PLAYER 2
-			// loop deck
-			for (int i = 0; i < player2->getDeck().getCards().size(); i++) {
-				if (player2->getDeck().getCards()[i].getCardRank() == 1) {
-					// Change energy cost to 11
-					player2->getDeck().getCards()[i].setCardEnergyCost(11);
-				}
-			}
-
-			// Loop hand 
-			for (int i = 0; i < player2->getHand().size(); i++) {
-				if (player2->getDeck().getCards()[i].getCardRank() == 1) {
-					// Change energy cost to 11
-					player2->getDeck().getCards()[i].setCardEnergyCost(11);
-				}
-			}
-
+			round++;
 		}
 
-		round++;
+		system.nextTurn();
 	}
 }

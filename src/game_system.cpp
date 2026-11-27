@@ -31,12 +31,29 @@ void GameSystem::unhookPlayerKilled(Player* player) {
 void GameSystem::init() {
 	GameSystem::createPlayers(false);
 	_maxEnergy = GameParameters::startingEnergy;
+	_turn = 1;
+	_skipNextTurn = false;
 }
 
 // Instantiates player1 & player2
 void GameSystem::createPlayers(bool isP2Ai) {
 	_player1 = std::make_unique<Player>(false, *this);
 	_player2 = std::make_unique<Player>(false, *this);
+}
+
+void GameSystem::nextTurn()
+{
+	if (_skipNextTurn) {
+		_skipNextTurn = false;
+		return;
+	}
+
+	if (_turn == 1) {
+		_turn = 2;
+	}
+	else {
+		_turn = 1;
+	}
 }
 
 // Code that is run when event is invoked.
@@ -72,11 +89,26 @@ int GameSystem::getMaxEnergy() {
 	return _maxEnergy;
 }
 
+int GameSystem::getTurn()
+{
+	return _turn;
+}
+
+bool GameSystem::getSkipTurn()
+{
+	return _skipNextTurn;
+}
+
 //___________________________//
 //          SETTERS          //
 //___________________________//
 void GameSystem::setMaxEnergy(int value) {
 	_maxEnergy = value;
+}
+
+void GameSystem::setSkipTurn(bool value)
+{
+	_skipNextTurn = value;
 }
 
 //___________________________________//

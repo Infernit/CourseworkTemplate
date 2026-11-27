@@ -38,11 +38,14 @@ struct GameSystem {
 	Player* getPlayer1();
 	Player* getPlayer2();
 	static int getMaxEnergy();
+	int getTurn();
+	bool getSkipTurn();
 	
 //___________________________//
 //          SETTERS          //
 //___________________________//
 	static void setMaxEnergy(int value);
+	void setSkipTurn(bool value);
 
 private:
 //___________________________________//
@@ -52,4 +55,7 @@ private:
 	std::unique_ptr<Player> _player2;
 	static int _playerNumber;
 	static int _maxEnergy;
+
+	int _turn;
+	bool _skipNextTurn;
 };

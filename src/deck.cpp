@@ -100,7 +100,7 @@ void Deck::populateDeck(int maxEnergy) {
 	//Loop through every suit
 	for (int i = 0; i < _suits.size(); i++) {
 		//Loop through all ranks up to current max energy
-		for (int j = 0; j < maxEnergy; j++) {
+		for (int j = 0; j < (maxEnergy >= 10 ? 13 : maxEnergy); j++) {
 			//Check if card has previously been drawn
 			for (int k = 0; k < _drawnCards.size(); k++) {
 				if (_drawnCards[k].getCardSuit().getSuitName() == i + 1 && _drawnCards[k].getCardRank() == j + 1) {

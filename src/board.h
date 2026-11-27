@@ -13,7 +13,7 @@ public:
 	/// <summary>
 	/// Constructor
 	/// </summary>
-	Board();
+	Board(GameSystem* system);
 
 	/// <summary>
 	/// Converts a px position into the same location on the grid.
@@ -82,6 +82,8 @@ public:
 	bool jackSpadeEffectable(Player* opponent);
 	bool jackDiamondEffectable(Player* player);
 	
+	void resetDamageDebuffs(Player* player);
+
 	bool queenHeartsEffectable(Player* player);
 	bool queenClubsEffectable(Player* player);
 	bool queenSpadeEffectable(Player* player);
@@ -132,4 +134,6 @@ private:
 
 	std::vector<Card> _player1GraveyardCards;
 	std::vector<Card> _player2GraveyardCards;
+
+	GameSystem* _system;
 };

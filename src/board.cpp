@@ -12,7 +12,9 @@ sf::Vector2f Board::gridToPixels(int gridX, int gridY) {
 	return sf::Vector2f(gridX * GameParameters::tileWidth, gridY * GameParameters::tileHeight);
 }
 
-Board::Board()  {
+Board::Board(GameSystem* system)  {
+	_system = system;
+
 	//Set both player's cards to empty.
     _player1BoardCards = {};
     _player2BoardCards = {};
@@ -180,7 +182,7 @@ void Board::removeDeadCards() {
 
 	//Loop through all player 1 cards
 	for (int i = 0; i < size; i++) {
-		if (_player1BoardCards[i].getIsDead()) {
+		if (_player1BoardCards[i - j].getIsDead()) {
 			// Add to the graveyard
 			_player1GraveyardCards.push_back(_player1BoardCards[i - j]);
 			//If card is dead erase it from the list.
@@ -349,7 +351,7 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 		case 1:
 			// Check turn-number/current energy
 			// Special if 11 ace
-			if (GameParameters::startingEnergy >= 11) {
+			if (GameSystem::getMaxEnergy() >= 11) {
 
 				Effect effect;
 
@@ -384,7 +386,7 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 			}
 			
 			else {
-				tryPlayCardToEffectable(player, opponent, card);
+				return tryPlayCardToEffectable(player, opponent, card);
 			}
 
 			break;
@@ -402,16 +404,10 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 					break;
 				case spades:
 					// Jack - Doubles mana cost of all cards in the opponent’s hand (to a cap of their max mana).
-					if (jackSpadeEffectable(player)) {
-						card.setIsUsable(false);
-						return true;
-					}
+					return jackSpadeEffectable(opponent);
 					break;
 				case diamonds:
-					if (jackDiamondEffectable(player)) {
-						card.setIsUsable(false);
-						return true;
-					}
+					return jackDiamondEffectable(player);
 					break;
 				default:
 					break;
@@ -447,18 +443,13 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 					break;
 				case spades:
 					// Halves all enemy damage dealt for 2 turns.
-					if (queenSpadeEffectable(player)) {
-						card.setIsUsable(false);
-						return true;
-					}
+					return queenSpadeEffectable(player);
 					break;
 				case diamonds:
 					// Bring back one non-ace from graveyard (then Queen disappears).
 					if (queenDiamondEffectable(player)) {
-						card.setIsUsable(false);
 						return true;
 					}
-
 					else {
 						std::cout << "\nERROR: No card in graveyard.\n\n";
 						return false;
@@ -484,20 +475,18 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 				case clubs:
 					// King - Has 40 health instead of 20. Deals 5 damage instead of 10.
 					// Should be in card / hardcoded
-					tryPlayCardToEffectable(player, opponent, card);
+					return tryPlayCardToEffectable(player, opponent, card);
 					break;
 				case spades:
 					// King - Skips the opponent’s next turn.
 					// NON FUNCTIONAL
-					//kingSpadeEffectable(player);
+					return kingSpadeEffectable(player);
 					break;
 				case diamonds:
 					// King - Rally effect. Grant all cards on board 10 overhealth.
 					if (kingDiamondEffectable(player)) {
-						card.setIsUsable(false);
 						return true;
 					}
-
 					else {
 						std::cout << "\nERROR: No cards to apply overhealth.\n\n";
 						return false;
@@ -511,10 +500,11 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 
 			//IF NORMAL CARD
 		default:
-			tryPlayCardToEffectable(player, opponent, card);
+			return tryPlayCardToEffectable(player, opponent, card);
 			break;
 		}
-	return true;
+
+	return false;
 }
 
 bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card) {
@@ -607,26 +597,7 @@ bool Board::tryPlayCardToEffectable(Player* player, Player* opponent, Card& card
 
 bool Board::jackSpadeEffectable(Player* opponent) {
 
-	std::vector<Card>* cardsToApplyTo;
-	bool kingOfHeartsPresentInEnemyHand = false;
-
-	// First, is there a king of hearts?
-	kingOfHeartsPresentInEnemyHand = isKingOfHeartsOnBoard(opponent);
-
-	if (kingOfHeartsPresentInEnemyHand) {
-		//fix ts
-		return false;
-	}
-
-	// potential issue / may require different function in card (?)
-	else {
-		cardsToApplyTo = &opponent->getHand();
-	}
-
-
-	for (int i = 0; i < cardsToApplyTo->size(); i++) {
-		cardsToApplyTo->at(i).setCardEnergyCost(cardsToApplyTo->at(i).getCardEnergyCost() * 2);
-	}
+	opponent->doubleHandEnergyCost();
 
 	return true;
 }
@@ -634,6 +605,22 @@ bool Board::jackSpadeEffectable(Player* opponent) {
 bool Board::jackDiamondEffectable(Player* player) {
 
 	return player->halfHandEnergyCost();
+}
+
+void Board::resetDamageDebuffs(Player* player)
+{
+	std::vector<Card>* cardsToReset;
+
+	if (player->getPlayerNumber() == 1) {
+		cardsToReset = &_player1BoardCards;
+	}
+	else {
+		cardsToReset = &_player2BoardCards;
+	}
+
+	for (int i = 0; i < cardsToReset->size(); i++) {
+		cardsToReset->at(i).resetDamageDecrease();
+	}
 }
 
 // Where to record the turn this starts on (so it can occur every 3 ...)?
@@ -809,7 +796,7 @@ bool Board::kingDiamondEffectable(Player* player) {
 
 // King - Skips the opponent’s next turn.
 bool Board::kingSpadeEffectable(Player* player) {
-	// ?????
+	_system->setSkipTurn(true);
 	return true;
 }
 
@@ -1034,6 +1021,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
 			tempText.setColor(sf::Color(255, 0, 0, 255));
 		}
+
 		window.draw(tempText);
 
 		//Set the text to the value of the card's diamond effect and draw it.
@@ -1099,18 +1087,10 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		window.draw(tempText);
 
 		//Set the text to the value of the card's health and draw it.
-		if (_player1BoardCards[i].getOverhealth() != 0) {
-			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
-				+ (int)_player1BoardCards[i].getOverhealth()));
-			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-			tempText.setColor(sf::Color(231, 48, 209, 255));
-		}
-
-		else {
-			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
-			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-			tempText.setColor(sf::Color(255, 0, 0, 255));
-		}
+		tempText.setString(std::to_string((int)_player1GraveyardCards[i].getCardHealth()));
+		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+		tempText.setColor(sf::Color(255, 0, 0, 255));
+		window.draw(tempText);
 
 		window.draw(tempText);
 
@@ -1193,15 +1173,15 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		window.draw(tempText);
 
 		//Set the text to the value of the card's health and draw it.
-		if (_player1BoardCards[i].getOverhealth() != 0) {
-			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
-				+ (int)_player1BoardCards[i].getOverhealth()));
+		if (_player2BoardCards[i].getOverhealth() != 0) {
+			tempText.setString(std::to_string((int)_player2BoardCards[i].getCardHealth()
+				+ (int)_player2BoardCards[i].getOverhealth()));
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
 			tempText.setColor(sf::Color(231, 48, 209, 255));
 		}
 
 		else {
-			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
+			tempText.setString(std::to_string((int)_player2BoardCards[i].getCardHealth()));
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
 			tempText.setColor(sf::Color(255, 0, 0, 255));
 		}
