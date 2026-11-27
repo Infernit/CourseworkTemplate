@@ -1,10 +1,10 @@
 #include "tile.h"
 #include "game_parameters.h"
 
-Tile(int x, int y, bool occupied, int tileWidth, int tileHeight, sf::Color colour) {
+Tile::Tile(int x, int y, bool occupied, int tileWidth, int tileHeight, sf::Color colour) {
 	_x = x;
 	_y = y;
-	_occupied = occupied
+	_occupied = occupied;
 
 	// sfml properties
 	_shape = sf::RectangleShape tile(sf::Vector2f(GameParameters::tileWidth + GameParameters::cardDescBarWidth, GameParameters::tileHeight));
@@ -14,34 +14,34 @@ Tile(int x, int y, bool occupied, int tileWidth, int tileHeight, sf::Color colou
 	_shape.setOutlineColor(sf::Color::Black);
 }
 
-int getOccupuied() {
+int Tile::getOccupuied() {
 	return _occupied;
 }
 
-int getX() {
+int Tile::getX() {
 	return _x;
 }
 
-int getY() {
+int Tile::getY() {
 	return _y;
 }
 
-sf::RectangleShape getShape() {
+sf::RectangleShape Tile::getShape() {
 	return _shape;
 }
 
-sf::Sprite getCardSprite() {
+sf::Sprite Tile::getCardSprite() {
 	return _cardSprite;
 }
 
-void setOccupied(bool occupied) {
+void Tile::setOccupied(bool occupied) {
 	_occupied = occupied
 }
 
-void setCardSprite(sf::Sprite cardSprite) {
+void Tile::setCardSprite(sf::Sprite cardSprite) {
 	_cardSprite = cardSprite;
 }
 
-void removeCardSprite() {
+void Tile::removeCardSprite() {
 	_cardSprite.reset();
 }
