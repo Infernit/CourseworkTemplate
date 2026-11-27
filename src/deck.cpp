@@ -143,3 +143,12 @@ std::string Deck::toString() {
 
 	return "Deck Size: " + std::to_string(_cards.size()) + ", Cards: [" + cardsString + "]";
 }
+
+void Deck::turnAcesInto11Aces()
+{
+	for (int i = 0; i < _cards.size(); i++) {
+		if (_cards[i].getCardRank() == 1) {
+			_cards[i].setCardEnergyCost(11);
+		}
+	}
+}

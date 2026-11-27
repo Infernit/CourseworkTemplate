@@ -15,6 +15,8 @@ public:
 	void setMaxEnergy(int value);
 	std::string toString();
 
+	void turnAcesInto11Aces();
+
 	void eraseAt(int index);
 	
 

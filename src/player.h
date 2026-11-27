@@ -19,6 +19,9 @@ public:
 	// Remove a revived card
 	void removeGraveyardCard(Card card);
 
+	void turnHandAcesInto11Aces();
+	void turnDeckAcesInto11Aces();
+
 	bool halfHandEnergyCost();
 	bool doubleHandEnergyCost();
 

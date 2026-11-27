@@ -108,7 +108,7 @@ public:
 	// Setters
 	void setCardEnergyCost(int energyCost);
 	void setOverhealth(int value);
-
+	void setEffect(Effect effect);
 
 //____________________________//
 //          TOSTRING          //

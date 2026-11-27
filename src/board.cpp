@@ -360,7 +360,8 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 					// effect handled elsewhere
 					//tryPlayCardToEffectable(player, opponent, card);
 					// 11 Ace - Heal all friendly minions by 5 every turn while on the board.
-					aceHeartsEffectable(player);
+					card.setIsUsable(false);
+					return aceHeartsEffectable(player);
 					break;
 				case clubs:
 					/*
@@ -369,15 +370,19 @@ bool Board::playCardRankAndSuit(Player* player, Player* opponent, Card& card) {
 					The captured does not start taking damage until the turn after the capture.
 					*/
 					//tryPlayCardToEffectable(player, opponent, card);
+					card.setIsUsable(false);
+					return true;
 					break;
 				case spades:
 					// 11 Ace - Instakills anything it is applied to.
 					effect = Effect(false, damage, 2000.f);
-					card.applyEffect(effect);
-					tryPlayCardToEffectable(player, opponent, card);
+					card.setEffect(effect);
+					return tryPlayCardToEffectable(player, opponent, card);
 					break;
 				case diamonds:
-					jackDiamondEffectable(player);
+					// 11 Ace - Fully restore energy plus gain an extra 11.
+					player->setCurrentEnergy(GameSystem::getMaxEnergy() + 11);
+					return true;
 					break;
 				default:
 					break;
@@ -819,10 +824,7 @@ bool Board::isKingOfHeartsOnBoard(Player* opponent) {
 // 11 Ace - Heal all friendly minions by 5 every turn while on the board.
 bool Board::aceHeartsEffectable(Player* player) {
 	
-	std::vector<Card>* cardsToApplyTo = &player->getHand();
-	bool kingOfHeartsPresentInEnemyHand = false;
-
-	// Healable for king of hearts is set to false and this is checked in effects, so no problems should arise
+	std::vector<Card>* cardsToApplyTo = &getFriendlyCards(player);
 
 	// 11 Ace - Heal all friendly minions by 5 every turn while on the board.
 	for (int i = 0; i < cardsToApplyTo->size(); i++) {

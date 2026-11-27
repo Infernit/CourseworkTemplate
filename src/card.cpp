@@ -365,6 +365,11 @@ void Card::setOverhealth(int value) {
 	_overhealth = value;
 }
 
+void Card::setEffect(Effect effect)
+{
+	_cardEffect = effect;
+}
+
 // Helper
 void Card::generateJackDamage() {
 	std::random_device random;

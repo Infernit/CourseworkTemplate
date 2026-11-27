@@ -61,6 +61,20 @@ void Player::removeGraveyardCard(Card card) {
 	_graveyard = tempGraveyard;
 }
 
+void Player::turnHandAcesInto11Aces()
+{
+	for (int i = 0; i < _hand.size(); i++) {
+		if (_hand[i].getCardRank() == 1) {
+			_hand[i].setCardEnergyCost(11);
+		}
+	}
+}
+
+void Player::turnDeckAcesInto11Aces()
+{
+	_deck.turnAcesInto11Aces();
+}
+
 bool Player::halfHandEnergyCost()
 {
 	for (int i = 0; i < _hand.size(); i++) {

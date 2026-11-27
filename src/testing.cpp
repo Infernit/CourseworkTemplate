@@ -139,6 +139,7 @@ void Testing::mockup_round() {
 	//Initialise Game System
 	GameSystem system;
 	system.init();
+	GameSystem::setMaxEnergy(10);
 
 	Player* player1 = system.getPlayer1();
 	Player* player2 = system.getPlayer2();
@@ -207,9 +208,9 @@ void Testing::mockup_round() {
 		//COMMENT THIS OUT FOR A STANDARD GAME
 		//Replace below card with card that needs testing
 		/*
-		Suit spadesSuit(spades, GameParameters::getSpadeEffect());
-		Card jackOfSpades(spadesSuit, 13);
-		player->setCurrentEnergy(12);
+		Suit spadesSuit(hearts, GameParameters::getHeartEffect());
+		Card jackOfSpades(spadesSuit, 1);
+		//player->setCurrentEnergy(12);
 		player->forceCardIntoHand(jackOfSpades);
 		*/
 
@@ -357,38 +358,14 @@ void Testing::mockup_round() {
 			if (GameSystem::getMaxEnergy() == 11) {
 				// PLAYER 1
 				// Loop deck
-				for (int i = 0; i < player1->getDeck().getCards().size(); i++) {
-					if (player1->getDeck().getCards()[i].getCardRank() == 1) {
-						// Change energy cost to 11
-						player1->getDeck().getCards()[i].setCardEnergyCost(11);
-					}
-				}
+				player1->turnHandAcesInto11Aces();
 
-				// Loop hand 
-				for (int i = 0; i < player1->getHand().size(); i++) {
-					if (player1->getHand()[i].getCardRank() == 1) {
-						// Change energy cost to 11
-						player1->getHand()[i].setCardEnergyCost(11);
-					}
-				}
+				player1->turnDeckAcesInto11Aces();
 
-				// PLAYER 2
-				// loop deck
-				for (int i = 0; i < player2->getDeck().getCards().size(); i++) {
-					if (player2->getDeck().getCards()[i].getCardRank() == 1) {
-						// Change energy cost to 11
-						player2->getDeck().getCards()[i].setCardEnergyCost(11);
-					}
-				}
+				
+				player2->turnHandAcesInto11Aces();
 
-				// Loop hand 
-				for (int i = 0; i < player2->getHand().size(); i++) {
-					if (player2->getHand()[i].getCardRank() == 1) {
-						// Change energy cost to 11
-						player2->getHand()[i].setCardEnergyCost(11);
-					}
-				}
-
+				player2->turnDeckAcesInto11Aces();
 			}
 
 			round++;
