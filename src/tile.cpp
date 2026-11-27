@@ -54,6 +54,31 @@ void Tile::setCardSprite(sf::Sprite cardSprite) {
 	_cardSprite = cardSprite;
 }
 
+void Tile::addCardDescBarSprite(sf::Sprite cardDescBarSprite)
+{
+	_cardDescBarSprite.push_back(cardDescBarSprite);
+}
+
+void Tile::addCardDescBarSprite(sf::Text cardDescBarSprite) {
+	_cardDescBarText.push_back(cardDescBarSprite);
+}
+
+void Tile::resetCardDescBarSprites()
+{
+	_cardDescBarSprite = {};
+	_cardDescBarText = {};
+}
+
+void Tile::drawCardDescBarSprite(sf::RenderWindow& window)
+{
+	for (int i = 0; i < _cardDescBarSprite.size(); i++) {
+		window.draw(_cardDescBarSprite[i]);
+	}
+	for (int i = 0; i < _cardDescBarText.size(); i++) {
+		window.draw(_cardDescBarText[i]);
+	}
+}
+
 void Tile::removeCardSprite() {
 	// cannot reset so just set to nothing
 	sf::Texture tempSprite;

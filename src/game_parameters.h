@@ -79,6 +79,8 @@ struct GameParameters {
 	/// </summary>
 	static sf::Sprite cardDescBar;
 
+	static sf::Sprite cardEnergyBar;
+
 	/// <summary>
 	/// Sprite of the heart icon for use with cardDescBar.
 	/// </summary>

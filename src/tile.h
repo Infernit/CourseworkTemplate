@@ -21,6 +21,11 @@ public:
 	void setSize(float size);
 	void setOccupied(bool occupied);
 	void setCardSprite(sf::Sprite cardSprite);
+	void addCardDescBarSprite(sf::Sprite cardDescBarSprite);
+	void addCardDescBarSprite(sf::Text cardDescBarSprite);
+	void resetCardDescBarSprites();
+
+	void drawCardDescBarSprite(sf::RenderWindow& window);
 
 	// Helpers
 	void removeCardSprite();
@@ -32,4 +37,6 @@ private:
 	bool _occupied;
 	sf::RectangleShape _shape;
 	sf::Sprite _cardSprite;
+	std::vector<sf::Sprite> _cardDescBarSprite;
+	std::vector<sf::Text> _cardDescBarText;
 };

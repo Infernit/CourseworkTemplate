@@ -35,11 +35,10 @@ float GameParameters::tileHeight = 45;
 float GameParameters::cardDescBarWidth = 16;
 float GameParameters::healthBarHeight = 20;
 // Normal board
-int GameParameters::windowWidth = ((int)GameParameters::tileWidth + (int)GameParameters::cardDescBarWidth
-	// + graveyard
-	+ (int)GameParameters::tileWidth + (int)GameParameters::cardDescBarWidth) * 15;
+int GameParameters::windowWidth = ((int)GameParameters::tileWidth + (int)GameParameters::cardDescBarWidth) * 16;
 int GameParameters::windowHeight = (int)GameParameters::tileHeight * 6 + (int)GameParameters::healthBarHeight * 2;
 sf::Font GameParameters::font;
 sf::Sprite GameParameters::cardDescBar;
+sf::Sprite GameParameters::cardEnergyBar;
 sf::Sprite GameParameters::heart;
 sf::Sprite GameParameters::club;

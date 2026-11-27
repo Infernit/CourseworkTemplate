@@ -64,6 +64,13 @@ Board::Board(GameSystem* system)  {
 	// Set graveyard cards
 	_player1GraveyardCards = {};
 	_player2GraveyardCards = {};
+
+	_playerHandTiles[1] = {};
+	_playerHandTiles[2] = {};
+	_playerBoardTiles[1] = {};
+	_playerBoardTiles[2] = {};
+	_playerGraveyardTiles[1] = {};
+	_playerGraveyardTiles[2] = {};
 	
 	//Attempt to load spritesheet and throw error if fails.
 	std::string sprite_path = std::string(RESOURCE_DIR) + "/img/sprite_sheet.png";
@@ -88,6 +95,12 @@ Board::Board(GameSystem* system)  {
 			sf::Vector2i(429, 90),
 			sf::Vector2i(16, 45)));
 	GameParameters::cardDescBar = temp;
+
+	temp.setTextureRect(
+		sf::IntRect(
+			sf::Vector2i(429, 135),
+			sf::Vector2i(16, 45)));
+	GameParameters::cardEnergyBar = temp;
 
 	//Cut club icon from spritesheet
 	temp.setTextureRect(sf::IntRect(
@@ -1107,14 +1120,212 @@ Tile Board::getTileFromBoardtiles(int xVal, int yVal) {
 	}
 }
 
+sf::Sprite Board::setPositionRelativeToCardDescBar(Tile tile, sf::Sprite sprite, int xOffset, int yOffset)
+{
+	sprite.setPosition((GameParameters::tileWidth + GameParameters::cardDescBarWidth) * tile.getX() + xOffset + GameParameters::tileWidth,
+		GameParameters::tileHeight * tile.getY() + GameParameters::healthBarHeight + yOffset);
+	return sprite;
+}
+
+sf::Text Board::setPositionRelativeToCardDescBar(Tile tile, sf::Text sprite, int xOffset, int yOffset) {
+	sprite.setPosition((GameParameters::tileWidth + GameParameters::cardDescBarWidth) * tile.getX() + xOffset + GameParameters::tileWidth,
+		GameParameters::tileHeight * tile.getY() + GameParameters::healthBarHeight + yOffset);
+	return sprite;
+}
+
 void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) {
+
+	//New system trial code
+	// Player 2 healthbar space
+
+	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f((GameParameters::windowWidth), GameParameters::healthBarHeight));
+	// make sure its being positioned correctly
+	healthbarPlayer2Red.setPosition(0.f, 0.f);
+	healthbarPlayer2Red.setFillColor(sf::Color::Red);
+	window.draw(healthbarPlayer2Red);
+
+	// Place a green on top that will decrease in size as player takes damage
+	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)(GameParameters::windowWidth) * (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
+	healthbarPlayer2.setPosition(0.f, 0.f);
+	healthbarPlayer2.setFillColor(sf::Color::Green);
+	window.draw(healthbarPlayer2);
+
+	//Player 1 healthbar
+	sf::RectangleShape healthbarPlayer1Red(sf::Vector2f((GameParameters::windowWidth), GameParameters::healthBarHeight));
+	// make sure its being positioned correctly
+	healthbarPlayer1Red.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
+	healthbarPlayer1Red.setFillColor(sf::Color::Red);
+	window.draw(healthbarPlayer1Red);
+
+	// Place a green on top that will decrease in size as player takes damage
+	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)(GameParameters::windowWidth) * (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
+	// To account for lines (1px each)
+	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
+	healthbarPlayer1.setFillColor(sf::Color::Green);
+	window.draw(healthbarPlayer1);
+
+	Player* p;
+	std::vector<int> limits = { 
+		GameParameters::handSize, 
+		GameParameters::boardSize, 
+		8
+	};
+	std::vector<std::map<int, std::vector<Tile>>*> maps = { 
+		&_playerHandTiles, 
+		&_playerBoardTiles, 
+		&_playerGraveyardTiles 
+	};
+
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			p = p1;
+		}
+		else {
+			p = p2;
+		}
+
+		std::vector<std::vector<Card>> currentCards = {
+			p->getHand(),
+			getFriendlyCards(p),
+			getFriendlyGraveyardCards(p)
+		};
+
+		std::vector<int> xPositions = {
+			0,
+			1,
+			8
+		};
+
+		std::vector<int> yPositions = {
+			(p->getPlayerNumber() == 1 ? 5 : 0),
+			(p->getPlayerNumber() == 1 ? 3 : 2),
+			(p->getPlayerNumber() == 1 ? 3 : 2)
+		};
+
+		//loop through hand, then board, then graveyard
+		for (int k = 0; k < limits.size(); k++) {
+			for (int j = 0; j < limits[k]; j++) {
+				//always create a tile even if there isnt a card in it
+				Tile tile(j + xPositions[k], yPositions[k], true, GameParameters::tileWidth, GameParameters::tileHeight, sf::Color::Yellow);
+
+				sf::Sprite s;
+				sf::Text txt;
+				txt.setFont(GameParameters::font);
+				txt.setCharacterSize(4);
+
+				//cut card if exists
+				//only do this if there is a card in that hand slot
+				if (j < currentCards[k].size()) {
+					//cut card
+					s = cutCard(currentCards[k][j]);
+					tile.setOccupied(true);
+					tile.resetCardDescBarSprites();
+
+					if (k == 0) {
+						tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, GameParameters::cardEnergyBar, 0, 0));
+						txt.setString(std::to_string(currentCards[k][j].getCardEnergyCost()));
+						txt.setColor(sf::Color(0, 0, 0, 255));
+						tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, txt, 9, 20));
+					}
+
+					else if (k == 1) {
+						tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, GameParameters::cardDescBar, 0, 0));
+
+						if (currentCards[k][j].getCardSuit().getSuitName() == clubs) {
+							//If the card is a club, draw the club icon in the first slot.
+							tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, GameParameters::club, 3, 7));
+
+							//Set the colour of the text next to it to the club colour.
+							txt.setColor(sf::Color(91, 110, 225, 255));
+						}
+
+						else if (currentCards[k][j].getCardSuit().getSuitName() == hearts) {
+							//If the card is a heart, draw the heart icon in the first slot.
+							tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, GameParameters::heart, 3, 7));
+
+							//Set the colour of the text next to it to the heart colour.
+							txt.setColor(sf::Color(255, 0, 0, 255));
+						}
+
+						//Set the text to the value of the card's effect and draw it.
+						if (currentCards[k][j].getCardRank() == 11 && currentCards[k][j].getCardSuit().getSuitName() == clubs) {
+							txt.setString("?");
+						}
+						else if (currentCards[k][j].getCardRank() == 12 && currentCards[k][j].getCardSuit().getSuitName() == clubs) {
+							txt.setString("0");
+						}
+						else if (currentCards[k][j].getCardSuit().getSuitName() == clubs || currentCards[k][j].getCardSuit().getSuitName() == hearts) {
+							txt.setString(std::to_string((int)currentCards[k][j].getCardEffect().getValue()));
+						}
+						else {
+							txt.setString("");
+						}
+
+						tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, txt, 9, 7));
+
+						//Set the text to the value of the card's health and draw it.
+						txt.setString(std::to_string((int)currentCards[k][j].getCardHealth()));
+						txt.setColor(sf::Color(255, 0, 0, 255));
+						tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, txt, 9, 16));
+
+
+						//Set the text to the value of the card's diamond effect and draw it.
+						txt.setString(std::to_string((int)currentCards[k][j].getEffectIncreases()));
+						txt.setColor(sf::Color(235, 134, 27, 255));
+						tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, txt, 9, 25));
+
+						//SHOULD SHOW THE SPADE EFFECT BUT CURRENTLY DOESNT WORK.
+						txt.setString(std::to_string((int)(1.f / currentCards[k][j].getDamageDecrease())));
+						txt.setColor(sf::Color(0, 0, 0, 255));
+						tile.addCardDescBarSprite(setPositionRelativeToCardDescBar(tile, txt, 9, 34));
+					}
+
+
+				}
+
+				//otherwise just show the back of the card the represent an "empty" board spot (can just not render maybe)
+				else {
+					s = sf::Sprite(GameParameters::spritesheet);
+					
+					s.setTextureRect(
+						sf::IntRect(
+							sf::Vector2i(
+								(13) * GameParameters::tileWidth,
+								(0) * GameParameters::tileHeight),
+							sf::Vector2i(
+								GameParameters::tileWidth,
+								GameParameters::tileHeight)));
+					tile.setOccupied(false);
+				}
+
+				s.setPosition(tile.getX() * (GameParameters::tileWidth + GameParameters::cardDescBarWidth),
+					tile.getY() * GameParameters::tileHeight + GameParameters::healthBarHeight);
+
+				//apply sprite to tile
+				tile.setCardSprite(s);
+
+				//add tile to dictionary
+				maps[k]->at(p->getPlayerNumber()).push_back(tile);
+			}
+		}
+	}
+
+	for (int i = 0; i < maps.size(); i++) {
+		for (int j = 0; j < 2; j++) {
+			for (int k = 0; k < maps.at(i)->at(j + 1).size(); k++) {
+				window.draw(maps.at(i)->at(j + 1).at(k).getShape());
+				window.draw(maps.at(i)->at(j + 1).at(k).getCardSprite());
+				maps.at(i)->at(j + 1).at(k).drawCardDescBarSprite(window);
+			}
+		}
+	}
 
 	//========================================================//
 	//---THIS FUNCTION IS A WIP AND VERY MUCH NOT EFFICIENT---//
 	//========================================================//
 
 	//Create tiles
-
+	/*
 	// Regular board
 	// Change so only half
 	// Its only supposed to be 15 tiles wide
@@ -1128,7 +1339,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			Tile tile = Tile(x, y, false, GameParameters::tileWidth, GameParameters::tileHeight, sf::Color::Yellow);
 			// Add to tile list?
 			boardTiles.push_back(tile);
-			/*
+			
 			//Tile(int x, int y, bool occupied, int tileWidth, int tileHeight, sf::Color colour)
 			//Tiles should be of card width (tileWidth) + card desc bar width and card height (tileHeight).
 			sf::RectangleShape tile(sf::Vector2f(GameParameters::tileWidth + GameParameters::cardDescBarWidth, GameParameters::tileHeight));
@@ -1140,7 +1351,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			tile.setFillColor(sf::Color::Yellow);
 			tile.setOutlineThickness(1.f);
 			tile.setOutlineColor(sf::Color::Black);
-			*/
+			
 			window.draw(tile.getShape());
 		}
 	}
@@ -1155,7 +1366,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			Tile tile(x, y, false, GameParameters::tileWidth, GameParameters::tileHeight, sf::Color::Cyan);
 			boardTiles.push_back(tile);
 			// Add to tile list?
-			/*
+			
 			sf::RectangleShape tile(sf::Vector2f(GameParameters::tileWidth + GameParameters::cardDescBarWidth, GameParameters::tileHeight));
 
 			tile.setPosition(x * (GameParameters::tileWidth + GameParameters::cardDescBarWidth), y * GameParameters::tileHeight + GameParameters::healthBarHeight);
@@ -1164,7 +1375,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			tile.setFillColor(sf::Color::Cyan);
 			tile.setOutlineThickness(1.f);
 			tile.setOutlineColor(sf::Color::Black);
-			*/
+			
 			window.draw(tile.getShape());
 		}
 
@@ -1642,6 +1853,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
 	healthbarPlayer1.setFillColor(sf::Color::Green);
 	window.draw(healthbarPlayer1);
+	*/
 
 }
 

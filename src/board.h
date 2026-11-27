@@ -140,6 +140,9 @@ public:
 	void changeTileToOccupied(int xVal, int yVal);
 	Tile getTileFromBoardtiles(int xVal, int yVal);
 
+	sf::Sprite setPositionRelativeToCardDescBar(Tile tile, sf::Sprite sprite, int xOffset, int yOffset);
+	sf::Text setPositionRelativeToCardDescBar(Tile tile, sf::Text sprite, int xOffset, int yOffset);
+
 private:
 	/// <summary>
 	/// Vector containing all of player 1's cards on the board.
@@ -158,4 +161,8 @@ private:
 	std::vector<Card> _player2GraveyardCards;
 
 	GameSystem* _system;
+
+	std::map<int, std::vector<Tile>> _playerBoardTiles;
+	std::map<int, std::vector<Tile>> _playerHandTiles;
+	std::map<int, std::vector<Tile>> _playerGraveyardTiles;
 };
