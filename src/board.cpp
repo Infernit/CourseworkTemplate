@@ -93,6 +93,7 @@ Board::Board(GameSystem* system)  {
 		sf::Vector2i(445, 94),
 		sf::Vector2i(4, 4)));
 	GameParameters::heart = temp;
+
 }
 
 void Board::removeDeadCards() {
