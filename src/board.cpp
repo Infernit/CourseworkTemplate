@@ -1240,15 +1240,15 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			//Set location based on temp variables.
 			tempSprite.setPosition(tempPosX, tempPosY);
 
-		// set sprite from tile x and y
+			// set sprite from tile x and y
 
-		// Add to occupied tile list
-		/*
-		Tile tempTile = Tile(tempPosX, tempPosY, true, sf::Color yellow);
-		Board::boardTiles.push_back(tempTile);
-		*/
-		//Draw card in window.
-		window.draw(tempSprite);
+			// Add to occupied tile list
+			/*
+			Tile tempTile = Tile(tempPosX, tempPosY, true, sf::Color yellow);
+			Board::boardTiles.push_back(tempTile);
+			*/
+			//Draw card in window.
+			window.draw(tempSprite);
 
 			//Move cardDescBar to next to the card and draw it.
 			GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
@@ -1271,27 +1271,27 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 				tempText.setColor(sf::Color(255, 0, 0, 255));
 			}
 
-		//Set the text to the value of the card's effect and draw it.
-		if (_player1BoardCards[i].getCardRank() == 11 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
-			tempText.setString("?");
-		}
-		else if (_player1BoardCards[i].getCardRank() == 12 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
-			tempText.setString(std::to_string((int)(10 / (_player2BoardCards.size() == 0 ? 1 : _player2BoardCards.size()))) + "*" + std::to_string(_player2BoardCards.size()));
-		}
-		else {
-			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
-		}
+			//Set the text to the value of the card's effect and draw it.
+			if (_player1BoardCards[i].getCardRank() == 11 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+				tempText.setString("?");
+			}
+			else if (_player1BoardCards[i].getCardRank() == 12 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+				tempText.setString(std::to_string((int)(10 / (_player2BoardCards.size() == 0 ? 1 : _player2BoardCards.size()))) + "*" + std::to_string(_player2BoardCards.size()));
+			}
+			else {
+				tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
+			}
 
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
-		window.draw(tempText);
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
+			window.draw(tempText);
 
-		//Set the text to the value of the card's health and draw it.
-		if (_player1BoardCards[i].getOverhealth() != 0) {
-			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
-				+ (int)_player1BoardCards[i].getOverhealth()));
-			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-			tempText.setColor(sf::Color(231, 48, 209, 255));
-		}
+			//Set the text to the value of the card's health and draw it.
+			if (_player1BoardCards[i].getOverhealth() != 0) {
+				tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
+					+ (int)_player1BoardCards[i].getOverhealth()));
+				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+				tempText.setColor(sf::Color(231, 48, 209, 255));
+			}
 
 			else {
 				tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
@@ -1439,12 +1439,12 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 			//Draw card in window.
 			window.draw(tempSprite);
-		// Add to occupied tile list
-		Tile tempTile = Tile(tempPosX, tempPosY, true);
-		Board::boardTiles.push_back(tempTile);
+			// Add to occupied tile list
+			Tile tempTile = Tile(tempPosX, tempPosY, true);
+			Board::boardTiles.push_back(tempTile);
 
-		//Draw card in window.
-		window.draw(tempSprite);
+			//Draw card in window.
+			window.draw(tempSprite);
 
 			//Move cardDescBar to next to the card and draw it.
 			GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
