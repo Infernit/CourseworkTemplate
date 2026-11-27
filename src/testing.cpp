@@ -131,6 +131,8 @@ void Testing::testing_effects_stuff() {
 
 	std::cout << "player health post attack: " << player.getHealth() << std::endl;
 
+
+
 }
 
 void Testing::mockup_round() {
@@ -149,227 +151,408 @@ void Testing::mockup_round() {
 	Board board(&system);
 	//Havent bothered validating this as it wont be the final version
 
+	/*
+	bool draggingCard = false;
+
+	while (window.isOpen()) {
+
+		bool allowedToMove = true;
+
+		// Interactable tiles (using mouse...)
+		 // window should recognise where mouse is
+		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
+		// breakpoint to check mouse position
+		// Continously calculates as prog runs (good)
+		int currentTileX = mousePos.x / Board::tileWidth;
+		int currentTileY = mousePos.y / Board::tileHeight;
+
+		// highlights (reactive)
+		// do not work in fs, only minimised / default window
+		sf::RectangleShape highlightTile(sf::Vector2f(Board::tileWidth, Board::tileHeight));
+
+		highlightTile.setPosition(currentTileX * Board::tileWidth, currentTileY * Board::tileHeight);
+		highlightTile.setFillColor(sf::Color(255, 255, 0, 100)); // Yellow with transparency
+		window.draw(highlightTile);
+
+		sf::Event event;
+
+		while (window.pollEvent(event)) {
+
+			if (event.type == sf::Event::Closed) {
+				window.close();
+			}
+
+			// disable movement for now
+
+			// Mouse drags card
+			if (event.type == sf::Event::MouseButtonPressed) {
+
+				if (event.mouseButton.button == sf::Mouse::Left) {
+
+					// test statement
+					std::cout << "MOUSE INTERACT\n";
+
+					// Get mouse position
+					sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+					// Convert to grid coordinates
+					// Print out grid positions (test passed)
+					sf::Vector2f gridPos = pixelsToGrid(sf::Vector2f(mousePos));
+					std::cout << "Mouse pressed at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
+
+					// Prepare for future logic with allowed to move var
+					if (cardTest1.getGlobalBounds().contains(
+						static_cast<float>(mousePos.x),
+						static_cast<float>(mousePos.y))
+						&& allowedToMove == true) {
+						draggingCard = true;
+					}
+
+				}
+			}
+
+			// Mouse releases card
+			if (event.type == sf::Event::MouseButtonReleased) {
+				if (event.mouseButton.button == sf::Mouse::Left) {
+
+					std::cout << "MOUSE RELEASE\n";
+
+					sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+					sf::Vector2f gridPos = pixelsToGrid(sf::Vector2f(mousePos));
+					std::cout << "Mouse released at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
+
+					// Only move it if the tile it was on was interacted with ?
+					if (draggingCard == true) {
+						cardTest1.setPosition(gridPos.x * Board::tileWidth, gridPos.y * Board::tileHeight);
+					}
+
+					// reset to default val
+					draggingCard = false;
+				}
+			}
+
+		}
+
+		//window.draw(cardTest1);
+		window.display();
+
+	}
+	*/
 	Player* player = player1;
 	Player* opponent = player2;
 
 	sf::RenderWindow window(sf::VideoMode({ (unsigned)GameParameters::windowWidth, (unsigned)GameParameters::windowHeight }), "SFML works!");
-	
-	//Outmost loop, loops until a player dies.
-	while (player1->getHealth() > 0 && player2->getHealth() > 0) {
 
-		std::cout 
-			<< std::endl 
-			<< "ROUND " 
-			<< GameParameters::turnNumber
-			<< ": Player 1 HP = " 
-			<< player1->getHealth() 
-			<< ", Player 2 HP = " 
-			<< player2->getHealth() 
-			<< std::endl 
-			<< std::endl;
+	while (window.isOpen()) {
 
-		//Player 1 turn stuff
-		if (system.getTurn() == 1) {
-			player = player1;
-			opponent = player2;
-		}
-		//Player 2 turn stuff
-		else {
-			player = player2;
-			opponent = player1;
-		}
+		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
+		// breakpoint to check mouse position
+		// Continously calculates as prog runs (good)
+		int currentTileX = mousePos.x / GameParameters::tileWidth;
+		int currentTileY = mousePos.y / GameParameters::tileHeight;
 
 		//Changing turn
 		std::cout << "\x1b[2J";
 
-		int temp = 0;
-		std::cout << "TYPE A NUMBER AND PRESS ENTER TO START NEXT TURN";
-		std::cin >> temp;
+		sf::Event event;
 
-		std::cout
-			<< std::endl
-			<< "PLAYER "
-			<< system.getTurn()
-			<< "'S TURN"
-			<< std::endl
-			<< std::endl;
+		while (window.pollEvent(event)) {
 
-		//Set player energy to current max energy
-		player->setCurrentEnergy(GameSystem::getMaxEnergy());
+			// Starting turn
+			// Wait for click?
+			if (event.type == sf::Event::MouseButtonPressed) {
 
-		//Fill players hand from deck
-		player->fillHand();
-		board.aceDamageCard(player);
+				if (event.mouseButton.button == sf::Mouse::Left) {
 
-		board.setPlayerCardsUsable(player);
+					// Freezing for console input
+					while (player1->getHealth() > 0 && player2->getHealth() > 0) {
 
-		//==============TESTING=============//
-		//COMMENT THIS OUT FOR A STANDARD GAME
-		//Replace below card with card that needs testing
-		/*
-		Suit spadesSuit(clubs, GameParameters::getClubEffect());
-		Card jackOfSpades(spadesSuit, 13);
-		//player->setCurrentEnergy(12);
-		player->forceCardIntoHand(jackOfSpades);
-		*/
+						//Player 1 turn stuff
+						if (system.getTurn() == 1) {
+							player = player1;
+							opponent = player2;
+						}
 
-		board.placeCardsOnBoard(player1, player2, window);
-		window.display();
+						//Player 2 turn stuff
+						else {
+							player = player2;
+							opponent = player1;
+						}
 
-		//Play cards from hand
-		while (player->getCurrentEnergy() > 0) {
-			// Turn number
-			std::cout
-				<< "Turn Number: "
-				<< GameParameters::turnNumber
-				<< std::endl
-				<< "-----------------"
-				<< std::endl;
 
-			std::cout
-				<< "Current Energy: "
-				<< player->getCurrentEnergy()
-				<< std::endl
-				<< "-----------------"
-				<< std::endl;
+						std::cout
+							<< std::endl
+							<< "PLAYER "
+							<< system.getTurn()
+							<< "'S TURN"
+							<< std::endl
+							<< std::endl;
 
-			//List player cards
-			for (int i = 0; i < player->getHand().size(); i++) {
-				std::cout
-					<< i + 1
-					<< ": "
-					<< params::cardNames[player->getHand()[i].getCardRank()]
-					<< " of "
-					<< params::suitNames[player->getHand()[i].getCardSuit().getSuitName()]
-					<< std::endl;
-			}
+						//Set player energy to current max energy
+						player->setCurrentEnergy(GameSystem::getMaxEnergy());
 
-			std::cout << "0: Manually End Turn" << std::endl;
+						//Fill players hand from deck
+						player->fillHand();
+						board.aceDamageCard(player);
 
-			//Get user input
-			std::cout 
-				<< std::endl 
-				<< "Pick card to play: ";
-			int num;
-			std::cin >> num;
+						board.setPlayerCardsUsable(player);
 
-			//Try play card based on user input
-			if (num == 0) {
-				break;
-			}
-			else if (!board.playCard(player, opponent, player->getHand()[num - 1])) {
-				std::cout
-					<< std::endl
-					<< "Invalid Option"
-					<< std::endl
-					<< std::endl;
-			}
-		}
+						//==============TESTING=============//
+						//COMMENT THIS OUT FOR A STANDARD GAME
+						//Replace below card with card that needs testing
+						/*
+						Suit spadesSuit(clubs, GameParameters::getClubEffect());
+						Card jackOfSpades(spadesSuit, 13);
+						//player->setCurrentEnergy(12);
+						player->forceCardIntoHand(jackOfSpades);
+						*/
 
-		//Play cards on board
-		bool keepLooping = true;
+						board.placeCardsOnBoard(player1, player2, window);
+						window.display();
 
-		while (keepLooping) {
-			//Lower flag by default
-			keepLooping = false;
+						//Play cards from hand
+						while (player->getCurrentEnergy() > 0) {
+							// Turn number
+							std::cout
+								<< "Turn Number: "
+								<< GameParameters::turnNumber
+								<< std::endl
+								<< "-----------------"
+								<< std::endl;
 
-			std::cout
-				<< std::endl
-				<< "Playable Cards:"
-				<< std::endl
-				<< "---------------"
-				<< std::endl;
+							std::cout
+								<< "Current Energy: "
+								<< player->getCurrentEnergy()
+								<< std::endl
+								<< "-----------------"
+								<< std::endl;
 
-			int index = 1;
+							//List player cards
+							for (int i = 0; i < player->getHand().size(); i++) {
+								std::cout
+									<< i + 1
+									<< ": "
+									<< params::cardNames[player->getHand()[i].getCardRank()]
+									<< " of "
+									<< params::suitNames[player->getHand()[i].getCardSuit().getSuitName()]
+									<< std::endl;
+							}
 
-			//List usable player cards
-			for (Card card : board.getFriendlyCards(player)) {
-				std::cout
-					<< index
-					<< ": "
-					<< params::cardNames[card.getCardRank()]
-					<< " of "
-					<< params::suitNames[card.getCardSuit().getSuitName()]
-					<< " - HP: "
-					<< card.getCardHealth()
-					<< " - OH: "
-					<< card.getOverhealth()
-					<< ", DB: "
-					<< card.getEffectIncreases()
-					<< ", DD: "
-					<< card.getDamageDecrease()
-					<< ", Usable? "
-					<< (card.getIsUsable() ? "True" : "False")
-					<< std::endl;
+							std::cout << "0: Manually End Turn" << std::endl;
 
-				index++;
+							//Get user input
+							std::cout
+								<< std::endl
+								<< "Pick card to play: ";
+							int num;
+							std::cin >> num;
 
-				//Raise flag if player has usable card on board
-				if (card.getIsUsable()) {
-					keepLooping = true;
+							//Try play card based on user input
+							if (num == 0) {
+								break;
+							}
+							else if (!board.playCard(player, opponent, player->getHand()[num - 1])) {
+								std::cout
+									<< std::endl
+									<< "Invalid Option"
+									<< std::endl
+									<< std::endl;
+							}
+						}
+
+						//Play cards on board
+						bool keepLooping = true;
+
+						while (keepLooping) {
+							//Lower flag by default
+							keepLooping = false;
+
+							std::cout
+								<< std::endl
+								<< "Playable Cards:"
+								<< std::endl
+								<< "---------------"
+								<< std::endl;
+
+							int index = 1;
+
+							//List usable player cards
+							for (Card card : board.getFriendlyCards(player)) {
+								std::cout
+									<< index
+									<< ": "
+									<< params::cardNames[card.getCardRank()]
+									<< " of "
+									<< params::suitNames[card.getCardSuit().getSuitName()]
+									<< " - HP: "
+									<< card.getCardHealth()
+									<< " - OH: "
+									<< card.getOverhealth()
+									<< ", DB: "
+									<< card.getEffectIncreases()
+									<< ", DD: "
+									<< card.getDamageDecrease()
+									<< ", Usable? "
+									<< (card.getIsUsable() ? "True" : "False")
+									<< std::endl;
+
+								index++;
+
+								//Raise flag if player has usable card on board
+								if (card.getIsUsable()) {
+									keepLooping = true;
+								}
+							}
+
+							if (!keepLooping) {
+								break;
+							}
+
+							std::cout << std::endl;
+
+							//Get user input
+							std::cout << "Pick card to use: ";
+							int num1;
+							std::cin >> num1;
+
+							std::cout << std::endl;
+
+							//SWITCH CASE
+
+							Card* cardToUse = &board.getFriendlyCards(player)[num1 - 1];
+
+							if (cardToUse->getIsUsable()) {
+								board.playCardRankAndSuit(player, opponent, *cardToUse);
+							}
+							else {
+								std::cout << "Card cannot be used" << std::endl;
+							}
+
+							//... SPECIAL CARD
+							//LOOP THROUGH ALL CARDS AND EFFECT THEM
+							//modified version of tryPlayCardToEffectable that just effects all of them instead of targeting.
+						}
+
+						board.resetDamageDebuffs(player);
+
+						/*
+						if (params::startingEnergy < 10) {
+							params::startingEnergy++;
+						}
+						*/
+						if (system.getTurn() == 2 && !system.getSkipTurn()) {
+
+							// Turn number and energy increase together
+							GameSystem::setMaxEnergy(GameSystem::getMaxEnergy() + 1);
+							params::turnNumber++;
+
+							// Loop through each players hand and deck if turn  number 11 is reached
+
+							if (GameSystem::getMaxEnergy() == 11) {
+								// PLAYER 1
+								// Loop deck
+								player1->turnHandAcesInto11Aces();
+
+								player1->turnDeckAcesInto11Aces();
+
+
+								player2->turnHandAcesInto11Aces();
+
+								player2->turnDeckAcesInto11Aces();
+							}
+
+							//round++
+						}
+
+						system.nextTurn();
+					}
+
 				}
+
+			}
+			/*
+
+			if (event.type == sf::Event::Closed) {
+				window.close();
 			}
 
-			if (!keepLooping) {
-				break;
-			}
 
-			std::cout << std::endl;
+			//Outmost loop, loops until a player dies.
+			while (player1->getHealth() > 0 && player2->getHealth() > 0) {
 
-			//Get user input
-			std::cout << "Pick card to use: ";
-			int num1;
-			std::cin >> num1;
-
-			std::cout << std::endl;
-
-			//SWITCH CASE
+				/*
+				std::cout
+					<< std::endl
+					<< "ROUND "
+					<< GameParameters::turnNumber
+					<< ": Player 1 HP = "
+					<< player1->getHealth()
+					<< ", Player 2 HP = "
+					<< player2->getHealth()
+					<< std::endl
+					<< std::endl;
 				
-			Card* cardToUse = &board.getFriendlyCards(player)[num1 - 1];
 
-			if (cardToUse->getIsUsable()) {
-				board.playCardRankAndSuit(player, opponent, *cardToUse);
-			}
-			else {
-				std::cout << "Card cannot be used" << std::endl;
-			}
+				// Moving Card
+				// disable movement for now
+				if (event.type == sf::Event::MouseButtonPressed) {
+
+					// Mouseclick left
+					if (event.mouseButton.button == sf::Mouse::Left) {
+
+						// test statement
+						std::cout << "MOUSE INTERACT\n";
+
+						// Get mouse position
+						sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+						// Convert to grid coordinates
+						// Print out grid positions (test passed)
+
+						sf::Vector2f gridPos = Board::pixelsToGrid(sf::Vector2f(mousePos));
+						std::cout << "Mouse pressed at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
+
+						
+						// Prepare for future logic with allowed to move var
+						if (cardTest1.getGlobalBounds().contains(
+							static_cast<float>(mousePos.x),
+							static_cast<float>(mousePos.y)) {
+							//&& allowedToMove == true) {
+							//&& allowedToMove == true) {
+							//draggingCard = true;
+						}
+						
+					}
+
+					// Mouse releases card
+					if (event.type == sf::Event::MouseButtonReleased) {
+						if (event.mouseButton.button == sf::Mouse::Left) {
+
+							std::cout << "MOUSE RELEASE\n";
+
+							sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+							sf::Vector2f gridPos = Board::pixelsToGrid(sf::Vector2f(mousePos));
+							std::cout << "Mouse released at grid position: (" << gridPos.x << ", " << gridPos.y << ")" << std::endl;
+
+							
+							// Only move it if the tile it was on was interacted with ?
+							if (draggingCard == true) {
+								cardTest1.setPosition(gridPos.x * Board::tileWidth, gridPos.y * Board::tileHeight);
+							}
+							
+
+							// reset to default val
+							//draggingCard = false;
+						}
+
+					}
+					
+				}
 				
-			//... SPECIAL CARD
-			//LOOP THROUGH ALL CARDS AND EFFECT THEM
-			//modified version of tryPlayCardToEffectable that just effects all of them instead of targeting.
+			}
+			*/
 		}
 
-		board.resetDamageDebuffs(player);
-		
-		/*
-		if (params::startingEnergy < 10) {
-			params::startingEnergy++;
-		}
-		*/
-		if (system.getTurn() == 2 && !system.getSkipTurn()) {
-
-			// Turn number and energy increase together
-			GameSystem::setMaxEnergy(GameSystem::getMaxEnergy() + 1);
-			params::turnNumber++;
-
-			// Loop through each players hand and deck if turn  number 11 is reached
-
-			if (GameSystem::getMaxEnergy() == 11) {
-				// PLAYER 1
-				// Loop deck
-				player1->turnHandAcesInto11Aces();
-
-				player1->turnDeckAcesInto11Aces();
-
-				
-				player2->turnHandAcesInto11Aces();
-
-				player2->turnDeckAcesInto11Aces();
-			}
-
-			//round++;
-		}
-
-		system.nextTurn();
 	}
+
 }
