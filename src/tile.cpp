@@ -1,0 +1,47 @@
+#include "tile.h"
+#include "game_parameters.h"
+
+Tile(int x, int y, bool occupied, int tileWidth, int tileHeight, sf::Color colour) {
+	_x = x;
+	_y = y;
+	_occupied = occupied
+
+	// sfml properties
+	_shape = sf::RectangleShape tile(sf::Vector2f(GameParameters::tileWidth + GameParameters::cardDescBarWidth, GameParameters::tileHeight));
+	_shape.setFillColor(colour);
+	_shape.setPosition(x * (GameParameters::tileWidth + GameParameters::cardDescBarWidth), y * GameParameters::tileHeight + GameParameters::healthBarHeight);
+	_shape.setOutlineThickness(1.f);
+	_shape.setOutlineColor(sf::Color::Black);
+}
+
+int getOccupuied() {
+	return _occupied;
+}
+
+int getX() {
+	return _x;
+}
+
+int getY() {
+	return _y;
+}
+
+sf::RectangleShape getShape() {
+	return _shape;
+}
+
+sf::Sprite getCardSprite() {
+	return _cardSprite;
+}
+
+void setOccupied(bool occupied) {
+	_occupied = occupied
+}
+
+void setCardSprite(sf::Sprite cardSprite) {
+	_cardSprite = cardSprite;
+}
+
+void removeCardSprite() {
+	_cardSprite.reset();
+}

@@ -3,6 +3,9 @@
 #include "game_parameters.h"
 #include <vector>
 #include <SFML/Graphics.hpp>
+// For tile occupation tracking
+//#include <map>
+#include "tile.h"
 
 /// <summary>
 /// Class for board rendering and card handling.
@@ -14,6 +17,10 @@ public:
 	/// Constructor
 	/// </summary>
 	Board(GameSystem* system);
+	// Maps
+	std::map<std::pair<int,int>, bool> occupiedPlayer1Tiles;
+	std::map<std::pair<int, int>, bool> occupiedPlayer2Tiles;
+	std::vector<Tile> boardTiles;
 
 	/// <summary>
 	/// Converts a px position into the same location on the grid.
@@ -29,6 +36,11 @@ public:
 	/// <param name="gridY">Y location on the grid.</param>
 	/// <returns>Location in px.</returns>
 	sf::Vector2f gridToPixels(int gridX, int gridY);
+
+	//
+	sf::Vector2f getCardPosition(sf::Sprite cardSprite);
+	//
+	void Board::makeValidPlayTilesGlowGreen(int yValue);
 
 	/// <summary>
 	/// Plays the referenced card. Either just plays to board if H or C, or plays to target if D or S.
@@ -120,6 +132,9 @@ public:
 	/// <param name="p2">Player 2, to get their hand contents.</param>
 	/// <param name="window">Window to render to.</param>
 	void placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window);
+
+	void changeTileToOccupied(int xVal, int yVal);
+	Tile Board::getTileFromBoardtiles(int xVal, int yVal);
 
 private:
 	/// <summary>

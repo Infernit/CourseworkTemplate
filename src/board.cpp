@@ -1,6 +1,7 @@
 #include "board.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "tile.h";
 
 sf::Vector2f Board::pixelsToGrid(sf::Vector2f mousePos) {
 	int gridX = static_cast<int>(mousePos.x) / GameParameters::tileWidth;
@@ -10,6 +11,49 @@ sf::Vector2f Board::pixelsToGrid(sf::Vector2f mousePos) {
 
 sf::Vector2f Board::gridToPixels(int gridX, int gridY) {
 	return sf::Vector2f(gridX * GameParameters::tileWidth, gridY * GameParameters::tileHeight);
+}
+
+// Prepare for interactive draggable cards
+sf::Vector2f Board::getCardPosition(sf::Sprite cardSprite) {
+	// SFML sprites inherit from Transformable, so get position
+	return Board::pixelsToGrid(cardSprite.getPosition());
+}
+
+/*
+// Legal positions
+// Main Board Cards (no graveyard yet)
+
+Player 1 hand
+
+Starting:
+(4,0),(5,0),(6,0),(7,0),(8,0),(9,0),(10,0)
+
+Played to:
+(4,2),(5,2),(6,2),(7,2),(8,2)
+
+Player 2 y = 3
+
+// MAX-NUMBER ALLOWED IS 5
+// It will come up invalid, if more than 5 are attempted to be played
+
+Idea: the valid tile should glow a different colour to indicate they can have a card placed
+*/
+
+// yValue = 2 (player 1) or 3 (player 2)
+// x ranges 4 - 8
+void Board::makeValidPlayTilesGlowGreen(int yValue) {
+	// Valid x for tiles
+	std::vector<int> xRanges = { 4, 5, 6, 7, 8 };
+
+	for (Tile tile : boardTiles) {
+		for (int x : xRanges) {
+			if (tile.getX() == x && tile.getY() == yValue) {
+				// Change colour ???
+
+			}
+		}
+	}
+
 }
 
 Board::Board(GameSystem* system)  {
@@ -879,6 +923,32 @@ sf::Sprite Board::cutCard(Card card) {
 //
 //}
 
+void Board::changeTileToOccupied(int xVal, int yVal) {
+	/*
+	for (x = 0; x < ((int)(GameParameters::windowWidth /
+		(GameParameters::tileWidth + GameParameters::cardDescBarWidth))); x++) {
+		for (int y = 0; y < GameParameters::windowHeight / GameParameters::tileHeight - 1; y++) {
+			if (x == xVal && y = yVal) {
+
+			}
+		}
+	}
+	*/
+	for (Tile tile : boardTiles) {
+		if (tile.getX() == xVal && tile.getY() == yVal) {
+			tile.setOccupied(true);
+		}
+	}
+}
+
+Tile Board::getTileFromBoardtiles(int xVal, int yVal) {
+	for (Tile tile : boardTiles) {
+		if (tile.getX() == xVal && tile.getY() == yVal) {
+			return tile;
+		}
+	}
+}
+
 void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) {
 
 	//========================================================//
@@ -886,7 +956,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	//========================================================//
 
 	//Create tiles
-	
+
 	// Regular board
 	// Change so only half
 	// Its only supposed to be 15 tiles wide
@@ -897,6 +967,11 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 		for (int y = 0; y < GameParameters::windowHeight / GameParameters::tileHeight - 1; y++) {
 
+			Tile tile = Tile(x, y, false, GameParameters::tileWidth, GameParameters::tileHeight, sf::Color::Yellow);
+			// Add to tile list?
+			boardTiles.push_back(tile);
+			/*
+			//Tile(int x, int y, bool occupied, int tileWidth, int tileHeight, sf::Color colour)
 			//Tiles should be of card width (tileWidth) + card desc bar width and card height (tileHeight).
 			sf::RectangleShape tile(sf::Vector2f(GameParameters::tileWidth + GameParameters::cardDescBarWidth, GameParameters::tileHeight));
 
@@ -907,8 +982,8 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			tile.setFillColor(sf::Color::Yellow);
 			tile.setOutlineThickness(1.f);
 			tile.setOutlineColor(sf::Color::Black);
-
-			window.draw(tile);
+			*/
+			window.draw(tile.getShape());
 		}
 	}
 
@@ -919,6 +994,10 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 		for (int y = 0; y < GameParameters::windowHeight / GameParameters::tileHeight - 1; y++) {
 
+			Tile tile = Tile(x, y, false, GameParameters::tileWidth, GameParameters::tileHeight, sf::Color::Cyan);
+			boardTiles.push_back(tile);
+			// Add to tile list?
+			/*
 			sf::RectangleShape tile(sf::Vector2f(GameParameters::tileWidth + GameParameters::cardDescBarWidth, GameParameters::tileHeight));
 
 			tile.setPosition(x * (GameParameters::tileWidth + GameParameters::cardDescBarWidth), y * GameParameters::tileHeight + GameParameters::healthBarHeight);
@@ -927,8 +1006,8 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			tile.setFillColor(sf::Color::Cyan);
 			tile.setOutlineThickness(1.f);
 			tile.setOutlineColor(sf::Color::Black);
-
-			window.draw(tile);
+			*/
+			window.draw(tile.getShape());
 		}
 
 	}
@@ -951,13 +1030,22 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		//Cut each hand card.
 		tempSprite = cutCard(p1->getHand()[i]);
 
+		int tempTileX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+		int tempTileY = 5 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+
 		//Place card in relevant location based on loop.
 		tempSprite.setPosition(
-			(4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth),
-			5 * GameParameters::tileHeight + GameParameters::healthBarHeight);
+			tempTileX,
+			tempTileY);
 
-		//Draw card in window.
-		window.draw(tempSprite);
+		// Draw card in window.
+		Board::changeTileToOccupied(tempTileX, tempTileY);
+		// Pointer issues ....
+		Tile tile = Board::getTileFromBoardtiles(tempTileX, tempTileY);
+		Board::boardTiles.erase(boardTiles.begin() + tile);
+		tile.setCardSprite(tempSprite);
+		window.draw(tile.getCardSprite());
+		Board::boardTiles.push_back(tile);
 	}
 
 	//Board
@@ -972,6 +1060,13 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		//Set location based on temp variables.
 		tempSprite.setPosition(tempPosX, tempPosY);
 
+		// set sprite from tile x and y
+
+		// Add to occupied tile list
+		/*
+		Tile tempTile = Tile(tempPosX, tempPosY, true, sf::Color yellow);
+		Board::boardTiles.push_back(tempTile);
+		*/
 		//Draw card in window.
 		window.draw(tempSprite);
 
@@ -1006,14 +1101,14 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		else {
 			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
 		}
-		
+
 		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
 		window.draw(tempText);
 
 		//Set the text to the value of the card's health and draw it.
 		if (_player1BoardCards[i].getOverhealth() != 0) {
-			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth() 
-								+ (int)_player1BoardCards[i].getOverhealth()));
+			tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
+				+ (int)_player1BoardCards[i].getOverhealth()));
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
 			tempText.setColor(sf::Color(231, 48, 209, 255));
 		}
@@ -1117,8 +1212,12 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 		//Place card in relevant location based on loop.
 		tempSprite.setPosition(
-			(4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth), 
+			(4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth),
 			GameParameters::healthBarHeight);
+
+		// Add to occupied tile list
+		Tile tempTile = Tile(tempPosX, tempPosY, true);
+		Board::boardTiles.push_back(tempTile);
 
 		//Draw card in window.
 		window.draw(tempSprite);
@@ -1135,6 +1234,10 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 		//Set location based on temp variables.
 		tempSprite.setPosition(tempPosX, tempPosY);
+
+		// Add to occupied tile list
+		Tile tempTile = Tile(tempPosX, tempPosY, true);
+		Board::boardTiles.push_back(tempTile);
 
 		//Draw card in window.
 		window.draw(tempSprite);
@@ -1158,7 +1261,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 			//Set the colour of the text next to it to the heart colour.
 			tempText.setColor(sf::Color(255, 0, 0, 255));
-			
+
 		}
 
 		//Set the text to the value of the card's effect and draw it.
@@ -1201,7 +1304,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		tempText.setColor(sf::Color(0, 0, 0, 255));
 		window.draw(tempText);
 	}
-	
+
 	//PLAYER 2
 	//Graveyard
 	for (int i = 0; i < _player2GraveyardCards.size(); i++) {
@@ -1270,9 +1373,9 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		window.draw(tempText);
 	}
 
-	
+
 	// Player 2 healthbar space
-	
+
 	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f((GameParameters::windowWidth / 2), GameParameters::healthBarHeight));
 	// make sure its being positioned correctly
 	healthbarPlayer2Red.setPosition(0.f, 0.f);
@@ -1280,7 +1383,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	window.draw(healthbarPlayer2Red);
 
 	// Place a green on top that will decrease in size as player takes damage
-	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)(GameParameters::windowWidth / 2)* (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
+	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)(GameParameters::windowWidth / 2) * (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
 	healthbarPlayer2.setPosition(0.f, 0.f);
 	healthbarPlayer2.setFillColor(sf::Color::Green);
 	window.draw(healthbarPlayer2);
@@ -1293,9 +1396,11 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	window.draw(healthbarPlayer1Red);
 
 	// Place a green on top that will decrease in size as player takes damage
-	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)(GameParameters::windowWidth / 2)* (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
+	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)(GameParameters::windowWidth / 2) * (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
 	// To account for lines (1px each)
 	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
 	healthbarPlayer1.setFillColor(sf::Color::Green);
 	window.draw(healthbarPlayer1);
+
 }
+
