@@ -1,7 +1,6 @@
 #include "board.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "tile.h";
 
 sf::Vector2f Board::pixelsToGrid(sf::Vector2f mousePos) {
 	int gridX = static_cast<int>(mousePos.x) / GameParameters::tileWidth;
@@ -1153,7 +1152,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 		for (int y = 0; y < GameParameters::windowHeight / GameParameters::tileHeight - 1; y++) {
 
-			Tile tile = Tile(x, y, false, GameParameters::tileWidth, GameParameters::tileHeight, sf::Color::Cyan);
+			Tile tile(x, y, false, GameParameters::tileWidth, GameParameters::tileHeight, sf::Color::Cyan);
 			boardTiles.push_back(tile);
 			// Add to tile list?
 			/*

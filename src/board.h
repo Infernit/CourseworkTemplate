@@ -138,7 +138,7 @@ public:
 	void placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window);
 
 	void changeTileToOccupied(int xVal, int yVal);
-	Tile Board::getTileFromBoardtiles(int xVal, int yVal);
+	Tile getTileFromBoardtiles(int xVal, int yVal);
 
 private:
 	/// <summary>
