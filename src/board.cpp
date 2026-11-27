@@ -1186,28 +1186,44 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	for (Tile tile : Board::boardTiles) {
 
 		// PLAYER 1
-		// Hand cards
-		for (int i = 0; i < p1->getHand().size(); i++) {
-			if (tile.getY() == 0 
-				// 7 Cards
-				&& (tile.getX() == 4 || tile.getX() == 5 || tile.getX() == 6 || 
-				tile.getX() == 7 || tile.getX() ==  8 || tile.getX() == 9 || tile.getX() ==  10) 
-				&& tile.getOccupuied() == false) {
-					//Cut each hand card.
-					tempSprite = cutCard(p1->getHand()[i]);
+// Hand cards
 
-					int tempTileX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-					int tempTileY = 5 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+		int tempX = tile.getX();
+		int tempY = tile.getY();
 
-					//Place card in relevant location based on loop.
-					tempSprite.setPosition(
-						tempTileX,
-						tempTileY);
+		//c++ breakpoints are annoying so just do this
+		if (tempX == 4) {
+			int val = 0;
+		}
 
-					tile.setOccupied(true);
-					tile.setCardSprite(tempSprite);
-					window.draw(tile.getCardSprite());
-			}
+		if (tempX == 5) {
+			int val2 = 0;
+		}
+
+		std::vector<Card> tempHand = p1->getHand();
+
+		if (tempY == 0
+			// 7 Cards
+			// It only places card in x == 4 ...
+			&& (tempX == 4 || tempX == 5 || tempX == 6 ||
+				tempX == 7 || tempX == 8 || tempX == 9 || tempX == 10)
+			&& tile.getOccupuied() == false && tempHand.size() != 0) {
+			//Cut each hand card.
+			tempSprite = cutCard(tempHand[0]);
+			// delete first elem
+			tempHand.erase(tempHand.begin());
+
+			int tempTileX = (tempX) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+			int tempTileY = 5 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+
+			//Place card in relevant location based on loop.
+			tempSprite.setPosition(
+				tempTileX,
+				tempTileY);
+
+			tile.setOccupied(true);
+			tile.setCardSprite(tempSprite);
+			window.draw(tile.getCardSprite());
 		}
 
 		// Graveyard Cards
