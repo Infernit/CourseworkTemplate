@@ -1183,85 +1183,66 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	int tempPosX = 0;
 	int tempPosY = 0;
 
-	//PLAYER 1
-	//Hand
-	for (int i = 0; i < p1->getHand().size(); i++) {
-		//Cut each hand card.
-		tempSprite = cutCard(p1->getHand()[i]);
+	// Alter tiles per turn
+	for (Tile tile : Board::boardTiles) {
 
-		int tempTileX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-		int tempTileY = 5 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+		// PLAYER 1
+		// Hand cards
+		for (int i = 0; i < p1->getHand().size(); i++) {
+			if (tile.getY() == 0 
+				// 7 Cards
+				&& (tile.getX() == 4 || tile.getX() == 5 || tile.getX() == 6 || 
+				tile.getX() == 7 || tile.getX() ==  8 || tile.getX() == 9 || tile.getX() ==  10) 
+				&& tile.getOccupuied() == false) {
+					//Cut each hand card.
+					tempSprite = cutCard(p1->getHand()[i]);
 
-		//Place card in relevant location based on loop.
-		tempSprite.setPosition(
-			tempTileX,
-			tempTileY);
+					int tempTileX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+					int tempTileY = 5 * GameParameters::tileHeight + GameParameters::healthBarHeight;
 
-		// Draw card in window.
-		Board::changeTileToOccupied(tempTileX, tempTileY);
-		// Pointer issues ....
-		Tile tile = Board::getTileFromBoardtiles(tempTileX, tempTileY);
-		Board::boardTiles.erase(boardTiles.begin() + tile);
-		tile.setCardSprite(tempSprite);
-		window.draw(tile.getCardSprite());
-		Board::boardTiles.push_back(tile);
-	}
+					//Place card in relevant location based on loop.
+					tempSprite.setPosition(
+						tempTileX,
+						tempTileY);
 
-	//Board
-	for (int i = 0; i < _player1BoardCards.size(); i++) {
-		
-		//If the card is captured it should display elsewhere
-		if (!_player1BoardCards[i].getCaptured()) {
+					tile.setOccupied(true);
+					tile.setCardSprite(tempSprite);
+					window.draw(tile.getCardSprite());
+			}
+		}
 
-			//Handle displaying captured card
-			if (_player1CapturedCard.getCardRank() != 0 &&
-				_player1BoardCards[i].getCardRank() == 1 && 
-				_player1BoardCards[i].getCardSuit().getSuitName() == clubs && 
-				GameSystem::getMaxEnergy() >= 11) {
+		// Graveyard Cards
+		for (int i = 0; i < _player1GraveyardCards.size(); i++) {
 
-				//Card is the ace of clubs and has a captured card.
-				tempSprite = cutCard(_player1CapturedCard);
+			if (tile.getX() >= 15 && tile.getY() >= 3) {
+				//Cut each board card.
+				tempSprite = cutCard(_player1GraveyardCards[i]);
 
-				tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-				tempPosY = (3 * GameParameters::tileHeight + GameParameters::healthBarHeight) + 10;
+				//Set temp variables to position of card.
+				tempPosX = (15 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+				tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
 
+				//Set location based on temp variables.
 				tempSprite.setPosition(tempPosX, tempPosY);
 
-				window.draw(tempSprite);
+				tile.setOccupied(true);
+				tile.setCardSprite(tempSprite);
+				//Draw card in window.
+				window.draw(tile.getCardSprite());
 			}
-
-			//Cut each board card.
-			tempSprite = cutCard(_player1BoardCards[i]);
-
-			//Set temp variables to position of card.
-			tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-			tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
-
-			//Set location based on temp variables.
-			tempSprite.setPosition(tempPosX, tempPosY);
-
-			// set sprite from tile x and y
-
-			// Add to occupied tile list
-			/*
-			Tile tempTile = Tile(tempPosX, tempPosY, true, sf::Color yellow);
-			Board::boardTiles.push_back(tempTile);
-			*/
-			//Draw card in window.
-			window.draw(tempSprite);
 
 			//Move cardDescBar to next to the card and draw it.
 			GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
 			window.draw(GameParameters::cardDescBar);
 
-			if (_player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			if (_player1GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
 				//If the card is a club, draw the club icon in the first slot.
 				GameParameters::club.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
 				window.draw(GameParameters::club);
-
 				//Set the colour of the text next to it to the club colour.
 				tempText.setColor(sf::Color(91, 110, 225, 255));
 			}
+
 			else {
 				//If the card is a heart, draw the heart icon in the first slot.
 				GameParameters::heart.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
@@ -1272,192 +1253,202 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 			}
 
 			//Set the text to the value of the card's effect and draw it.
-			if (_player1BoardCards[i].getCardRank() == 11 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			if (_player1GraveyardCards[i].getCardRank() == 11 && _player1GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
 				tempText.setString("?");
 			}
-			else if (_player1BoardCards[i].getCardRank() == 12 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
-				tempText.setString(std::to_string((int)(10 / (_player2BoardCards.size() == 0 ? 1 : _player2BoardCards.size()))) + "*" + std::to_string(_player2BoardCards.size()));
+			else if (_player1GraveyardCards[i].getCardRank() == 12 && _player1GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
+				tempText.setString("0");
 			}
 			else {
-				tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
+				tempText.setString(std::to_string((int)_player1GraveyardCards[i].getCardEffect().getValue()));
 			}
 
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
 			window.draw(tempText);
 
 			//Set the text to the value of the card's health and draw it.
-			if (_player1BoardCards[i].getOverhealth() != 0) {
-				tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
-					+ (int)_player1BoardCards[i].getOverhealth()));
-				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-				tempText.setColor(sf::Color(231, 48, 209, 255));
-			}
-
-			else {
-				tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
-				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-				tempText.setColor(sf::Color(255, 0, 0, 255));
-			}
+			tempText.setString(std::to_string((int)_player1GraveyardCards[i].getCardHealth()));
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+			tempText.setColor(sf::Color(255, 0, 0, 255));
+			window.draw(tempText);
 
 			window.draw(tempText);
 
 			//Set the text to the value of the card's diamond effect and draw it.
-			tempText.setString(std::to_string((int)_player1BoardCards[i].getEffectIncreases()));
+			tempText.setString(std::to_string((int)_player1GraveyardCards[i].getEffectIncreases()));
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 25);
 			tempText.setColor(sf::Color(235, 134, 27, 255));
 			window.draw(tempText);
 
 			//SHOULD SHOW THE SPADE EFFECT BUT CURRENTLY DOESNT WORK.
-			tempText.setString(std::to_string((int)(1.f / _player1BoardCards[i].getDamageDecrease())));
+			tempText.setString(std::to_string((int)(1.f / _player1GraveyardCards[i].getDamageDecrease())));
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 34);
 			tempText.setColor(sf::Color(0, 0, 0, 255));
 			window.draw(tempText);
 		}
-	}
 
-	//PLAYER 1
-	//Board
-	for (int i = 0; i < _player1GraveyardCards.size(); i++) {
-		//Cut each board card.
-		tempSprite = cutCard(_player1GraveyardCards[i]);
+		// To playable cards
+		//Board
+		// Capture weird stuff
+		for (int i = 0; i < _player1BoardCards.size(); i++) {
 
-		//Set temp variables to position of card.
-		tempPosX = (15 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-		tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+			//If the card is captured it should display elsewhere
+			if (!_player1BoardCards[i].getCaptured()) {
 
-		//Set location based on temp variables.
-		tempSprite.setPosition(tempPosX, tempPosY);
+				//Handle displaying captured card
+				if (_player1CapturedCard.getCardRank() != 0 &&
+					_player1BoardCards[i].getCardRank() == 1 &&
+					_player1BoardCards[i].getCardSuit().getSuitName() == clubs &&
+					GameSystem::getMaxEnergy() >= 11) {
 
-		//Draw card in window.
-		window.draw(tempSprite);
+					//Card is the ace of clubs and has a captured card.
+					tempSprite = cutCard(_player1CapturedCard);
 
-		//Move cardDescBar to next to the card and draw it.
-		GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
-		window.draw(GameParameters::cardDescBar);
+					tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+					tempPosY = (3 * GameParameters::tileHeight + GameParameters::healthBarHeight) + 10;
 
-		if (_player1GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
-			//If the card is a club, draw the club icon in the first slot.
-			GameParameters::club.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
-			window.draw(GameParameters::club);
-			//Set the colour of the text next to it to the club colour.
-			tempText.setColor(sf::Color(91, 110, 225, 255));
-		}
-		else {
-			//If the card is a heart, draw the heart icon in the first slot.
-			GameParameters::heart.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
-			window.draw(GameParameters::heart);
+					tempSprite.setPosition(tempPosX, tempPosY);
+					tile.setCardSprite(tempSprite);
 
-			//Set the colour of the text next to it to the heart colour.
-			tempText.setColor(sf::Color(255, 0, 0, 255));
-		}
+					window.draw(tile.getCardSprite());
+				}
 
-		//Set the text to the value of the card's effect and draw it.
-		if (_player1GraveyardCards[i].getCardRank() == 11 && _player1GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
-			tempText.setString("?");
-		}
-		else if (_player1GraveyardCards[i].getCardRank() == 12 && _player1GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
-			tempText.setString("0");
-		}
-		else {
-			tempText.setString(std::to_string((int)_player1GraveyardCards[i].getCardEffect().getValue()));
-		}
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
-		window.draw(tempText);
+				//Cut each board card.
+				tempSprite = cutCard(_player1BoardCards[i]);
 
-		//Set the text to the value of the card's health and draw it.
-		tempText.setString(std::to_string((int)_player1GraveyardCards[i].getCardHealth()));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-		tempText.setColor(sf::Color(255, 0, 0, 255));
-		window.draw(tempText);
-
-		window.draw(tempText);
-
-		//Set the text to the value of the card's diamond effect and draw it.
-		tempText.setString(std::to_string((int)_player1GraveyardCards[i].getEffectIncreases()));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 25);
-		tempText.setColor(sf::Color(235, 134, 27, 255));
-		window.draw(tempText);
-
-		//SHOULD SHOW THE SPADE EFFECT BUT CURRENTLY DOESNT WORK.
-		tempText.setString(std::to_string((int)(1.f / _player1GraveyardCards[i].getDamageDecrease())));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 34);
-		tempText.setColor(sf::Color(0, 0, 0, 255));
-		window.draw(tempText);
-	}
-
-	//PLAYER 2
-	//Hand
-	for (int i = 0; i < p2->getHand().size(); i++) {
-		//Cut each hand card.
-		tempSprite = cutCard(p2->getHand()[i]);
-
-		//Place card in relevant location based on loop.
-		tempSprite.setPosition(
-			(4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth),
-			GameParameters::healthBarHeight);
-
-		// Add to occupied tile list
-		Tile tempTile = Tile(tempPosX, tempPosY, true);
-		Board::boardTiles.push_back(tempTile);
-
-		//Draw card in window.
-		window.draw(tempSprite);
-	}
-
-	//Board
-	for (int i = 0; i < _player2BoardCards.size(); i++) {
-
-		if (!_player2BoardCards[i].getCaptured()) {
-
-			//Handle displaying captured card
-			if (_player2CapturedCard.getCardRank() != 0 &&
-				_player2BoardCards[i].getCardRank() == 1 &&
-				_player2BoardCards[i].getCardSuit().getSuitName() == clubs &&
-				GameSystem::getMaxEnergy() >= 11) {
-
-				//Card is the ace of clubs and has a captured card.
-				tempSprite = cutCard(_player2CapturedCard);
-
+				//Set temp variables to position of card.
 				tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-				tempPosY = (2 * GameParameters::tileHeight + GameParameters::healthBarHeight) - 10;
+				tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
 
+				//Set location based on temp variables.
 				tempSprite.setPosition(tempPosX, tempPosY);
 
-				window.draw(tempSprite);
+				//Draw card in window.
+				tile.setCardSprite(tempSprite);
+				window.draw(tile.getCardSprite());
+
+				//Move cardDescBar to next to the card and draw it.
+				GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
+				window.draw(GameParameters::cardDescBar);
+
+				if (_player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+					//If the card is a club, draw the club icon in the first slot.
+					GameParameters::club.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
+					window.draw(GameParameters::club);
+
+					//Set the colour of the text next to it to the club colour.
+					tempText.setColor(sf::Color(91, 110, 225, 255));
+				}
+				else {
+					//If the card is a heart, draw the heart icon in the first slot.
+					GameParameters::heart.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
+					window.draw(GameParameters::heart);
+
+					//Set the colour of the text next to it to the heart colour.
+					tempText.setColor(sf::Color(255, 0, 0, 255));
+				}
+
+				//Set the text to the value of the card's effect and draw it.
+				if (_player1BoardCards[i].getCardRank() == 11 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+					tempText.setString("?");
+				}
+				else if (_player1BoardCards[i].getCardRank() == 12 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+					tempText.setString(std::to_string((int)(10 / (_player2BoardCards.size() == 0 ? 1 : _player2BoardCards.size()))) + "*" + std::to_string(_player2BoardCards.size()));
+				}
+				else {
+					tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
+				}
+
+				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
+				window.draw(tempText);
+
+				//Set the text to the value of the card's health and draw it.
+				if (_player1BoardCards[i].getOverhealth() != 0) {
+					tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
+						+ (int)_player1BoardCards[i].getOverhealth()));
+					tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+					tempText.setColor(sf::Color(231, 48, 209, 255));
+				}
+
+				else {
+					tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
+					tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+					tempText.setColor(sf::Color(255, 0, 0, 255));
+				}
+
+				window.draw(tempText);
+
+				//Set the text to the value of the card's diamond effect and draw it.
+				tempText.setString(std::to_string((int)_player1BoardCards[i].getEffectIncreases()));
+				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 25);
+				tempText.setColor(sf::Color(235, 134, 27, 255));
+				window.draw(tempText);
+
+				//SHOULD SHOW THE SPADE EFFECT BUT CURRENTLY DOESNT WORK.
+				tempText.setString(std::to_string((int)(1.f / _player1BoardCards[i].getDamageDecrease())));
+				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 34);
+				tempText.setColor(sf::Color(0, 0, 0, 255));
+				window.draw(tempText);
 			}
+		}
 
+		// PLAYER 2
+		// Hand cards
+		for (int i = 0; i < p2->getHand().size(); i++) {
+			if (tile.getY() == 0
+				// 7 Cards
+				&& (tile.getX() == 4 || tile.getX() == 5 || tile.getX() == 6 ||
+					tile.getX() == 7 || tile.getX() == 8 || tile.getX() == 9 || tile.getX() == 10)
+				&& tile.getOccupuied() == false) {
+				//Cut each hand card.
+				tempSprite = cutCard(p2->getHand()[i]);
 
-			//Cut each board card.
-			tempSprite = cutCard(_player2BoardCards[i]);
+				int tempTileX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+				int tempTileY = 5 * GameParameters::tileHeight + GameParameters::healthBarHeight;
 
-			//Set temp variables to position of card.
-			tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-			tempPosY = 2 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+				//Place card in relevant location based on loop.
+				tempSprite.setPosition(
+					tempTileX,
+					tempTileY);
 
-			//Set location based on temp variables.
-			tempSprite.setPosition(tempPosX, tempPosY);
+				tile.setOccupied(true);
+				tile.setCardSprite(tempSprite);
+				window.draw(tile.getCardSprite());
+			}
+		}
 
-			//Draw card in window.
-			window.draw(tempSprite);
-			// Add to occupied tile list
-			Tile tempTile = Tile(tempPosX, tempPosY, true);
-			Board::boardTiles.push_back(tempTile);
+		// Graveyard Cards
+		for (int i = 0; i < _player2GraveyardCards.size(); i++) {
 
-			//Draw card in window.
-			window.draw(tempSprite);
+			if (tile.getX() >= 15 && tile.getY() >= 3) {
+				//Cut each board card.
+				tempSprite = cutCard(_player2GraveyardCards[i]);
+
+				//Set temp variables to position of card.
+				tempPosX = (15 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+				tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+
+				//Set location based on temp variables.
+				tempSprite.setPosition(tempPosX, tempPosY);
+
+				tile.setOccupied(true);
+				tile.setCardSprite(tempSprite);
+				//Draw card in window.
+				window.draw(tile.getCardSprite());
+			}
 
 			//Move cardDescBar to next to the card and draw it.
 			GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
 			window.draw(GameParameters::cardDescBar);
 
-			if (_player2BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			if (_player2GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
 				//If the card is a club, draw the club icon in the first slot.
 				GameParameters::club.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
 				window.draw(GameParameters::club);
-
 				//Set the colour of the text next to it to the club colour.
 				tempText.setColor(sf::Color(91, 110, 225, 255));
 			}
+
 			else {
 				//If the card is a heart, draw the heart icon in the first slot.
 				GameParameters::heart.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
@@ -1465,119 +1456,149 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 				//Set the colour of the text next to it to the heart colour.
 				tempText.setColor(sf::Color(255, 0, 0, 255));
-
 			}
 
 			//Set the text to the value of the card's effect and draw it.
-			if (_player2BoardCards[i].getCardRank() == 11 && _player2BoardCards[i].getCardSuit().getSuitName() == clubs) {
+			if (_player2GraveyardCards[i].getCardRank() == 11 && _player2GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
 				tempText.setString("?");
 			}
-			else if (_player2BoardCards[i].getCardRank() == 12 && _player2BoardCards[i].getCardSuit().getSuitName() == clubs) {
-				tempText.setString(std::to_string(10 / (_player1BoardCards.size() == 0 ? 1 : _player1BoardCards.size())) + "*" + std::to_string(_player1BoardCards.size()));
+			else if (_player2GraveyardCards[i].getCardRank() == 12 && _player2GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
+				tempText.setString("0");
 			}
 			else {
-				tempText.setString(std::to_string((int)_player2BoardCards[i].getCardEffect().getValue()));
+				tempText.setString(std::to_string((int)_player2GraveyardCards[i].getCardEffect().getValue()));
 			}
+
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
 			window.draw(tempText);
 
 			//Set the text to the value of the card's health and draw it.
-			if (_player2BoardCards[i].getOverhealth() != 0) {
-				tempText.setString(std::to_string((int)_player2BoardCards[i].getCardHealth()
-					+ (int)_player2BoardCards[i].getOverhealth()));
-				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-				tempText.setColor(sf::Color(231, 48, 209, 255));
-			}
+			tempText.setString(std::to_string((int)_player2GraveyardCards[i].getCardHealth()));
+			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+			tempText.setColor(sf::Color(255, 0, 0, 255));
+			window.draw(tempText);
 
-			else {
-				tempText.setString(std::to_string((int)_player2BoardCards[i].getCardHealth()));
-				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-				tempText.setColor(sf::Color(255, 0, 0, 255));
-			}
 			window.draw(tempText);
 
 			//Set the text to the value of the card's diamond effect and draw it.
-			tempText.setString(std::to_string((int)_player2BoardCards[i].getEffectIncreases()));
+			tempText.setString(std::to_string((int)_player2GraveyardCards[i].getEffectIncreases()));
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 25);
 			tempText.setColor(sf::Color(235, 134, 27, 255));
 			window.draw(tempText);
 
 			//SHOULD SHOW THE SPADE EFFECT BUT CURRENTLY DOESNT WORK.
-			tempText.setString(std::to_string((int)(1.f / _player2BoardCards[i].getDamageDecrease())));
+			tempText.setString(std::to_string((int)(1.f / _player2GraveyardCards[i].getDamageDecrease())));
 			tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 34);
 			tempText.setColor(sf::Color(0, 0, 0, 255));
 			window.draw(tempText);
 		}
+
+		// To playable cards
+		//Board
+		// Capture weird stuff
+		for (int i = 0; i < _player2BoardCards.size(); i++) {
+
+			//If the card is captured it should display elsewhere
+			if (!_player2BoardCards[i].getCaptured()) {
+
+				//Handle displaying captured card
+				if (_player2CapturedCard.getCardRank() != 0 &&
+					_player2BoardCards[i].getCardRank() == 1 &&
+					_player2BoardCards[i].getCardSuit().getSuitName() == clubs &&
+					GameSystem::getMaxEnergy() >= 11) {
+
+					//Card is the ace of clubs and has a captured card.
+					tempSprite = cutCard(_player2CapturedCard);
+
+					tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+					tempPosY = (3 * GameParameters::tileHeight + GameParameters::healthBarHeight) + 10;
+
+					tempSprite.setPosition(tempPosX, tempPosY);
+					tile.setCardSprite(tempSprite);
+
+					window.draw(tile.getCardSprite());
+				}
+
+				//Cut each board card.
+				tempSprite = cutCard(_player2BoardCards[i]);
+
+				//Set temp variables to position of card.
+				tempPosX = (4 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
+				tempPosY = 3 * GameParameters::tileHeight + GameParameters::healthBarHeight;
+
+				//Set location based on temp variables.
+				tempSprite.setPosition(tempPosX, tempPosY);
+
+				//Draw card in window.
+				tile.setCardSprite(tempSprite);
+				window.draw(tile.getCardSprite());
+
+				//Move cardDescBar to next to the card and draw it.
+				GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
+				window.draw(GameParameters::cardDescBar);
+
+				if (_player2BoardCards[i].getCardSuit().getSuitName() == clubs) {
+					//If the card is a club, draw the club icon in the first slot.
+					GameParameters::club.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
+					window.draw(GameParameters::club);
+
+					//Set the colour of the text next to it to the club colour.
+					tempText.setColor(sf::Color(91, 110, 225, 255));
+				}
+				else {
+					//If the card is a heart, draw the heart icon in the first slot.
+					GameParameters::heart.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
+					window.draw(GameParameters::heart);
+
+					//Set the colour of the text next to it to the heart colour.
+					tempText.setColor(sf::Color(255, 0, 0, 255));
+				}
+
+				//Set the text to the value of the card's effect and draw it.
+				if (_player1BoardCards[i].getCardRank() == 11 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+					tempText.setString("?");
+				}
+				else if (_player1BoardCards[i].getCardRank() == 12 && _player1BoardCards[i].getCardSuit().getSuitName() == clubs) {
+					tempText.setString(std::to_string((int)(10 / (_player2BoardCards.size() == 0 ? 1 : _player2BoardCards.size()))) + "*" + std::to_string(_player2BoardCards.size()));
+				}
+				else {
+					tempText.setString(std::to_string((int)_player1BoardCards[i].getCardEffect().getValue()));
+				}
+
+				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
+				window.draw(tempText);
+
+				//Set the text to the value of the card's health and draw it.
+				if (_player1BoardCards[i].getOverhealth() != 0) {
+					tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()
+						+ (int)_player1BoardCards[i].getOverhealth()));
+					tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+					tempText.setColor(sf::Color(231, 48, 209, 255));
+				}
+
+				else {
+					tempText.setString(std::to_string((int)_player1BoardCards[i].getCardHealth()));
+					tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
+					tempText.setColor(sf::Color(255, 0, 0, 255));
+				}
+
+				window.draw(tempText);
+
+				//Set the text to the value of the card's diamond effect and draw it.
+				tempText.setString(std::to_string((int)_player1BoardCards[i].getEffectIncreases()));
+				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 25);
+				tempText.setColor(sf::Color(235, 134, 27, 255));
+				window.draw(tempText);
+
+				//SHOULD SHOW THE SPADE EFFECT BUT CURRENTLY DOESNT WORK.
+				tempText.setString(std::to_string((int)(1.f / _player1BoardCards[i].getDamageDecrease())));
+				tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 34);
+				tempText.setColor(sf::Color(0, 0, 0, 255));
+				window.draw(tempText);
+			}
+		}
+
 	}
-	
-	//PLAYER 2
-	//Graveyard
-	for (int i = 0; i < _player2GraveyardCards.size(); i++) {
-		//Cut each board card.
-		tempSprite = cutCard(_player2GraveyardCards[i]);
-
-		//Set temp variables to position of card.
-		tempPosX = (15 + i) * (GameParameters::tileWidth + GameParameters::cardDescBarWidth);
-		tempPosY = 2 * GameParameters::tileHeight + GameParameters::healthBarHeight;
-
-		//Set location based on temp variables.
-		tempSprite.setPosition(tempPosX, tempPosY);
-
-		//Draw card in window.
-		window.draw(tempSprite);
-
-		//Move cardDescBar to next to the card and draw it.
-		GameParameters::cardDescBar.setPosition(tempPosX + GameParameters::tileWidth, tempPosY);
-		window.draw(GameParameters::cardDescBar);
-
-		if (_player2GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
-			//If the card is a club, draw the club icon in the first slot.
-			GameParameters::club.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
-			window.draw(GameParameters::club);
-			//Set the colour of the text next to it to the club colour.
-			tempText.setColor(sf::Color(91, 110, 225, 255));
-		}
-		else {
-			//If the card is a heart, draw the heart icon in the first slot.
-			GameParameters::heart.setPosition(tempPosX + GameParameters::tileWidth + 3, tempPosY + 7);
-			window.draw(GameParameters::heart);
-
-			//Set the colour of the text next to it to the heart colour.
-			tempText.setColor(sf::Color(255, 0, 0, 255));
-		}
-
-		//Set the text to the value of the card's effect and draw it.
-		if (_player2GraveyardCards[i].getCardRank() == 11 && _player2GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
-			tempText.setString("?");
-		}
-		else if (_player2GraveyardCards[i].getCardRank() == 12 && _player2GraveyardCards[i].getCardSuit().getSuitName() == clubs) {
-			tempText.setString("0");
-		}
-		else {
-			tempText.setString(std::to_string((int)_player2GraveyardCards[i].getCardEffect().getValue()));
-		}
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 7);
-		window.draw(tempText);
-
-		//Set the text to the value of the card's health and draw it.
-		tempText.setString(std::to_string((int)_player2GraveyardCards[i].getCardHealth()));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 16);
-		tempText.setColor(sf::Color(255, 0, 0, 255));
-		window.draw(tempText);
-
-		//Set the text to the value of the card's diamond effect and draw it.
-		tempText.setString(std::to_string((int)_player2GraveyardCards[i].getEffectIncreases()));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 25);
-		tempText.setColor(sf::Color(235, 134, 27, 255));
-		window.draw(tempText);
-
-		//SHOULD SHOW THE SPADE EFFECT BUT CURRENTLY DOESNT WORK.
-		tempText.setString(std::to_string((int)(1.f / _player2GraveyardCards[i].getDamageDecrease())));
-		tempText.setPosition(tempPosX + GameParameters::tileWidth + 9, tempPosY + 34);
-		tempText.setColor(sf::Color(0, 0, 0, 255));
-		window.draw(tempText);
-	}
-
 
 	// Player 2 healthbar space
 
