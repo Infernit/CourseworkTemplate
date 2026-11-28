@@ -14,7 +14,9 @@ public:
 	int getX();
 	int getY();	
 	sf::RectangleShape getShape();
-	sf::Sprite getCardSprite();
+	sf::Sprite getCardSpriteVal();
+	sf::Sprite* getCardSpriteRef();
+	bool getBeingDragged();
 
 	// Setters
 	void setColour(sf::Color colour);
@@ -24,6 +26,7 @@ public:
 	void addCardDescBarSprite(sf::Sprite cardDescBarSprite);
 	void addCardDescBarSprite(sf::Text cardDescBarSprite);
 	void resetCardDescBarSprites();
+	void setBeingDragged(bool value);
 
 	void drawCardDescBarSprite(sf::RenderWindow& window);
 
@@ -39,4 +42,6 @@ private:
 	sf::Sprite _cardSprite;
 	std::vector<sf::Sprite> _cardDescBarSprite;
 	std::vector<sf::Text> _cardDescBarText;
+
+	bool _beingDragged;
 };

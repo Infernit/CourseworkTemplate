@@ -1084,36 +1084,17 @@ sf::Text Board::setPositionRelativeToCardDescBar(Tile tile, sf::Text sprite, int
 	return sprite;
 }
 
+std::vector<std::map<int, std::vector<Tile>>*> Board::getTileMaps()
+{
+	return { &_playerHandTiles, &_playerBoardTiles, &_playerGraveyardTiles };
+}
+
 void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) {
 
 	//New system trial code
 	// Player 2 healthbar space
 
-	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f((GameParameters::windowWidth), GameParameters::healthBarHeight));
-	// make sure its being positioned correctly
-	healthbarPlayer2Red.setPosition(0.f, 0.f);
-	healthbarPlayer2Red.setFillColor(sf::Color::Red);
-	window.draw(healthbarPlayer2Red);
-
-	// Place a green on top that will decrease in size as player takes damage
-	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)(GameParameters::windowWidth) * (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
-	healthbarPlayer2.setPosition(0.f, 0.f);
-	healthbarPlayer2.setFillColor(sf::Color::Green);
-	window.draw(healthbarPlayer2);
-
-	//Player 1 healthbar
-	sf::RectangleShape healthbarPlayer1Red(sf::Vector2f((GameParameters::windowWidth), GameParameters::healthBarHeight));
-	// make sure its being positioned correctly
-	healthbarPlayer1Red.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
-	healthbarPlayer1Red.setFillColor(sf::Color::Red);
-	window.draw(healthbarPlayer1Red);
-
-	// Place a green on top that will decrease in size as player takes damage
-	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)(GameParameters::windowWidth) * (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
-	// To account for lines (1px each)
-	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
-	healthbarPlayer1.setFillColor(sf::Color::Green);
-	window.draw(healthbarPlayer1);
+	
 
 	Player* p;
 	std::vector<int> limits = { 
@@ -1251,6 +1232,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 
 				s.setPosition(tile.getX() * (GameParameters::tileWidth + GameParameters::cardDescBarWidth),
 					tile.getY() * GameParameters::tileHeight + GameParameters::healthBarHeight);
+				
 
 				//apply sprite to tile
 				tile.setCardSprite(s);
@@ -1261,15 +1243,7 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 		}
 	}
 
-	for (int i = 0; i < maps.size(); i++) {
-		for (int j = 0; j < 2; j++) {
-			for (int k = 0; k < maps.at(i)->at(j + 1).size(); k++) {
-				window.draw(maps.at(i)->at(j + 1).at(k).getShape());
-				window.draw(maps.at(i)->at(j + 1).at(k).getCardSprite());
-				maps.at(i)->at(j + 1).at(k).drawCardDescBarSprite(window);
-			}
-		}
-	}
+	renderBoard(p1, p2, window);
 
 	//1 is player num, 2 is position in hand array
 	//_playerHandTiles[1][2];
@@ -1277,5 +1251,72 @@ void Board::placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window) 
 	//1 is player num, 0 is position on board array
 	//_playerBoardTiles[1][0];
 
+}
+
+void Board::renderBoard(Player* p1, Player* p2, sf::RenderWindow& window)
+{
+	window.clear();
+
+	sf::RectangleShape healthbarPlayer2Red(sf::Vector2f((GameParameters::windowWidth), GameParameters::healthBarHeight));
+	// make sure its being positioned correctly
+	healthbarPlayer2Red.setPosition(0.f, 0.f);
+	healthbarPlayer2Red.setFillColor(sf::Color::Red);
+	window.draw(healthbarPlayer2Red);
+
+	// Place a green on top that will decrease in size as player takes damage
+	sf::RectangleShape healthbarPlayer2(sf::Vector2f((float)(GameParameters::windowWidth) * (float)p2->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
+	healthbarPlayer2.setPosition(0.f, 0.f);
+	healthbarPlayer2.setFillColor(sf::Color::Green);
+	window.draw(healthbarPlayer2);
+
+	//Player 1 healthbar
+	sf::RectangleShape healthbarPlayer1Red(sf::Vector2f((GameParameters::windowWidth), GameParameters::healthBarHeight));
+	// make sure its being positioned correctly
+	healthbarPlayer1Red.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
+	healthbarPlayer1Red.setFillColor(sf::Color::Red);
+	window.draw(healthbarPlayer1Red);
+
+	// Place a green on top that will decrease in size as player takes damage
+	sf::RectangleShape healthbarPlayer1(sf::Vector2f((float)(GameParameters::windowWidth) * (float)p1->getHealth() / (float)GameParameters::maxPlayerHealth, GameParameters::healthBarHeight));
+	// To account for lines (1px each)
+	healthbarPlayer1.setPosition(0.f, (GameParameters::tileHeight * 6) + GameParameters::healthBarHeight);
+	healthbarPlayer1.setFillColor(sf::Color::Green);
+	window.draw(healthbarPlayer1);
+
+	// End turn button
+	sf::RectangleShape endTurnButton;
+	endTurnButton.setPosition(Board::gridToPixels(12, 1));
+	endTurnButton.setSize(Board::gridToPixels(1, 1));
+	endTurnButton.setFillColor(sf::Color::Red);
+	window.draw(endTurnButton);
+
+	auto maps = getTileMaps();
+
+	Tile* dragged = nullptr;
+
+	for (int i = 0; i < maps.size(); i++) {
+		for (int j = 0; j < 2; j++) {
+			for (int k = 0; k < maps.at(i)->at(j + 1).size(); k++) {
+				window.draw(maps.at(i)->at(j + 1).at(k).getShape());
+
+				if (maps.at(i)->at(j + 1).at(k).getBeingDragged()) {
+					dragged = &maps.at(i)->at(j + 1).at(k);
+				}
+				else {
+					window.draw(maps.at(i)->at(j + 1).at(k).getCardSpriteVal());
+				}
+				
+				maps.at(i)->at(j + 1).at(k).drawCardDescBarSprite(window);
+			}
+		}
+	}
+
+	if (dragged != nullptr) {
+		sf::Sprite s = dragged->getCardSpriteVal();
+		s.setPosition(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+
+		dragged->setCardSprite(s);
+		window.draw(dragged->getCardSpriteVal());
+	}
 }
 

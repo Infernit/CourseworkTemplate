@@ -265,6 +265,8 @@ void Testing::mockup_round() {
 
 				if (event.mouseButton.button == sf::Mouse::Left) {
 
+					//Check if click is within bounds of end turn button
+
 					// Freezing for console input
 					while (player1->getHealth() > 0 && player2->getHealth() > 0) {
 
@@ -280,7 +282,26 @@ void Testing::mockup_round() {
 							opponent = player1;
 						}
 
+						//Set player energy to current max energy
+						player->setCurrentEnergy(GameSystem::getMaxEnergy());
 
+						// Text on screen to show turn number and energy
+						sf::Text turnNumberText;
+						turnNumberText.setFont(GameParameters::font);
+						turnNumberText.setCharacterSize(12);
+						turnNumberText.setString("Turn: " + std::to_string(GameParameters::turnNumber));
+						// Just dummy values for now, see how it looks
+						turnNumberText.setPosition(Board::gridToPixels(12,5));
+						window.draw(turnNumberText);
+
+						sf::Text energyText;
+						energyText.setFont(GameParameters::font);
+						energyText.setCharacterSize(12);
+						energyText.setString("Energy: " + std::to_string(player->getCurrentEnergy()));
+						// Just dummy values for now, see how it looks
+						energyText.setPosition(Board::gridToPixels(12, 6));
+						window.draw(energyText);
+						/*
 						std::cout
 							<< std::endl
 							<< "PLAYER "
@@ -288,9 +309,7 @@ void Testing::mockup_round() {
 							<< "'S TURN"
 							<< std::endl
 							<< std::endl;
-
-						//Set player energy to current max energy
-						player->setCurrentEnergy(GameSystem::getMaxEnergy());
+						*/
 
 						//Fill players hand from deck
 						player->fillHand();
@@ -313,6 +332,7 @@ void Testing::mockup_round() {
 
 						//Play cards from hand
 						while (player->getCurrentEnergy() > 0) {
+							/*
 							// Turn number
 							std::cout
 								<< "Turn Number: "
@@ -327,7 +347,9 @@ void Testing::mockup_round() {
 								<< std::endl
 								<< "-----------------"
 								<< std::endl;
+							*/
 
+							/*
 							//List player cards
 							for (int i = 0; i < player->getHand().size(); i++) {
 								std::cout
@@ -338,16 +360,37 @@ void Testing::mockup_round() {
 									<< params::suitNames[player->getHand()[i].getCardSuit().getSuitName()]
 									<< std::endl;
 							}
+							*/
 
 							std::cout << "0: Manually End Turn" << std::endl;
 
+							if (event.type == sf::Event::MouseButtonPressed) {
+
+								if (event.mouseButton.button == sf::Mouse::Left) {
+									if ((mousePos.x >= Board::gridToPixels(12, 0).x &&
+										mousePos.x <= Board::gridToPixels(13, 0).x) 
+										&&
+										(mousePos.y >= Board::gridToPixels(0, 1).y) &&
+										mousePos.y <= Board::gridToPixels(0, 2).y) {
+										std::cout << "You pressed a button" << std::endl;
+										break;
+									}
+
+									// Else play card / check card pos code ???
+								}
+
+							}
+
+							/*
 							//Get user input
 							std::cout
 								<< std::endl
 								<< "Pick card to play: ";
 							int num;
 							std::cin >> num;
+							*/
 
+							/*
 							//Try play card based on user input
 							if (num == 0) {
 								break;
@@ -359,6 +402,7 @@ void Testing::mockup_round() {
 									<< std::endl
 									<< std::endl;
 							}
+							*/
 						}
 
 						//Play cards on board

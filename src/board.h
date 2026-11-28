@@ -137,11 +137,15 @@ public:
 	/// <param name="window">Window to render to.</param>
 	void placeCardsOnBoard(Player* p1, Player* p2, sf::RenderWindow& window);
 
+	void renderBoard(Player* p1, Player* p2, sf::RenderWindow& window);
+
 	void changeTileToOccupied(int xVal, int yVal);
 	Tile getTileFromBoardtiles(int xVal, int yVal);
 
 	sf::Sprite setPositionRelativeToCardDescBar(Tile tile, sf::Sprite sprite, int xOffset, int yOffset);
 	sf::Text setPositionRelativeToCardDescBar(Tile tile, sf::Text sprite, int xOffset, int yOffset);
+
+	std::vector<std::map<int, std::vector<Tile>>*> getTileMaps();
 
 private:
 	/// <summary>

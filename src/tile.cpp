@@ -9,6 +9,8 @@ Tile::Tile(int x, int y, bool occupied, int tileWidth, int tileHeight, sf::Color
 	_y = y;
 	_occupied = occupied;
 
+	_beingDragged = false;
+
 	// sfml properties
 	_shape = sf::RectangleShape();
 	_shape.setSize(sf::Vector2f((GameParameters::tileWidth + GameParameters::cardDescBarWidth), GameParameters::tileHeight));
@@ -34,8 +36,18 @@ sf::RectangleShape Tile::getShape() {
 	return _shape;
 }
 
-sf::Sprite Tile::getCardSprite() {
+sf::Sprite Tile::getCardSpriteVal() {
 	return _cardSprite;
+}
+
+sf::Sprite* Tile::getCardSpriteRef()
+{
+	return &_cardSprite;
+}
+
+bool Tile::getBeingDragged()
+{
+	return _beingDragged;
 }
 
 void Tile::setColour(sf::Color colour)
@@ -67,6 +79,11 @@ void Tile::resetCardDescBarSprites()
 {
 	_cardDescBarSprite = {};
 	_cardDescBarText = {};
+}
+
+void Tile::setBeingDragged(bool value)
+{
+	_beingDragged = value;
 }
 
 void Tile::drawCardDescBarSprite(sf::RenderWindow& window)

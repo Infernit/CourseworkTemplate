@@ -174,6 +174,11 @@ std::vector<Card> Player::getHand() {
 	return _hand;
 }
 
+std::vector<Card>& Player::getHandRef()
+{
+	return _hand;
+}
+
 std::vector<Card> Player::getGraveyard() {
 	return _graveyard;
 }

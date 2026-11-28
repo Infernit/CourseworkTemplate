@@ -31,6 +31,7 @@ public:
 	void setCurrentEnergy(int value);
 	Deck& getDeck();
 	std::vector<Card> getHand();
+	std::vector<Card>& getHandRef();
 	std::vector<Card> getGraveyard();
 
 	void forceCardIntoHand(Card &card);

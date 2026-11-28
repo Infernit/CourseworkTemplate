@@ -1,8 +1,12 @@
 #pragma once
 #include <iostream>
 #include <memory>
+#include <SFML/Graphics.hpp>
 
 class Player;
+class Board;
+class Tile;
+class Card;
 
 struct GameSystem {
 //________________________________//
@@ -23,8 +27,8 @@ struct GameSystem {
 	void init();
 	void reset();
 	void clean();
-	void update(const float& dt);
-	void render();
+	void update(const float& dt, sf::RenderWindow& window);
+	void render(sf::RenderWindow& window);
 
 	void nextTurn();
 	void playerKilledHandler(int playerNumber);
@@ -40,6 +44,7 @@ struct GameSystem {
 	static int getMaxEnergy();
 	int getTurn();
 	bool getSkipTurn();
+	Board* getBoard();
 	
 //___________________________//
 //          SETTERS          //
@@ -58,4 +63,11 @@ private:
 
 	int _turn;
 	bool _skipNextTurn;
+
+	std::unique_ptr<Board> _board;
+
+	bool _draggingCard;
+	Card* _cardBeingDragged;
+	sf::Sprite* _cardSpriteBeingDragged;
+	Tile* _tileBeingDragged;
 };
